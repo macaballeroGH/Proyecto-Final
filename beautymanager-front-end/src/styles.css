@@ -1,0 +1,49 @@
+:root{
+
+    /*=======================
+       Colores principales
+    =======================*/
+    --color-primary: #FFFFFF;
+    --color-background: #F8F9FA;
+    --color-section-light: #FCFBFA;
+    --color-section-accent: #F5EFEA;
+
+    /*=======================
+       Textos
+    =======================*/
+    --color-text: #2D2D2D;
+    --color-text-secondary: #6B7280;
+
+    /*=======================
+       Color de acento
+    =======================*/
+    --color-accent: #C9A58A;
+    --color-accent-hover: #B88D70;
+
+    /*=======================
+       Bordes
+    =======================*/
+    --color-border: #E5E7EB;
+
+    /*=======================
+       Sombras
+    =======================*/
+    --shadow-card: 0 4px 20px rgba(0,0,0,.08);
+    --shadow-hover: 0 8px 25px rgba(0,0,0,.12);
+
+    /*=======================
+       Bordes redondos
+    =======================*/
+    --radius-small: 10px;
+    --radius-medium: 16px;
+    --radius-large: 24px;
+}
+
+body{
+
+    margin:0;
+    background: var(--color-background);
+    color: var(--color-text);
+
+    font-family: "Inter", "Roboto", Arial, sans-serif;
+}

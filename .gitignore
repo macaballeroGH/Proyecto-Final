@@ -1,0 +1,57 @@
+# =========================
+# GENERAL
+# =========================
+
+*.log
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# BACKEND - SPRING BOOT
+# =========================
+
+beautymanager-back-end/target/
+
+beautymanager-back-end/.mvn/wrapper/maven-wrapper.jar
+
+# Configuración local
+beautymanager-back-end/src/main/resources/application-local.properties
+
+# Claves privadas
+beautymanager-back-end/src/main/resources/jwtKeys/private_key.pem
+
+
+# =========================
+# FRONTEND - ANGULAR
+# =========================
+
+beautymanager-front-end/node_modules/
+
+beautymanager-front-end/dist/
+
+beautymanager-front-end/.angular/
+
+beautymanager-front-end/.cache/
+
+
+# =========================
+# IDE
+# =========================
+
+.idea/
+.vscode/
+
+*.iml
+
+*.classpath
+*.project
+*.settings/
+
+
+# =========================
+# SISTEMA
+# =========================
+
+*.tmp
+*.temp

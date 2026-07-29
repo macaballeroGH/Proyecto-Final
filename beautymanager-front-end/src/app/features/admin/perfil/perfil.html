@@ -1,0 +1,128 @@
+<mat-card class="perfil-admin">
+
+    <div class="bienvenida">
+        <h1>Bienvenida, {{ usuario()?.nombre }}</h1>
+    </div>
+
+    <div class="cabecera">
+
+        <div class="foto-card">
+
+            <img [src]="usuario()?.fotoPerfil ? 'http://localhost:8080/' + usuario()?.fotoPerfil : '/img/default-profile.jpg'" alt="Foto de perfil">
+
+            <input 
+                type="file" 
+                #archivoInput
+                hidden
+                accept="image/*"
+                (change)="cambiarFoto($event)"
+            >
+
+            <button mat-raised-button color="primary" (click)="archivoInput.click()">
+                Cambiar foto
+            </button>
+
+            <button
+                    mat-stroked-button
+                    color="warn"
+                    *ngIf="usuario()?.fotoPerfil"
+                    (click)="eliminarFoto()"
+            >
+                Eliminar foto
+            </button>
+        </div>
+
+        <div class="datos-card">
+
+            <h2>Datos del administrador</h2>
+
+            <p>
+                <strong>Nombre:</strong>
+                {{ usuario()?.nombre }} {{ usuario()?.apellido }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ usuario()?.email }}
+            </p>
+
+            <p>
+                <strong>Rol:</strong>
+                {{ usuario()?.rol }}
+            </p>
+
+            <p>
+                <strong>Estado:</strong>
+                {{ usuario()?.estadoUsuario }}
+            </p>
+
+            <p>
+                <strong>Teléfono:</strong>
+                {{ usuario()?.telefono }}
+            </p>
+        </div>
+    </div>
+
+    <div class="estadisticas-container">
+
+        <mat-card class="estadisticas-card">
+
+            <h3>Clientes</h3>
+
+            <span>0</span>
+        </mat-card>
+
+        <mat-card class="estadisticas-card">
+
+            <h3>Turnos</h3>
+
+            <span>0</span>
+        </mat-card>
+
+        <mat-card class="estadisticas-card">
+
+            <h3>Ventas</h3>
+
+            <span>$0</span>
+        </mat-card>
+
+        <mat-card class="estadisticas-card">
+
+            <h3>Empleados</h3>
+
+            <span>0</span>
+        </mat-card>
+    </div>
+
+    <div class="accesos">
+
+        <h2>Accesos rápidos</h2>
+
+        <div class="botones">
+
+            <button mat-raised-button>
+                Servicios
+            </button>
+
+            <button mat-raised-button>
+                Productos
+            </button>
+
+            <button mat-raised-button>
+                Empleados
+            </button>
+
+            <button mat-raised-button>
+                Compras
+            </button>
+
+            <button mat-raised-button>
+                Estadísticas
+            </button>
+
+            <button mat-raised-button>
+                Finanzas
+            </button>
+        </div>
+    </div>
+</mat-card>

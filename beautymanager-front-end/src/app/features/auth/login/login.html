@@ -1,0 +1,30 @@
+<mat-card>
+    <h2>Iniciar Sesión</h2>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="email">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="password">
+    </mat-form-field>
+
+    <button mat-raised-button (click)="iniciarSesion()">
+        Iniciar Sesión
+    </button>
+
+    <p>
+        <a routerLink="/forgot-password">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </p>
+
+    <p>
+        ¿No tienes una cuenta?
+        <a routerLink="/registro">
+            Registrate
+        </a>
+    </p>
+</mat-card>

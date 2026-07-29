@@ -1,0 +1,8 @@
+export enum CarpetaArchivo{
+    PERFILES = 'PERFILES',
+    PRODUCTOS = 'PRODUCTOS',
+    SERVICIOS = 'SERVICIOS',
+    CATEGORIAS = 'CATEGORIAS',
+    EMPLEADOS = 'EMPLEADOS',
+    OTROS = 'OTROS'
+}

@@ -1,0 +1,285 @@
+/*===========================
+    Header
+===========================*/
+.landing-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 80px;
+    background: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 6px 25px rgba(0,0,0,.08);
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: var(--color-text);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 500;
+    transition: .3s;
+}
+
+nav a:hover {
+    color: var(--color-accent);
+}
+
+.btn-registro {
+    background: var(--color-accent);
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: var(--radius-small);
+    box-shadow: 0 6px 18px rgba(201,165,138,.35);
+    transition: .35s;
+}
+
+.btn-registro:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(201,165,138,.45);
+}
+
+/*===========================
+    Hero
+===========================*/
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 90px;
+    max-width: 1400px;
+    margin: auto;
+    padding: 110px 50px;
+    background: linear-gradient(180deg, #FFFFFF, #F5EFEA);
+}
+
+.hero-texto {
+    flex: 1;
+    max-width: 650px;
+}
+
+.hero-texto h1 {
+    font-size: 2.8rem;
+    line-height: 1.25;
+    margin-bottom: 35px;
+}
+
+.hero-texto p {
+    font-size: 1.15rem;
+    line-height: 2;
+    color: var(--color-text-secondary);
+    text-align: justify;
+    margin-bottom: 20px;
+}
+
+/*===========================
+    Imagenes hero
+===========================*/
+.hero-imagen {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+}
+
+.hero-imagen img {
+    width: 280px;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-hover);
+    object-fit: cover;
+    transition: .35s;
+}
+
+.hero-imagen img:first-child {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+.hero-imagen img:last-child {
+    position: absolute;
+    right: 0;
+    bottom: 20px;
+}
+
+.hero-imagen img:hover {
+    transform: scale(1.05) rotate(1deg);
+}
+
+/*===========================
+    Sobre
+===========================*/
+.sobre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 90px;
+    max-width: 1400px;
+    margin: auto;
+    padding: 110px 50px;
+    background: white;
+}
+
+.sobre-texto {
+    flex: 1;
+    max-width: 650px;
+}
+
+.sobre h2 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+.sobre p {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.9;
+    text-align: justify;
+    margin-bottom: 25px;
+}
+
+.sobre-imagen {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.sobre-imagen img {
+    width: 420px;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+/*===========================
+    Caracteristicas
+===========================*/
+.caracteristicas {
+    background: var(--color-section-light);
+    padding: 100px 50px;
+    text-align: center;
+}
+
+.caracteristicas h2 {
+    font-size: 2.4rem;
+    margin-bottom: 60px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 30px;
+}
+
+.card {
+    background: var(--color-accent);
+    color: white;
+    padding: 35px;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-card);
+    transition: .35s;
+}
+
+.card:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card h3 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.35rem;
+}
+
+.card p {
+    color: #FDFBF8;
+    line-height: 1.8;
+}
+
+/*===========================
+    Beneficios
+===========================*/
+.beneficios {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 90px;
+    max-width: 1400px;
+    margin: auto;
+    padding: 110px 50px;
+    background: var(--color-section-accent);
+}
+
+.beneficios-texto {
+    flex: 1;
+    max-width: 650px;
+}
+
+.beneficios h2 {
+    font-size: 2.4rem;
+    margin-bottom: 25px;
+}
+
+.beneficios p {
+    text-align: justify;
+    line-height: 2;
+}
+
+.beneficios ul {
+    padding-left: 20px;
+}
+
+.beneficios li {
+    margin-bottom: 18px;
+    font-size: 1.1rem;
+}
+
+.beneficios-imagen {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.beneficios-imagen img {
+    width: 420px;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+/*===========================
+    Footer
+===========================*/
+footer {
+    background: var(--color-text);
+    color: white;
+    text-align: center;
+    padding: 80px 30px;
+}
+
+footer h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+footer p {
+    max-width: 700px;
+    margin: auto;
+    color: #D1D5DB;
+    line-height: 1.8;
+}

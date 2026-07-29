@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>
+    Eliminar foto
+</h2>
+
+<mat-dialog-content>
+    ¿Estás segura de que querés eliminar tu foto de perfil?
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button mat-button (click)="cancelar()">
+        Cancelar
+    </button>
+
+    <button mat-raised-button color="warn" (click)="confirmar()">
+        Eliminar
+    </button>
+</mat-dialog-actions>
