@@ -28,6 +28,8 @@ public interface MovimientoFinanzasRepository extends JpaRepository<MovimientoFi
 
     List<MovimientoFinanzasEntity> findByTipoMovimientoAndFechaBetween(TipoMovimientoEnums tipoMovimiento, LocalDateTime inicio, LocalDateTime fin);
 
+    List<MovimientoFinanzasEntity> findByTipoMovimientoAndEstadoAndFechaBetween(TipoMovimientoEnums tipoMovimiento, EstadoMovimientoEnums estado, LocalDateTime inicio, LocalDateTime fin);
+
     List<MovimientoFinanzasEntity> findByUsuarioIdAndFechaBetween(Long idUsuario, LocalDateTime inicio, LocalDateTime fin);
 
     List<MovimientoFinanzasEntity> findByTipoGastoIdAndFechaBetween(Long idTipoGasto, LocalDateTime inicio, LocalDateTime fin);

@@ -28,7 +28,7 @@ import jakarta.persistence.OneToOne;
 @Entity
 @Data
 
-@Table(name = "usuario", schema = "pp2", uniqueConstraints = { @UniqueConstraint(columnNames = { "email" }) })
+@Table(name = "usuario", schema = "beautymanager", uniqueConstraints = { @UniqueConstraint(columnNames = { "email" }) })
 public class UsuarioEntity implements UserDetails {
 
     @Id

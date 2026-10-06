@@ -3,6 +3,8 @@ package com.example.beautymanager.Servicio;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
+import com.example.beautymanager.Modelo.DTO.FiltroEstadisticasDTO;
+import com.example.beautymanager.Modelo.DTO.ObtenerEstadisticasDTO;
 
 public interface EstadisticasService {
 
@@ -17,4 +19,6 @@ public interface EstadisticasService {
     Map<String, Long> obtenerServiciosMasSolicitados();
 
     Map<String, Long> obtenerProductosMasVendidos();
+
+    ObtenerEstadisticasDTO obtenerEstadisticas(FiltroEstadisticasDTO filtro);
 }

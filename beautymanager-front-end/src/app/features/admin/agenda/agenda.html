@@ -1,49 +1,744 @@
 <div class="agenda-container">
+
     <header class="agenda-header">
-        <h1>Agenda</h1>
 
-        <div class="agenda-controls">
+        <div class="header-titulo">
 
-            <button></button>
+            <h1>Agenda</h1>
 
-            <button class="mes-actual">
-                Julio 2026
+            @if(hayTurnos()){
+
+                <span class="cantidad-turnos">
+                    {{ turnosFiltrados.length }} turnos
+                </span>
+            }
+            @else {
+
+                <span class="sin-turnos">
+                    Sin turnos
+                </span>
+            }
+        </div>
+
+        <div class="header-controles">
+
+            <button class="btn-icon" type="button" (click)="semanaAnterior()" aria-label="Semana anterior">
+                <mat-icon>chevron_left</mat-icon>
             </button>
 
-            <button>Hoy</button>
+            <button class="btn-mes" type="button" (click)="abrirSelectorFecha()">
 
-            <button>Filtros</button>
+                <span>{{ obtenerMesActual() }}</span>
+
+                <mat-icon>expand_more</mat-icon>
+            </button>
+
+            <button class="btn-icon" type="button" (click)="semanaSiguiente()" aria-label="Semana siguiente">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+
+            <button class="btn-hoy" type="button" (click)="irAHoy()">
+
+                <mat-icon>today</mat-icon>
+
+                Hoy
+            </button>
+
+            <div class="busqueda">
+
+                <mat-icon>search</mat-icon>
+
+                <input type="text" placeholder="Buscar cliente, empleado o servicio..." [(ngModel)]="textoBusqueda" (input)="buscarTurnos()">
+            </div>
+
+            <button class="btn-filtros" type="button" (click)="abrirFiltros()">
+
+                <mat-icon>filter_alt</mat-icon>
+
+                Filtros
+            </button>
         </div>
     </header>
 
-    <div class="agenda-content">
-
+    <main class="agenda-content">
+        
         <aside class="agenda-sidebar">
 
-            <button class="sidebar-btn">
-                Nuevo Turno
+            <h2>Acciones</h2>
+
+            <button class="sidebar-btn btn-nuevo-turno" type="button" (click)="abrirNuevoTurno()">
+
+                <mat-icon>add</mat-icon>
+
+                <span>Nuevo turno</span>
             </button>
 
-            <button class="sidebar-btn">
-                Servicios
+            <button class="sidebar-btn" type="button" (click)="abrirServicios()">
+
+                <mat-icon>content_cut</mat-icon>
+
+                <span>Servicios</span>
             </button>
 
-            <button class="sidebar-btn">
-                Categorías
-            </button>
+            <button class="sidebar-btn" type="button" (click)="abrirCategorias()">
 
+                <mat-icon>category</mat-icon>
+
+                <span>Categorias</span>
+            </button>
         </aside>
 
         <section class="agenda-calendar">
+            
+            <div class="calendar-header">
 
-            <div class="calendar-placeholder">
+                <div class="calendar-title">
+                    Calendario semanal
+                </div>
 
-                <h2>Calendario</h2>
+                <div class="calendar-range">
+                    {{ obtenerMesActual() }}
+                </div>
+            </div>
 
-                <p>
-                    Aquí se mostrará la agenda por horas.
-                </p>
+            <div class="calendar-grid">
+
+                <div class="calendar-time-column">
+                    
+                    <div class="calendar-corner"></div>
+
+                    @for (hora of horas; track hora){
+                        <div class="calendar-time">
+                            {{ hora }}
+                        </div>
+                    }
+                </div>
+
+                @for (dia of diasSemana; track dia.getTime()) {
+
+                    <div class="calendar-day" [class.dia-hoy]="esHoy(dia)">
+
+                        <div class="calendar-day-header">
+
+                            <span class="dia-nombre">
+                                {{ dia | date:'EEEE':'':'es-AR' }}
+                            </span>
+
+                            <span class="dia-numero">
+                                {{ dia | date: 'd' }}
+                            </span>
+                        </div>
+
+                        <div class="calendar-day-slot">
+
+                            @for (hora of horas; track hora) {
+
+                                <div class="calendar-slot" [class.slot-ocupado]="tieneTurnos(dia, hora)">
+
+                                    @for (turno of obtenerTurnos(dia, hora); track turno.id) {
+
+                                        @if (empiezaEnFranja(turno, hora)) {
+
+                                            <button class="turno-card" type="button" [class]="obtenerClaseEstado(turno)" [style.height.px]="obtenerAlturaTurno(turno) * 60" (click)="abrirDetalle(turno)" (mouseenter)="mostrarEstado(turno)" (mouseleave)="ocultarEstado()">
+
+                                                <div class="turno-estado">
+
+                                                    <span class="estado-punto"></span>
+
+                                                    {{ obtenerEstado(turno) }}
+                                                </div>
+
+                                                <div class="turno-horario">
+                                                    {{ obtenerHorario(turno) }}
+                                                </div>
+
+                                                <div class="turno-cliente">
+                                                    {{ obtenerNombreCliente(turno) }}
+                                                </div>
+
+                                                <div class="turno-empleado">
+
+                                                    <mat-icon>person</mat-icon>
+
+                                                    {{ obtenerNombreEmpleado(turno) }}
+                                                </div>
+
+                                                <div class="turno-servicio">
+
+                                                    {{ obtenerServicioPrincipal(turno) }}
+
+                                                    @if (tieneMasServicios(turno)) {
+                                                        <span class="mas-servicios">
+                                                            +{{ turno.servicios.length - 1 }}
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </button>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </section>
+    </main>
+
+    <section class="agenda-leyenda">
+
+        <h5>Estados de los turnos</h5>
+
+        <div class="leyenda-grid">
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto pendiente">circle</mat-icon>
+
+                <span>Pendiente</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto confirmado">circle</mat-icon>
+
+                <span>Confirmado</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto en-curso">circle</mat-icon>
+
+                <span>En Curso</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto finalizado">circle</mat-icon>
+
+                <span>Finalizado</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto cancelado">circle</mat-icon>
+
+                <span>Cancelado</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto ausente">circle</mat-icon>
+
+                <span>Ausente</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto rechazado">circle</mat-icon>
+
+                <span>Rechazado</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto reprogramado">circle</mat-icon>
+
+                <span>Reprogramado</span>
+            </div>
+
+            <div class="leyenda-item">
+
+                <mat-icon class="estado-punto disponible">circle</mat-icon>
+
+                <span>Disponible</span>
+            </div>
+        </div>
+    </section>
+
+    @if (mostrarSelectorFecha) {
+
+        <div class="selector-fecha">
+
+            <div class="selector-header">
+
+                <button type="button" class="selector-titulo" (click)="cambiarVistaSelector()">
+
+                    @if (tipoSelector === 'dia') {
+
+                        {{ meses[mesSelector.getMonth()] }}
+
+                        {{ mesSelector.getFullYear() }}
+                    }
+                    @else if (tipoSelector === 'meses') {
+
+                        {{ anioSelector }}
+                    }
+                    @else {
+                        Seleccionar año
+                    }
+
+                    <mat-icon>expand_more</mat-icon>
+                </button>
+            </div>
+
+            @if (tipoSelector === 'dia') {
+
+                <div class="selector-dias">
+
+                    @for (dia of diasMes; track dia.getTime()) {
+
+                        <button type="button" class="selector-dia" [class.otro-mes]="!esMismoMes(dia)" [class.dia-seleccionado]="dia.getDate() === fechaSemana.getDate() && dia.getMonth() === fechaSemana.getMonth() && dia.getFullYear() === fechaSemana.getFullYear()" (click)="seleccionarDia(dia)">
+
+                            {{ dia.getDate() }}
+                        </button>
+                    }
+                </div>
+            }
+
+            @if(tipoSelector === 'meses') {
+
+                <div class="selector-meses">
+
+                    @for (mes of meses; track mes; let i = $index) {
+
+                        <button type="button" class="selector-mes" (click)="seleccionarMes(i)">
+
+                            {{ mes }}
+                        </button>
+                    }
+                </div>
+            }
+
+            @if (tipoSelector === 'anios') {
+
+                <div class="selector-anios">
+
+                    @for (anio of aniosDisponibles; track anio) {
+
+                        <button type="button" class="selector-anio" (click)="seleccionarAnio(anio)">
+
+                            {{ anio }}
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @if(turnoSeleccionado) {
+
+        <div class="turno-overlay" (click)="cerrarDetalle()">
+
+            <div class="turno-detalle" (click)="$event.stopPropagation()">
+
+                <button type="button" class="btn-cerrar" (click)="cerrarDetalle()">
+                    <mat-icon>close</mat-icon>
+                </button>
+
+                <div class="detalle-header">
+
+                    <div>
+
+                        <span class="detalle-etiqueta">
+                            Turno
+                        </span>
+
+                        <h2>
+                            {{ obtenerNombreCliente(turnoSeleccionado) }}
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="detalle-estado">
+
+                    <span class="estado-indicador" [class]="obtenerClaseEstado(turnoSeleccionado)"></span>
+
+                    {{ obtenerEstado(turnoSeleccionado) }}
+                </div>
+
+                <div class="detalle-informacion">
+
+                    <div class="detalle-item">
+
+                        <mat-icon>event</mat-icon>
+
+                        <div>
+
+                            <span>Fecha</span>
+
+                            <strong>
+                                {{ obtenerFechaCompleta(turnoSeleccionado) }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>schedule</mat-icon>
+
+                        <div>
+
+                            <span>Horario</span>
+
+                            <strong>
+                                {{ obtenerHorario(turnoSeleccionado) }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>person</mat-icon>
+
+                        <div>
+
+                            <span>Empleado</span>
+
+                            <strong>
+                                {{ obtenerNombreEmpleado(turnoSeleccionado) }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>content_cut</mat-icon>
+
+                        <div>
+
+                            <span>Servicios</span>
+
+                            <strong>
+                                {{ obtenerServicios(turnoSeleccionado) }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>payments</mat-icon>
+
+                        <div>
+
+                            <span>Total</span>
+
+                            <strong>
+                                {{ obtenerPrecioTotal(turnoSeleccionado) }}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (mostrarFiltros) {
+
+        <div class="modal-overlay" (click)="cerrarFiltros()">
+
+            <div class="filtros-panel" (click)="$event.stopPropagation()">
+
+                <div class="filtros-header">
+
+                    <h2>Filtros</h2>
+
+                    <button type="button" (click)="cerrarFiltros()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                <div class="filtros-body">
+
+                    <label>
+                        Estado
+                    </label>
+
+                    <select [(ngModel)]="filtros.estado">
+
+                        <option [ngValue]="null">
+                            Todos
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.PENDIENTE">
+                            Pendiente
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.CONFIRMADO">
+                            Confirmado
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.EN_CURSO">
+                            En Curso
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.FINALIZADO">
+                            Finalizado
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.CANCELADO">
+                            Cancelado
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.AUSENTE">
+                            Ausente
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.RECHAZADO">
+                            Rechazado
+                        </option>
+
+                        <option [ngValue]="EstadoTurno.REPROGRAMADO">
+                            Reprogramado
+                        </option>
+                    </select>
+
+                    <label class="checkbox-filtro">
+
+                        <input type="checkbox" [(ngModel)]="filtros.mostrarCancelados">
+
+                        Mostrar turnos cancelados
+                    </label>
+                </div>
+
+                <div class="filtros-footer">
+
+                    <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+                        Limpiar
+                    </button>
+
+                    <button type="button" class="btn-aplicar" (click)="aplicarFiltros(); cerrarFiltros()">
+                        Aplicar filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (mostrarFormularioNuevoTurno) {
+    <div class="modal-overlay" (click)="cerrarNuevoTurno()">
+
+        <div class="nuevo-turno-panel" (click)="$event.stopPropagation()">
+
+            <div class="nuevo-turno-header">
+
+                <div>
+                    <h2>Nuevo turno</h2>
+                    <p>Crear un turno para un cliente</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-cerrar"
+                    (click)="cerrarNuevoTurno()"
+                    aria-label="Cerrar">
+
+                    <mat-icon>close</mat-icon>
+                </button>
+
+            </div>
+
+
+            <div class="nuevo-turno-body">
+
+                <!-- CLIENTE -->
+                <section class="formulario-seccion">
+
+                    <h3>Cliente</h3>
+
+                    <div class="campo-formulario">
+
+                        <label for="cliente">Seleccionar cliente</label>
+
+                        <select
+                            id="cliente"
+                            [(ngModel)]="nuevoTurno.idCliente">
+
+                            <option [ngValue]="null">
+                                Seleccionar cliente
+                            </option>
+
+                            @for (cliente of clientes; track cliente.idCliente) {
+
+                                <option [ngValue]="cliente.idCliente">
+                                    {{ cliente.nombre }} {{ cliente.apellido }}
+                                </option>
+
+                            }
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- EMPLEADO -->
+                <section class="formulario-seccion">
+
+                    <h3>Empleado</h3>
+
+                    <div class="campo-formulario">
+
+                        <label for="empleado">Seleccionar empleado</label>
+
+                        <select
+                            id="empleado"
+                            [(ngModel)]="nuevoTurno.idEmpleado">
+
+                            <option [ngValue]="null">
+                                Seleccionar empleado
+                            </option>
+
+                            @for (empleado of empleados; track empleado.idEmpleado) {
+
+                                <option [ngValue]="empleado.idEmpleado">
+                                    {{ empleado.nombre }} {{ empleado.apellido }}
+                                </option>
+
+                            }
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- SERVICIOS -->
+                <section class="formulario-seccion">
+
+                    <h3>Servicios</h3>
+
+                    <div class="servicios-lista">
+
+                        @for (servicio of servicios; track servicio.id) {
+
+                            <label class="servicio-opcion">
+
+                                <input
+                                    type="checkbox"
+                                    [checked]="nuevoTurno.serviciosIds.includes(servicio.id)"
+                                    (change)="seleccionarServicio(servicio.id, $event)">
+
+                                <div class="servicio-info">
+
+                                    <span class="servicio-nombre">
+                                        {{ servicio.nombre }}
+                                    </span>
+
+                                    <span class="servicio-detalle">
+                                        {{ servicio.duracionMinutos }} min ·
+                                        ${{ servicio.precio }}
+                                    </span>
+
+                                </div>
+
+                            </label>
+
+                        }
+
+                    </div>
+
+                </section>
+
+
+                <!-- FECHA Y HORARIO -->
+                <section class="formulario-seccion">
+
+                    <h3>Fecha y horario</h3>
+
+                    <div class="fecha-horario">
+
+                        <div class="campo-formulario">
+
+                            <label for="fecha">Fecha</label>
+
+                            <input
+                                id="fecha"
+                                type="date"
+                                [(ngModel)]="fechaNuevoTurno"
+                                (change)="cargarHorariosDisponibles()">
+
+                        </div>
+
+                        <div class="campo-formulario">
+
+                            <label for="horario">Horario</label>
+
+                            <select
+                                id="horario"
+                                [(ngModel)]="horaNuevoTurno">
+
+                                <option [ngValue]="null">
+                                    Seleccionar horario
+                                </option>
+
+                                @for (hora of horariosDisponibles; track hora) {
+
+                                    <option [ngValue]="hora">
+                                        {{ hora }}
+                                    </option>
+
+                                }
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- RESUMEN -->
+                <section class="nuevo-turno-resumen">
+
+                    <h3>Resumen</h3>
+
+                    <div class="resumen-datos">
+
+                        <div>
+                            <span>Duración</span>
+                            <strong>{{ duracionTotalFormulario }} min</strong>
+                        </div>
+
+                        <div>
+                            <span>Total</span>
+                            <strong>${{ obtenerPrecioTotalFormulario() }}</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <div class="nuevo-turno-footer">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    (click)="cerrarNuevoTurno()">
+
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-crear-turno"
+                    (click)="crearNuevoTurno()"
+                    [disabled]="!formularioNuevoTurnoValido()">
+
+                    <mat-icon>event_available</mat-icon>
+
+                    Crear turno
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
-</div>
+}

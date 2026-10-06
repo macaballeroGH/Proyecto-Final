@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "turno_servicio", schema = "pp2")
+@Table(name = "turno_servicio", schema = "beautymanager")
 public class TurnoServicioEntity {
 
     @Id

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Session } from '../../../core/services/session';
 import { UserSession } from '../../../core/models/user-session';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })

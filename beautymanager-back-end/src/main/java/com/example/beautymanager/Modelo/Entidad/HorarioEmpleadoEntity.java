@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "horario_empleado", schema = "pp2")
+@Table(name = "horario_empleado", schema = "beautymanager")
 public class HorarioEmpleadoEntity {
 
     @Id

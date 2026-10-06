@@ -18,7 +18,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "categoria_servicio", schema = "pp2")
+@Table(name = "categoria_servicio", schema = "beautymanager")
 public class CategoriaServicioEntity {
 
     @Id

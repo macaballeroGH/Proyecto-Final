@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "billetera", schema = "pp2")
+@Table(name = "billetera", schema = "beautymanager")
 public class BilleteraEntity {
     
     @Id

@@ -9,5 +9,5 @@ public interface MovimientoBilleteraService {
 
     ObtenerMovimientoBilleteraDTO toMap(MovimientoBilleteraEntity movimiento);
 
-    List<ObtenerMovimientoBilleteraDTO> obtenerMovimientosPorUsuario(String email);
+    List<ObtenerMovimientoBilleteraDTO> obtenerMovimientosPorUsuario(Long idUsuario);
 }

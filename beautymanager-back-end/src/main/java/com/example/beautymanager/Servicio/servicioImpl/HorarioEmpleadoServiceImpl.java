@@ -15,6 +15,7 @@ import com.example.beautymanager.Repositorio.EmpleadoRepository;
 import com.example.beautymanager.Repositorio.HorarioEmpleadoRepository;
 import com.example.beautymanager.Servicio.HorarioEmpleadoService;
 import com.example.beautymanager.exception.BusinessException;
+import com.example.beautymanager.utils.HorarioAtencion;
 
 import jakarta.transaction.Transactional;
 
@@ -37,7 +38,13 @@ public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
         validarHorario(crearHorario.getDiaSemana(), crearHorario.getHoraInicio(), crearHorario.getHoraFin());
 
         EmpleadoEntity empleado = empleadoRepository.findById(crearHorario.getIdEmpleado())
-                .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+            .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+
+        boolean existeSuperposicion = horarioEmpleadoRepository.existsByEmpleadoIdAndDiaSemanaAndHoraInicioLessThanAndHoraFinGreaterThan(crearHorario.getIdEmpleado(), crearHorario.getDiaSemana(), crearHorario.getHoraFin(), crearHorario.getHoraInicio());
+
+        if(existeSuperposicion){
+            throw new BusinessException("El empleado ya tiene un horario superpuesto ese dia");
+        }
 
         HorarioEmpleadoEntity horario = new HorarioEmpleadoEntity();
 
@@ -57,9 +64,15 @@ public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
     public ObtenerHorarioEmpleadoDTO actualizarHorario(Long idHorario, ActualizarHorarioEmpleadoDTO actualizarHorario){
 
         HorarioEmpleadoEntity horario = horarioEmpleadoRepository.findById(idHorario)
-                .orElseThrow(() -> new BusinessException("Horario no encontrado"));
+            .orElseThrow(() -> new BusinessException("Horario no encontrado"));
 
         validarHorario(actualizarHorario.getDiaSemana(), actualizarHorario.getHoraInicio(), actualizarHorario.getHoraFin());
+
+        boolean existeSuperposicion = horarioEmpleadoRepository.existsByEmpleadoIdAndDiaSemanaAndHoraInicioLessThanAndHoraFinGreaterThanAndIdNot(horario.getEmpleado().getId(), actualizarHorario.getDiaSemana(), actualizarHorario.getHoraFin(), actualizarHorario.getHoraInicio(), idHorario);
+
+        if(existeSuperposicion){
+            throw new BusinessException("El empleado ya tiene un horario superpuesto ese dia");
+        }
 
         horario.setDiaSemana(actualizarHorario.getDiaSemana());
         horario.setHoraInicio(actualizarHorario.getHoraInicio());
@@ -126,8 +139,8 @@ public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
             throw new BusinessException("El dia es obligatorio");
         }
 
-        if(diaSemana < 1 || diaSemana > 7){
-            throw new BusinessException("El dia debe estar entre 1 y 7");
+        if(diaSemana < 1 || diaSemana > 6){
+            throw new BusinessException("El horario debe ser de lunes a sabado");
         }
 
         if(horaInicio == null){
@@ -140,6 +153,14 @@ public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
 
         if(!horaInicio.isBefore(horaFin)){
             throw new BusinessException("La hora de inicio debe ser menor a la hora de fin");
+        }
+
+        if(horaInicio.isBefore(HorarioAtencion.APERTURA)){
+            throw new BusinessException("La hora de inicio no puede ser anterior a las 08:00");
+        }
+
+        if(horaFin.isAfter(HorarioAtencion.CIERRE)){
+            throw new BusinessException("La hora de fin no puede ser posterior a las 20:00");
         }
     }
 

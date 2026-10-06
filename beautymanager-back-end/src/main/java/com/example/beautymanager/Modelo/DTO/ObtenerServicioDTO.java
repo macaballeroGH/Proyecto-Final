@@ -14,6 +14,7 @@ public class ObtenerServicioDTO {
     private String descripcion;
     private BigDecimal precio;
     private Integer duracionMinutos;
+    private Long idCategoria;
     private String nombreCategoria;
     private EstadoServicioEnums estado;
 }

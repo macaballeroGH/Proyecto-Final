@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "carrito_item", schema = "pp2")
+@Table(name = "carrito_item", schema = "beautymanager")
 public class CarritoItemEntity {
 
     @Id

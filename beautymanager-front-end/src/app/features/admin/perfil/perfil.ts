@@ -14,7 +14,7 @@ import { ConfirmacionDialog } from "../../../shared/components/dialogs/confirmac
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })
-export class Perfil implements OnInit {
+export class PerfilAdmin implements OnInit {
 
   usuario = signal<UsuarioPerfil | null>(null);
 

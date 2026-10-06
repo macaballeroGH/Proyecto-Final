@@ -26,7 +26,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "turno", schema = "pp2")
+@Table(name = "turno", schema = "beautymanager")
 public class TurnoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

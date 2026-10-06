@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "configuracion_recordatorio", schema = "pp2")
+@Table(name = "configuracion_recordatorio", schema = "beautymanager")
 public class ConfiguracionRecordatorioEntity {
 
     @Id

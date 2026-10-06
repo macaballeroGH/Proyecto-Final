@@ -22,7 +22,7 @@ import jakarta.persistence.OneToOne;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "cliente", schema = "pp2")
+@Table(name = "cliente", schema = "beautymanager")
 public class ClienteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

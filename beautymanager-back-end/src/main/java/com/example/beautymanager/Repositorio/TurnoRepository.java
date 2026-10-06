@@ -13,6 +13,8 @@ import com.example.beautymanager.Modelo.Enums.EstadoTurnoEnums;
 public interface TurnoRepository extends JpaRepository<TurnoEntity, Long> {
     List<TurnoEntity> findByFechaHoraInicioBetween(LocalDateTime inicio, LocalDateTime fin);
 
+    List<TurnoEntity> findByFechaHoraInicioAfter(LocalDateTime fecha);
+
     List<TurnoEntity> findByClienteId(Long idCliente);
 
     List<TurnoEntity> findByEmpleadoId(Long idEmpleado);

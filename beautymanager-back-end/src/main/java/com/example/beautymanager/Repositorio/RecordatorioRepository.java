@@ -13,4 +13,6 @@ public interface RecordatorioRepository extends JpaRepository<RecordatorioEntity
     List<RecordatorioEntity> findByEnviadoFalseAndFechaEnvioBefore(LocalDateTime fecha);
 
     List<RecordatorioEntity> findByTurnoId(Long idTurno);
+
+    List<RecordatorioEntity> findByTurnoIdAndEnviadoFalse(Long idTurno);
 }

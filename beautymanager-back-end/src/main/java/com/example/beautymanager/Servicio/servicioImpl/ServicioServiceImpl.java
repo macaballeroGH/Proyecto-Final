@@ -333,6 +333,7 @@ public class ServicioServiceImpl implements ServicioService {
         obtenerServicioDTO.setDuracionMinutos(servicio.getDuracionMinutos());
 
         if(servicio.getCategoria() != null){
+            obtenerServicioDTO.setIdCategoria(servicio.getCategoria().getId());
             obtenerServicioDTO.setNombreCategoria(servicio.getCategoria().getNombre());
         }
 

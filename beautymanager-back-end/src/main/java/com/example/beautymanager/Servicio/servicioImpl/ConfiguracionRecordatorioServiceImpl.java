@@ -9,6 +9,7 @@ import com.example.beautymanager.Modelo.DTO.ObtenerConfiguracionRecordatorioDTO;
 import com.example.beautymanager.Modelo.Entidad.ConfiguracionRecordatorioEntity;
 import com.example.beautymanager.Repositorio.ConfiguracionRecordatorioRepository;
 import com.example.beautymanager.Servicio.ConfiguracionRecordatorioService;
+import com.example.beautymanager.Servicio.RecordatorioService;
 import com.example.beautymanager.exception.BusinessException;
 
 @Service
@@ -16,6 +17,9 @@ public class ConfiguracionRecordatorioServiceImpl implements ConfiguracionRecord
 
     @Autowired
     private ConfiguracionRecordatorioRepository configuracionRepository;
+
+    @Autowired
+    private RecordatorioService recordatorioService;
 
     //=======================
     //Crear Configuracion
@@ -91,7 +95,11 @@ public class ConfiguracionRecordatorioServiceImpl implements ConfiguracionRecord
 
         validarEntidad(configuracion);
 
-        return toMap(configuracionRepository.save(configuracion));
+        configuracion = configuracionRepository.save(configuracion);
+
+        recordatorioService.reprogramarRecordatoriosFuturos();
+
+        return toMap(configuracion);
     }
 
     //=======================

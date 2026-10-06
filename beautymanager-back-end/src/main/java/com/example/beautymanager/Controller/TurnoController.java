@@ -54,6 +54,18 @@ public class TurnoController {
     }
 
     //=======================
+    //Crear turno admin
+    //=======================
+    @PostMapping("/admin/reservar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ObtenerTurnoDTO> crearTurnoAdmin(@RequestBody CrearTurnoDTO crearTurno){
+
+        ObtenerTurnoDTO response = turnoService.crearTurnoAdmin(crearTurno);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    //=======================
     //Cancelar turno
     //=======================
     @DeleteMapping("/cancelar/{idTurno}")

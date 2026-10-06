@@ -1,0 +1,9 @@
+.panel-container {
+    display: flex;
+    min-height: calc(100vh - 70);
+}
+
+.contenido {
+    flex: 1;
+    padding: 20px;
+}

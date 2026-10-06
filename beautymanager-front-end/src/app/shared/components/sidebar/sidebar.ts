@@ -81,6 +81,60 @@ export class Sidebar implements OnInit {
         ];
 
         break;
+
+      case Rol.CLIENTE:
+
+        this.menuItems = [
+          {
+            nombre: 'Inicio',
+            ruta: '/cliente/inicio'
+          },
+          {
+            nombre: 'Agenda',
+            ruta: '/cliente/agenda'
+          },
+          {
+            nombre: 'Historial de Tratamientos',
+            ruta: '/cliente/historial-tratamientos'
+          },
+          {
+            nombre: 'Perfil',
+            ruta: '/cliente/perfil'
+          },
+          {
+            nombre: 'Notificaciones',
+            ruta: '/cliente/notificaciones'
+          },
+          {
+            nombre: 'Tienda',
+            ruta: '/cliente/tienda'
+          }
+        ];
+
+        break;
+
+      case Rol.EMPLEADO:
+
+        this.menuItems = [
+          {
+            nombre: 'Inicio',
+            ruta: '/empleado/inicio'
+          },
+          {
+            nombre: 'Agenda',
+            ruta: '/empleado/agenda'
+          },
+          {
+            nombre: 'Perfil',
+            ruta: '/empleado/perfil'
+          },
+          {
+            nombre: 'Tratamientos',
+            ruta: 'empleado/tratamiento'
+          }
+        ];
+
+        break;
     }
   }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
 import com.example.beautymanager.Servicio.AgendaService;
 
 @RestController
@@ -53,6 +54,23 @@ public class AgendaController {
         Long idUsuario = Long.valueOf(auth.getName());
 
         return ResponseEntity.ok(agendaService.obtenerDisponibilidadPorEmpleado(idUsuario, serviciosIds, fecha));
+    }
+
+    //=================================
+    //Obtener disponibilidad general
+    //=================================
+    @GetMapping("/disponibilidad-general")
+    public ResponseEntity<List<LocalDateTime>> obtenerDisponibilidadGeneral(@RequestParam LocalDate fecha){
+        return ResponseEntity.ok(agendaService.obtenerDisponibilidadGeneral(fecha));
+    }
+
+    //=======================
+    //Obtener agenda
+    //=======================
+    @GetMapping("/turnos")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ObtenerTurnoDTO>> obtenerAgenda(@RequestParam LocalDate inicio, @RequestParam LocalDate fin){
+        return ResponseEntity.ok(agendaService.obtenerAgenda(inicio, fin));
     }
 
     //=========================

@@ -8,6 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
 })
-export class Inicio {
+export class InicioAdmin {
 
 }

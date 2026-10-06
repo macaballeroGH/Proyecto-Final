@@ -1,0 +1,249 @@
+.estadisticas-container {
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.estadisticas-header {
+    width: 100%;
+    box-sizing: border-box;
+    background: #7A3F4D;
+    border-radius: 12px;
+    padding: 28px 30px;
+    margin-bottom: 22px;
+}
+
+.estadisticas-header h1 {
+    margin: 0;
+    color: #E3C98A;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.estadisticas-header p {
+    margin: 8px 0 0;
+    color: #C9A45C;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.filtros-estadisticas {
+    width: 100%;
+    box-sizing: border-box;
+    background: #6D3442;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 26px;
+}
+
+.filtros-header {
+    margin-bottom: 14px;
+    display: none;
+}
+
+.filtros-header h2 {
+    margin: 0;
+    color: #E3C98A;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.filtros-contenido {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.campo-filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo-filtro label {
+    color: #E3C98A;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.campo-filtro select,
+.campo-filtro input {
+    width: 160px;
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 11px;
+    border: 1px solid rgba(227, 201, 138, 0.35);
+    border-radius: 6px;
+    background: #F8F3F1;
+    color: #34232A;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campo-filtro select:focus,
+.campo-filtro input:focus {
+    border-color: #C9A45C;
+    box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.14);
+}
+
+.campo-filtro input:disabled {
+    background: #E7DEDB;
+    color: #8C7B80;
+    cursor: not-allowed;
+}
+
+.comparar-filtro {
+    display: flex;
+    align-items: center;
+    height: 38px;
+}
+
+.checkbox-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #E3C98A;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.checkbox-contenedor input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #C77C8A;
+    cursor: pointer;
+}
+
+.btn-aplicar {
+    height: 38px;
+    padding: 0 19px;
+    border: none;
+    border-radius: 6px;
+    background: #C77C8A;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-aplicar:hover {
+    background: #A65364;
+}
+
+.btn-aplicar:active {
+    transform: translateY(1px);
+}
+
+.indicadores-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.indicador-card {
+    min-width: 0;
+    box-sizing: border-box;
+    background: #F1E4E0;
+    border: 1px solid #E2D1CC;
+    border-radius: 10px;
+    padding: 19px 20px;
+}
+
+.indicador-titulo {
+    display: block;
+    margin-bottom: 10px;
+    color: #6D3442;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.indicador-valor {
+    display: block;
+    color: #34232A;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.indicador-comparacion {
+    display: inline-block;
+    margin-top: 7px;
+    color: #A65364;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.graficos-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.grafico-card {
+    min-width: 0;
+    box-sizing: border-box;
+    background: #FAF8F7;
+    border: 1px solid #E8E1DE;
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.grafico-header {
+    margin-bottom: 18px;
+}
+
+.grafico-header h2 {
+    margin: 0;
+    color: #34232A;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.grafico-header span {
+    display: block;
+    margin-top: 5px;
+    color: #8A777D;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.grafico-contenedor {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.grafico-dona {
+    height: 320px;
+}
+
+.estado-estadisticas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    box-sizing: border-box;
+    background: #FAF8F7;
+    border: 1px solid #E8E1DE;
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.estado-estadisticas p {
+    margin: 0;
+    color: #6D3442;
+    font-size: 14px;
+}
+
+.estado-error p {
+    color: #A65364;
+}

@@ -27,6 +27,7 @@ import com.example.beautymanager.Repositorio.TurnoRepository;
 import com.example.beautymanager.Repositorio.UsuarioRepository;
 import com.example.beautymanager.Servicio.TurnoService;
 import com.example.beautymanager.exception.BusinessException;
+import com.example.beautymanager.utils.HorarioAtencion;
 
 import jakarta.transaction.Transactional;
 
@@ -71,7 +72,7 @@ public class TurnoServiceImpl implements TurnoService {
 
     LocalTime hora = inicio.toLocalTime();
 
-    if(hora.isBefore(LocalTime.of(8,0)) || hora.isAfter(LocalTime.of(20,0))){
+    if(hora.isBefore(HorarioAtencion.APERTURA) || hora.isAfter(HorarioAtencion.CIERRE)){
         throw new BusinessException("Horario fuera del rango de atencion");
     }
 
@@ -113,6 +114,10 @@ public class TurnoServiceImpl implements TurnoService {
 
     LocalDateTime fin = inicio.plusMinutes(duracionTotal);
 
+    if(fin.toLocalTime().isAfter(HorarioAtencion.CIERRE)){
+        throw new BusinessException("El turno no puede finalizar despues de las 20:00");
+    }
+
     if(!turnoRepository.findByEmpleadoIdAndFechaHoraInicioLessThanAndFechaHoraFinGreaterThan(crearTurno.getIdEmpleado(), fin, inicio).isEmpty()){
         throw new BusinessException("El empleado ya tiene un turno en ese horario");
     }
@@ -141,6 +146,20 @@ public class TurnoServiceImpl implements TurnoService {
     turno.setServicios(lista);
 
     return toMap(turnoRepository.save(turno));
+   }
+
+   //========================
+   //Crear turno admin
+   //========================
+   @Override 
+   @Transactional 
+   public ObtenerTurnoDTO crearTurnoAdmin(CrearTurnoDTO crearTurno) {
+
+    if(crearTurno == null || crearTurno.getIdCliente() == null){
+        throw new BusinessException("El cliente es obligatorio");
+    }
+
+    return crearTurno(crearTurno, crearTurno.getIdCliente());
    }
 
    //========================
@@ -297,6 +316,16 @@ public class TurnoServiceImpl implements TurnoService {
             throw new BusinessException("Solo se pueden iniciar turnos confirmados");
         }
 
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if(ahora.isBefore(turno.getFechaHoraInicio())){
+            throw new BusinessException("El turno todavía no puede iniciarse");
+        }
+
+        if(ahora.isAfter(turno.getFechaHoraFin())){
+            throw new BusinessException("El horario del turno ya finalizó");
+        }
+
         turno.setEstadoTurno(EstadoTurnoEnums.EN_CURSO);
 
         turnoRepository.save(turno);
@@ -325,6 +354,12 @@ public class TurnoServiceImpl implements TurnoService {
 
     if(turno.getEstadoTurno() != EstadoTurnoEnums.EN_CURSO){
         throw new BusinessException("Solo se pueden finalizar turnos en curno");
+    }
+
+    LocalDateTime ahora = LocalDateTime.now();
+
+    if(ahora.isBefore(turno.getFechaHoraInicio())){
+        throw new BusinessException("El turno todavía no comenzó");
     }
 
     turno.setEstadoTurno(EstadoTurnoEnums.FINALIZADO);

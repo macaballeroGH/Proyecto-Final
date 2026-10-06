@@ -1,1 +1,183 @@
-<h2>Estadísticas</h2>
+<div class="estadisticas-container">
+
+    <section class="estadisticas-header">
+
+        <header class="estadisticas-header">
+            <div>
+                <h1>Estadísticas</h1>
+            </div>
+        </header>
+
+        <section class="filtros-estadisticas">
+
+            <div class="filtros-contenido">
+
+                <div class="campo-filtro">
+
+                    <label for="tipoPeriodo"></label>
+
+                    <select id="tipoPeriodo" [(ngModel)]="filtro.tipoPeriodo" (ngModelChange)="cambiarPeriodo()">
+
+                        <option [ngValue]="TipoPeriodoEstadistica.SEMANA">Semana</option>
+
+                        <option [ngValue]="TipoPeriodoEstadistica.MES">Mes</option>
+
+                        <option [ngValue]="TipoPeriodoEstadistica.ANIO">Año</option>
+
+                        <option [ngValue]="TipoPeriodoEstadistica.PERSONALIZADO">Personalizado</option>
+                    </select>
+                </div>
+
+                <div class="campo-filtro">
+
+                    <label for="fechaInicio">Desde</label>
+
+                    <input id="fechaInicio" type="date" [(ngModel)]="filtro.fechaInicio" (change)="cambiarPeriodoDesdeFecha()">
+                </div>
+
+                <div class="campo-filtro">
+
+                    <label for="fechaFin">Hasta</label>
+
+                    <input id="fechaFin" type="date" [(ngModel)]="filtro.fechaFin" (change)="filtro.tipoPeriodo !== TipoPeriodoEstadistica.PERSONALIZADO">
+                </div>
+
+                <div class="comparar-filtro">
+
+                    <label class="checkbox-contenedor">
+
+                        <input type="checkbox" [(ngModel)]="filtro.comparar">
+
+                        <span>Comparar con un periodo anterior</span>
+                    </label>
+                </div>
+
+                <button type="button" class="btn-aplicar" (click)="aplicarFiltros()">Aplicar filtros</button>
+            </div>
+        </section>
+    </section>
+
+    @if (cargando) {
+
+        <section class="estado-estadisticas">
+            <p>Cargando estadísticas...</p>
+        </section>
+
+    } @else if (error) {
+
+        <section class="estado-estadisticas estado-error">
+            <p>No se pudieron obtener las estadísticas.</p>
+        </section>
+
+    } @else if (!hayDatos) {
+
+        <section class="estado-estadisticas">
+            <p>Aún no hay datos disponibles</p>
+        </section>
+
+    } @else {
+
+        <section class="indicadores-estadisticas">
+
+            <article class="indicador-card">
+                
+                <span class="indicador-titulo">Ingresos totales</span>
+
+                <strong class="indicador-valor">${{ ingresosTotales | number:'1.0-0' }}</strong>
+
+                @if (tieneComparacion && variacionIngresos !== null) {
+                    <span class="indicador-comparacion">
+                        {{ variacionIngresos > 0 ? '+' : '' }}{{ variacionIngresos }}%
+                    </span>
+                }
+            </article>
+
+            <article class="indicador-card">
+
+                <span class="indicador-titulo">Turnos realizados</span>
+
+                <strong class="indicador-valor">{{ turnosTotales }}</strong>
+
+                @if (tieneComparacion && variacionTurnos !== null) {
+                    <span class="indicador-comparacion">
+                        {{ variacionTurnos > 0 ? '+' : '' }}{{ variacionTurnos }}%
+                    </span>
+                }
+            </article>
+
+            <article class="indicador-card">
+
+                <span class="indicador-titulo">Servicios realizados</span>
+
+                <strong class="indicador-valor">{{ serviciosTotales }}</strong>
+            </article>
+
+            <article class="indicador-card">
+
+                <span class="indicador-titulo">Productos vendidos</span>
+
+                <strong class="indicador-valor">{{ productosTotales }}</strong>
+            </article>
+        </section>
+
+
+        <section class="graficos-estadisticas">
+
+            <article class="grafico-card grafico-ingresos">
+
+                <div class="grafico-header">
+
+                    <h2>Ingresos</h2>
+
+                    <span>Ingresos durante el período seleccionado</span>
+                </div>
+
+                <div class="grafico-contenedor">
+                    <canvas baseChart [data]="ingresosChartData" [options]="ingresosChartOptions" type="line"></canvas>
+                </div>
+            </article>
+
+            <article class="grafico-card grafico-turnos">
+
+                <div class="grafico-header">
+
+                    <h2>Turnos realizados</h2>
+
+                    <span>Cantidad de turnos finalizados durante el período</span>
+                </div>
+
+                <div class="grafico-contenedor">
+                    <canvas baseChart [data]="turnosChartData" [options]="turnosChartOptions" type="bar"></canvas>
+                </div>
+            </article>
+
+            <article class="grafico-card grafico-ranking">
+
+                <div class="grafico-header">
+
+                    <h2>Servicios más solicitados</h2>
+
+                    <span>Servicios realizados durante el período</span>
+                </div>
+
+                <div class="grafico-contenedor grafico-dona">
+                    <canvas baseChart [data]="serviciosChartData" [options]="serviciosChartOptions" type="doughnut"></canvas>
+                </div>
+            </article>
+
+            <article class="grafico-card grafico-ranking">
+
+                <div class="grafico-header">
+
+                    <h2>Productos más vendidos</h2>
+
+                    <span>Productos vendidos durante el período</span>
+                </div>
+
+                <div class="grafico-contenedor grafico-dona">
+                    <canvas baseChart [data]="productosChartData" [options]="productosChartOptions" type="doughnut"></canvas>
+                </div>
+            </article>
+        </section>
+    }
+</div>

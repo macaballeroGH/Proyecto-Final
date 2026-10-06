@@ -22,7 +22,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "movimiento_finanzas", schema = "pp2")
+@Table(name = "movimiento_finanzas", schema = "beautymanager")
 public class MovimientoFinanzasEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

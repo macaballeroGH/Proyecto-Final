@@ -18,7 +18,7 @@ import jakarta.persistence.OneToOne;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "administrador", schema = "pp2")
+@Table(name = "administrador", schema = "beautymanager")
 public class AdminEntity {
 
     @Id

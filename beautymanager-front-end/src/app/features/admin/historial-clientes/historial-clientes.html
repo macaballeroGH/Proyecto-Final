@@ -1,1 +1,543 @@
-<h2>Historial de los Clientes</h2>
+<div class="historial-container">
+
+    <header class="historial-header">
+
+        <div class="header-titulo">
+
+            <div class="titulo-contenido">
+
+                <h1>Historial de clientes</h1>
+
+                @if (hayClientes) {
+                    <span class="cantidad-clientes">
+                        {{ clientesFiltrados.length }}
+                        {{ clientesFiltrados.length === 1 ? 'cliente' : 'clientes' }}
+                    </span>
+                }
+            </div>
+        </div>
+
+        <div class="header-controles">
+
+            <div class="busqueda-container">
+
+                <mat-icon>search</mat-icon>
+
+                <input type="text" placeholder="Buscar cliente..." [(ngModel)]="textoBusqueda" (input)="buscar()" aria-label="Buscar cliente">
+
+                @if (textoBusqueda) {
+
+                    <button type="button" class="btn-limpiar-busqueda" aria-label="Limpiar búsqueda" (click)="textoBusqueda = ''; buscar()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </div>
+
+            <button type="button" class="btn-filtros" (click)="abrirFiltros()">
+
+                <mat-icon>filter_list</mat-icon>
+
+                <span>Filtros</span>
+
+                @if (hayFiltrosAplicados) {
+                    <span class="filtro-activo" aria-label="Hay filtros aplicados"></span>
+                }
+            </button>
+        </div>
+    </header>
+
+    <main class="historial-contenido">
+
+        @if (cargandoLista) {
+
+            <div class="estado-mensaje">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <p>Cargando historial de clientes...</p>
+
+            </div>
+        }
+
+        @else if (error) {
+
+            <div class="estado-mensaje estado-error">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <p>{{ error }}</p>
+
+                <button type="button" class="btn-principal" (click)="cargarHistorial()">
+
+                    <mat-icon>refresh</mat-icon>
+
+                    <span>Intentar nuevamente</span>
+                </button>
+            </div>
+        }
+
+        @else if (!hayClientes) {
+
+            <div class="estado-mensaje">
+
+                <mat-icon>people_outline</mat-icon>
+
+                <h2>No hay clientes registrados</h2>
+
+                <p>Todavía no existen tratamientos registrados para mostrar en el historial.</p>
+            </div>
+        }
+
+        @else if (!hayResultados) {
+
+            <div class="estado-mensaje">
+
+                <mat-icon>search_off</mat-icon>
+
+                <h2>No se encontraron resultados</h2>
+
+                <p>No hay clientes que coincidan con los criterios de búsqueda o filtros seleccionados.</p>
+
+                <button type="button" class="btn-secundario" (click)="limpiarFiltros()">
+
+                    <mat-icon>filter_alt_off</mat-icon>
+
+                    <span>Limpiar filtros</span>
+                </button>
+            </div>
+        }
+
+        @else {
+
+            <section class="clientes-lista">
+
+                @for (cliente of clientesPagina; track cliente.idCliente) {
+
+                    <article class="cliente-card" (click)="abrirHistorial(cliente)" tabindex="0" role="button"[attr.aria-label]="'Ver historial de ' + obtenerNombreCompletoCliente(cliente)">
+
+                        <div class="cliente-avatar">
+
+                            <div class="avatar-placeholder">
+                                {{ cliente.nombreCliente.charAt(0) }}{{ cliente.apellidoCliente.charAt(0) }}
+                            </div>
+                        </div>
+
+                        <div class="cliente-info">
+
+                            <h2>{{ obtenerNombreCompletoCliente(cliente) }}</h2>
+
+                            <span class="cliente-id">Cliente #{{ cliente.idCliente }}</span>
+                        </div>
+
+                        <div class="cliente-dato">
+
+                            <div class="dato-icono">
+                                <mat-icon>medical_services</mat-icon>
+                            </div>
+
+                            <div class="dato-contenido">
+
+                                <span class="dato-label">Tratamientos</span>
+
+                                <span class="dato-valor">{{ cliente.tratamientos.length }}</span>
+                            </div>
+                        </div>
+
+                        <div class="cliente-dato">
+
+                            <div class="dato-icono">
+                                <mat-icon>event</mat-icon>
+                            </div>
+
+                            <div class="dato-contenido">
+
+                                <span class="dato-label">Último tratamiento</span>
+
+                                <span class="dato-valor">
+                                    {{ cliente.tratamientos[0]?.fechaHoraTurno || 'Sin registros' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="cliente-accion">
+
+                            <span>Ver historial</span>
+
+                            <mat-icon>chevron_right</mat-icon>
+                        </div>
+                    </article>
+                }
+            </section>
+
+            @if (totalPaginas > 1) {
+
+                <nav class="paginacion" aria-label="Paginación de clientes">
+
+                    <div class="paginacion-info">
+
+                        <span>Mostrando</span>
+
+                        <strong>{{ indiceInicio }}{{ indiceFin }}</strong>
+
+                        <span>de</span>
+
+                        <strong>{{ clientesFiltrados.length }}</strong>
+                    </div>
+
+                    <div class="paginacion-controles">
+
+                        <button type="button" class="btn-paginacion" [disabled]="paginaActual === 1" (click)="paginaAnterior()" aria-label="Página anterior">
+                            <mat-icon>chevron_left</mat-icon>
+                        </button>
+
+                        @for (pagina of paginas; track pagina) {
+
+                            <button type="button" class="btn-pagina" [class.activa]="pagina === paginaActual" (click)="cambiarPagina(pagina)" [attr.aria-label]="'Ir a la página ' + pagina">
+                                {{ pagina }}
+                            </button>
+                        }
+
+                        <button type="button" class="btn-paginacion" [disabled]="paginaActual === totalPaginas" (click)="paginaSiguiente()" aria-label="Página siguiente">
+                            <mat-icon>chevron_right</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="cantidad-pagina">
+
+                        <label for="clientesPorPagina">Mostrar</label>
+
+                        <select id="clientesPorPagina" [value]="clientesPorPagina" (change)="cambiarCantidadPorPagina(+$any($event.target).value)">
+
+                            <option value="5">5</option>
+
+                            <option value="10">10</option>
+
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </nav>
+            }
+        }
+    </main>
+
+    @if (modalActivo === 'filtros') {
+
+        <div class="modal-overlay" (click)="cancelarFiltros()">
+
+            <section class="modal filtros-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="titulo-filtros">
+
+                <header class="modal-header">
+
+                    <div class="modal-titulo">
+
+                        <div class="modal-titulo-icono">
+                            <mat-icon>filter_list</mat-icon>
+                        </div>
+
+                        <div>
+
+                            <h2 id="titulo-filtros">Filtrar historial</h2>
+
+                            <p>Selecciona los criterios que quieras aplicar.</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-cerrar" aria-label="Cerrar filtros" (click)="cancelarFiltros()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </header>
+
+                <div class="modal-contenido">
+
+                    <div class="campo-filtro">
+
+                        <label for="especialidad">Especialidad</label>
+
+                        <div class="select-container">
+
+                            <mat-icon>category</mat-icon>
+
+                            <select id="especialidad" [(ngModel)]="especialidadFiltroTemporal">
+
+                                <option value="">Todas las especialidades</option>
+
+                                @for (especialidad of especialidades; track especialidad) {
+
+                                    <option [value]="especialidad">
+                                        {{ obtenerEspecialidadTexto(especialidad) }}
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filtro-fechas">
+
+                        <div class="campo-filtro">
+
+                            <label for="fechaDesde">Desde</label>
+
+                            <div class="input-icon-container">
+
+                                <mat-icon>calendar_today</mat-icon>
+
+                                <input id="fechaDesde" type="date" [(ngModel)]="fechaDesdeFiltroTemporal">
+                            </div>
+                        </div>
+
+                        <div class="campo-filtro">
+
+                            <label for="fechaHasta">Hasta</label>
+
+                            <div class="input-icon-container">
+
+                                <mat-icon>calendar_today</mat-icon>
+
+                                <input id="fechaHasta" type="date" [(ngModel)]="fechaHastaFiltroTemporal">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+
+                    <button type="button" class="btn-secundario btn-limpiar-filtros" (click)="limpiarFiltros()">
+
+                        <mat-icon>filter_alt_off</mat-icon>
+
+                        <span>Limpiar filtros</span>
+                    </button>
+
+                    <div class="modal-acciones">
+
+                        <button type="button" class="btn-secundario" (click)="cancelarFiltros()">
+                            Cancelar
+                        </button>
+
+                        <button type="button" class="btn-principal" (click)="confirmarFiltros()">
+
+                            <mat-icon>check</mat-icon>
+
+                            <span>Aplicar filtros</span>
+                        </button>
+                    </div>
+                </footer>
+            </section>
+        </div>
+    }
+
+    @if (modalActivo === 'historial' && clienteSeleccionado) {
+
+        <div class="modal-overlay" (click)="cerrarModal()">
+
+            <section class="modal historial-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="titulo-historial-cliente">
+
+                <header class="historial-modal-header">
+
+                    <div class="cliente-modal-info">
+
+                        <div class="cliente-avatar modal-avatar">
+
+                            <div class="avatar-placeholder">
+
+                                {{ clienteSeleccionado.nombreCliente.charAt(0)}}{{ clienteSeleccionado.apellidoCliente.charAt(0) }}
+                            </div>
+                        </div>
+
+                        <div class="cliente-modal-datos">
+
+                            <span class="modal-subtitulo">Historial del cliente</span>
+
+                            <h2 id="titulo-historial-cliente">{{ obtenerNombreCompletoCliente(clienteSeleccionado) }}</h2>
+
+                            <span class="cantidad-tratamientos">
+
+                                <mat-icon>medical_services</mat-icon>
+
+                                {{ tratamientosClienteSeleccionado.length }}
+
+                                {{ tratamientosClienteSeleccionado.length === 1 ? 'tratamiento registrado' : 'tratamientos registrados' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-cerrar" aria-label="Cerrar historial" (click)="cerrarModal()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </header>
+
+                <div class="historial-modal-contenido">
+
+                    @if (tratamientosClienteSeleccionado.length === 0) {
+
+                        <div class="estado-mensaje">
+
+                            <mat-icon>history</mat-icon>
+
+                            <h2>Sin tratamientos registrados</h2>
+
+                            <p>Este cliente todavía no tiene tratamientos registrados.</p>
+                        </div>
+                    }
+
+                    @else {
+
+                        <section class="tratamientos-lista">
+
+                            @for (tratamiento of tratamientosClienteSeleccionado; track tratamiento.idHistorial) {
+
+                                <article class="tratamiento-card">
+
+                                    <header class="tratamiento-header">
+
+                                        <div class="tratamiento-titulo">
+
+                                            <div class="tratamiento-especialidad">
+
+                                                <mat-icon>category</mat-icon>
+
+                                                <span>
+                                                    {{obtenerEspecialidadTexto(tratamiento.especialidadEmpleado) }}
+                                                </span>
+                                            </div>
+
+                                            <span class="tratamiento-fecha">
+
+                                                <mat-icon>event</mat-icon>
+
+                                                {{ tratamiento.fechaHoraTurno }}
+                                            </span>
+                                        </div>
+
+                                        <div class="tratamiento-precio">
+
+                                            <span class="dato-label">Precio</span>
+
+                                            <strong>{{ formatearPrecio(tratamiento.precioTotalTurno) }}</strong>
+                                        </div>
+                                    </header>
+
+                                    <div class="tratamiento-empleado">
+
+                                        <div class="empleado-avatar">
+
+                                            <div class="avatar-placeholder">
+
+                                                {{ tratamiento.nombreEmpleado.charAt(0)}}{{ tratamiento.apellidoEmpleado.charAt(0) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="empleado-info">
+
+                                            <span class="dato-label">Profesional</span>
+
+                                            <span class="dato-valor">{{ obtenerNombreCompletoEmpleado(tratamiento) }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="tratamiento-informacion">
+
+                                        <div class="tratamiento-dato">
+
+                                            <div class="dato-icono">
+                                                <mat-icon>spa</mat-icon>
+                                            </div>
+
+                                            <div class="dato-contenido">
+
+                                                <span class="dato-label">Servicios</span>
+
+                                                <span class="dato-valor">{{ obtenerServicios(tratamiento) }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="tratamiento-dato">
+
+                                            <div class="dato-icono">
+                                                <mat-icon>schedule</mat-icon>
+                                            </div>
+
+                                            <div class="dato-contenido">
+
+                                                <span class="dato-label">Duración real</span>
+
+                                                <span class="dato-valor">{{ formatearDuracion(tratamiento.duracionReal) }}</span>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- PRODUCTOS -->
+
+                                        @if (
+                                            tieneProductos(
+                                                tratamiento
+                                            )
+                                        ) {
+
+                                            <div
+                                                class="tratamiento-dato"
+                                            >
+
+                                                <div
+                                                    class="dato-icono"
+                                                >
+
+                                                    <mat-icon>
+                                                        inventory_2
+                                                    </mat-icon>
+
+                                                </div>
+
+                                                <div
+                                                    class="dato-contenido"
+                                                >
+
+                                                    <span
+                                                        class="dato-label"
+                                                    >
+                                                        Productos utilizados
+                                                    </span>
+
+                                                    <span
+                                                        class="dato-valor"
+                                                    >
+
+                                                        {{
+                                                            obtenerProductos(
+                                                                tratamiento
+                                                            )
+                                                        }}
+
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        }
+
+                                    </div>
+
+                                    @if (tieneObservacion(tratamiento)) {
+
+                                        <div class="tratamiento-observacion">
+
+                                            <div class="observacion-header">
+
+                                                <mat-icon>notes</mat-icon>
+
+                                                <span>Observación</span>
+                                            </div>
+
+                                            <p>{{ obtenerObservacion(tratamiento) }}</p>
+                                        </div>
+                                    }
+                                </article>
+                            }
+                        </section>
+                    }
+                </div>
+            </section>
+        </div>
+    }
+</div>

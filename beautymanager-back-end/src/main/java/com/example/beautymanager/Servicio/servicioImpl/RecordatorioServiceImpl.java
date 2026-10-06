@@ -19,6 +19,7 @@ import com.example.beautymanager.Modelo.Enums.EstadoTurnoEnums;
 import com.example.beautymanager.Modelo.Enums.TipoNotificacionEnums;
 import com.example.beautymanager.Repositorio.ConfiguracionRecordatorioRepository;
 import com.example.beautymanager.Repositorio.RecordatorioRepository;
+import com.example.beautymanager.Repositorio.TurnoRepository;
 import com.example.beautymanager.Servicio.EmailService;
 import com.example.beautymanager.Servicio.NotificacionService;
 import com.example.beautymanager.Servicio.RecordatorioService;
@@ -44,6 +45,9 @@ public class RecordatorioServiceImpl implements RecordatorioService {
 
     @Autowired
     private ConfiguracionRecordatorioRepository configuracionRepository;
+
+    @Autowired
+    private TurnoRepository turnoRepository;
 
     //=========================
     //Crear recordatorios
@@ -177,6 +181,52 @@ public class RecordatorioServiceImpl implements RecordatorioService {
         }
 
         recordatorioRepository.saveAll(pendientes);
+    }
+
+    //==================================
+    //Reprogramar recordatorios futuros
+    //==================================
+    @Override
+    @Transactional
+    public void reprogramarRecordatoriosFuturos() {
+
+        ConfiguracionRecordatorioEntity configuracion = configuracionRepository.findFirstByOrderByIdConfiguracionAsc()
+            .orElseThrow(() -> new BusinessException("No existe una configuracion de recordatorios"));
+
+        LocalDateTime ahora = LocalDateTime.now();
+
+        List<TurnoEntity> turnosFuturos = turnoRepository.findByFechaHoraInicioAfter(ahora);
+
+        for(TurnoEntity turno : turnosFuturos){
+
+            if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
+                continue;
+            }
+
+            List<RecordatorioEntity> recordatoriosPendientes = recordatorioRepository.findByTurnoIdAndEnviadoFalse(turno.getId());
+
+            if(!recordatoriosPendientes.isEmpty()){
+                recordatorioRepository.deleteAll(recordatoriosPendientes);
+            }
+
+            List<RecordatorioEntity> nuevosRecordatorios = new ArrayList<>();
+
+            LocalDateTime primerRecordatorio = turno.getFechaHoraInicio().minusHours(configuracion.getPrimerRecordatorioHoras());
+
+            if(primerRecordatorio.isAfter(ahora)){
+                crearPorConfiguracion(nuevosRecordatorios, turno, primerRecordatorio, configuracion);
+            }
+
+            LocalDateTime segundoRecordatorio = turno.getFechaHoraInicio().minusHours(configuracion.getSegundoRecordatorioHoras());
+
+            if(segundoRecordatorio.isAfter(ahora)){
+                crearPorConfiguracion(nuevosRecordatorios, turno, segundoRecordatorio, configuracion);
+            }
+
+            if(!nuevosRecordatorios.isEmpty()){
+                recordatorioRepository.saveAll(nuevosRecordatorios);
+            }
+        }
     }
 
     //=================

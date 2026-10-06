@@ -7,6 +7,7 @@ export interface ObtenerServicio {
     descripcion: string;
     precio: number;
     duracionMinutos: number;
+    idCategoria: number;
     nombreCategoria: string;
     estado: EstadoServicio;
 }

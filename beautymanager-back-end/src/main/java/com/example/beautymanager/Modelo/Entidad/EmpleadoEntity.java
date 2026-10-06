@@ -28,7 +28,7 @@ import jakarta.persistence.PrePersist;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "empleado", schema = "pp2")
+@Table(name = "empleado", schema = "beautymanager")
 public class EmpleadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

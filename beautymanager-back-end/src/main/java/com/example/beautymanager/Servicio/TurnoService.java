@@ -12,6 +12,8 @@ public interface TurnoService {
     
     ObtenerTurnoDTO crearTurno(CrearTurnoDTO crearTurno, Long idCliente);
 
+    ObtenerTurnoDTO crearTurnoAdmin(CrearTurnoDTO crearTurno);
+
     void cancelarTurno(Long idTurno, Long idCliente);
 
     void aceptarTurno(Long idTurno, Long idUsuario);

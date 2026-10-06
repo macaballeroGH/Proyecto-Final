@@ -35,8 +35,12 @@ public class ClienteServiceImpl implements ClienteService {
             existente.setDireccion(actualizarCliente.getDireccion().trim());
         }
 
-        if(actualizarCliente.getFechaNacimiento() != null){
-            existente.setFechaNacimiento(actualizarCliente.getFechaNacimiento());
+        if(actualizarCliente.getEmail() != null && !actualizarCliente.getEmail().isBlank()){
+            existente.getUsuario().setEmail(actualizarCliente.getEmail().trim());
+        }
+
+        if(actualizarCliente.getTelefono() != null && !actualizarCliente.getTelefono().isBlank()){
+            existente.getUsuario().setTelefono(actualizarCliente.getTelefono().trim());
         }
 
         return toMap(clienteRepository.save(existente));

@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "historial_tratamiento", schema = "pp2")
+@Table(name = "historial_tratamiento", schema = "beautymanager")
 public class HistorialTratamientoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

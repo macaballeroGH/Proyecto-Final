@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "compra", schema = "pp2")
+@Table(name = "compra", schema = "beautymanager")
 public class CompraEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

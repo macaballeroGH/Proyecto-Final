@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "notificacion", schema = "pp2")
+@Table(name = "notificacion", schema = "beautymanager")
 public class NotificacionEntity {
 
     @Id

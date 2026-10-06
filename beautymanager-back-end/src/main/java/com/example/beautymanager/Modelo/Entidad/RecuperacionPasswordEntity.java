@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "recuperacion_password", schema = "pp2")
+@Table(name = "recuperacion_password", schema = "beautymanager")
 @Data
 public class RecuperacionPasswordEntity {
 

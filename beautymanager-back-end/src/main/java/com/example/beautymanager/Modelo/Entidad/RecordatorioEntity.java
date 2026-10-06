@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "recordatorio", schema = "pp2")
+@Table(name = "recordatorio", schema = "beautymanager")
 public class RecordatorioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

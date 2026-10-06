@@ -1,1 +1,1146 @@
-<h2>Empleados</h2>
+<div class="empleados-page">
+
+    <header class="page-header">
+
+        <div class="header-info">
+            <h1>Empleados</h1>
+        </div>
+    </header>
+
+    @if (mensajeExito) {
+
+        <div class="mensaje mensaje-exito" role="alert">
+
+            <mat-icon class="mensaje-icono">check_circle</mat-icon>
+
+            <span>{{ mensajeExito }}</span>
+
+            <button type="button" class="mensaje-cerrar" (click)="mensajeExito = ''" aria-label="Cerrar mensaje">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    }
+
+    @if (error) {
+
+        <div class="mensaje mensaje-error" role="alert">
+            
+            <mat-icon class="mensaje-icono">error</mat-icon>
+
+            <span>{{ error }}</span>
+
+            <button type="button" class="mensaje-cerrar" (click)="error = ''" aria-label="Cerrar mensaje">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    }
+
+    <section class="estadisticas-empleados">
+
+        <article class="estadistica-card">
+
+            <div class="estadistica-icono">
+                <mat-icon>groups</mat-icon>
+            </div>
+
+            <div class="estadistica-info">
+
+                <span class="estadistica-label">Total</span>
+
+                <strong class="estadistica-valor">{{ empleadosOriginales.length }}</strong>
+            </div>
+        </article>
+
+        <article class="estadistica-card">
+
+            <div class="estadistica-icono">
+                <mat-icon>check_circle</mat-icon>
+            </div>
+
+            <div class="estadistica-info">
+
+                <span class="estadistica-label">Activos</span>
+
+                <strong class="estadistica-valor">{{ contarPorEstado(estados[0]) }}</strong>
+            </div>
+        </article>
+
+        <article class="estadistica-card">
+
+            <div class="estadistica-icono">
+                <mat-icon>person_off</mat-icon>
+            </div>
+
+            <div class="estadistica-info">
+
+                <span class="estadistica-label">Inactivos</span>
+
+                <strong class="estadistica-valor">{{ contarPorEstado(estados[1]) }}</strong>
+            </div>
+        </article>
+
+        <article class="estadistica-card">
+
+            <div class="estadistica-icono">
+                <mat-icon>event_busy</mat-icon>
+            </div>
+
+            <div class="estadistica-info">
+
+                <span class="estadistica-label">Licencia</span>
+
+                <strong class="estadistica-valor">{{ contarPorEstado(estados[2]) }}</strong>
+            </div>
+        </article>
+
+        <article class="estadistica-card">
+
+            <div class="estadistica-icono">
+                <mat-icon>block</mat-icon>
+            </div>
+
+            <div class="estadistica-info">
+
+                <span class="estadistica-label">Suspendidos</span>
+
+                <strong class="estadistica-valor">{{ contarPorEstado(estados[3]) }}</strong>
+            </div>
+        </article>
+    </section>
+
+    <section class="barra-herramientas">
+
+        <div class="buscador">
+
+            <mat-icon class="buscador-icono">search</mat-icon>
+
+            <input type="search" placeholder="Buscar empleado..." [(ngModel)]="textoBusqueda" (input)="buscar()" aria-label="Buscar empleado">
+
+            @if (textoBusqueda) {
+
+                <button type="button" class="buscador-limpiar" (click)="textoBusqueda = ''; buscar()" aria-label="Limpiar busqueda">
+                    <mat-icon>close</mat-icon>
+                </button>
+            }
+        </div>
+
+        <button type="button" class="boton boton-secundario" (click)="abrirFiltros()">
+
+            <mat-icon>tune</mat-icon>
+
+            Filtros
+
+            @if (hayFiltrosAplicados) {
+                <span class="filtro-activo-indicador" aria-label="Hay filtros aplicados"></span>
+            }
+        </button>
+
+        <button type="button" class="boton boton-principal" (click)="abrirNuevoEmpleado()">
+
+            <mat-icon>add</mat-icon>
+
+            Nuevo empleado
+        </button>
+    </section>
+
+    @if (hayFiltrosAplicados) {
+
+        <div class="filtros-aplicados">
+
+            <span class="filtros-aplicados-titulo">Filtos:</span>
+
+            @if (textoBusqueda.trim()) {
+                <span class="filtro-tag">
+                    Busqueda:
+                    {{ textoBusqueda }}
+                </span>
+            }
+
+            @if (especialidadFiltro) {
+                <span class="filtro-tag">
+                    Especialidad:
+                    {{ obtenerNombreEspecialidad(especialidadFiltro) }}
+                </span>
+            }
+
+            @if (estadoFiltro) {
+                <span class="filtro-tag">
+                    Estado:
+                    {{ obtenerNombreEstado(estadoFiltro) }}
+                </span>
+            }
+
+            <button type="button" class="filtros-limpiar-todos" (click)="textoBusqueda = ''; especialidadFiltro = ''; estadoFiltro = ''; actualizarVista()">
+
+                <mat-icon>filter_alt_off</mat-icon>
+
+                Limpiar todo
+            </button>
+        </div>
+    }
+
+    <section class="tabla-container">
+
+        @if (cargandoLista) {
+
+            <div class="estado-tabla">
+                
+                <div class="spinner"></div>
+
+                <p>Cargando empleados...</p>
+            </div>
+        }
+
+        @else if (!hayEmpleados) {
+
+            <div class="estado-tabla estado-vacio">
+
+                <div class="estado-icono">
+                    <mat-icon>groups</mat-icon>
+                </div>
+
+                <h3>No hay empleados registrados</h3>
+
+                <p>Todavía no hay empleados registrados en el sistema.</p>
+
+                <button type="button" class="boton boton-principal" (click)="abrirNuevoEmpleado()">
+
+                    <mat-icon>person_add</mat-icon>
+
+                    Dar de alta empleado
+                </button>
+            </div>
+        }
+
+        @else if (!hayResultados) {
+
+            <div class="estado-tabla estado-vacio">
+
+                <div class="estado-icono">
+                    <mat-icon>search_off</mat-icon>
+                </div>
+
+                <h3>No se encontraron resultados</h3>
+
+                <p>No hay empleados que coincidan con la busqueda o los filtros seleccionados.</p>
+
+                <button type="button" class="boton boton-secundario" (click)="textoBusqueda = ''; especialidadFiltro = ''; estadoFiltro = ''; actualizarVista()">
+
+                    <mat-icon>filter_alt_off</mat-icon>
+
+                    Limpiar busqueda y filtros
+                </button>
+            </div>
+        }
+
+        @else {
+
+            <div class="tabla-scroll">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>
+                                <button type="button" class="encabezado-orden" (click)="ordenarPor('nombre')">
+
+                                    Empleado
+
+                                    @if (campoOrden === 'nombre') {
+                                        <mat-icon>{{ direccionOrden === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                                    }
+                                </button>
+                            </th>
+
+                            <th>Email</th>
+
+                            <th>
+                                <button type="button" class="encabezado-orden" (click)="ordenarPor('telefono')">
+
+                                    Telefono
+
+                                    @if (campoOrden === 'telefono') {
+                                        <mat-icon>{{ direccionOrden === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                                    }
+                                </button>
+                            </th>
+
+                            <th>
+                                <button type="button" class="encabezado-orden" (click)="ordenarPor('especialidad')">
+
+                                    Especialidad
+
+                                    @if (campoOrden === 'especialidad') {
+                                        <mat-icon>{{ direccionOrden === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+                                    }
+                                </button>
+                            </th>
+
+                            <th>
+                                <button type="button" class="encabezado-orden" (click)="ordenarPor('fechaAlta')">
+
+                                    Fecha de alta
+
+                                    @if (campoOrden === 'fechaAlta') {
+                                        <mat-icon>{{ direccionOrden === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+                                    }
+                                </button>
+                            </th>
+
+                            <th>
+                                <button type="button" class="encabezado-orden" (click)="ordenarPor('estadoEmpleado')">
+
+                                    Estado
+
+                                    @if (campoOrden === 'estadoEmpleado') {
+                                        <mat-icon>{{direccionOrden === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+                                    }
+                                </button>
+                            </th>
+
+                            <th class="columna-acciones"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @for (empleado of empleadosPagina; track empleado.idEmpleado) {
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="empleada-info">
+
+                                        <div class="empleada-avatar">{{ empleado.nombre.charAt(0) }}{{ empleado.apellido.charAt(0) }}</div>
+
+                                        <div>
+
+                                            <strong>
+                                                {{ empleado.nombre }}
+                                                {{ empleado.apellido }}
+                                            </strong>
+
+                                            <span>ID: {{ empleado.idEmpleado }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="dato-secundario">{{ empleado.email }}</span>
+                                </td>
+
+                                <td>
+                                    <span>{{ empleado.telefono }}</span>
+                                </td>
+
+                                <td>
+                                    <span class="especialidad-badge">{{ obtenerNombreEspecialidad(empleado.especialidad) }}</span>
+                                </td>
+
+                                <td>
+                                    {{ empleado.fechaAlta | date:'dd/MM/yyyy' }}
+                                </td>
+
+                                <td>
+                                    <span class="estado-badge" [class.estado-activo]="empleado.estadoEmpleado === estados[0]" [class.estado-inactivo]="empleado.estadoEmpleado === estados[1]" [class.estado-licencia]="empleado.estadoEmpleado === estados[2]" [class.estado-suspendido]="empleado.estadoEmpleado === estados[3]">
+
+                                        @switch (empleado.estadoEmpleado) {
+
+                                            @case (estados[0]) {
+                                                <mat-icon>check_circle</mat-icon>
+                                            }
+
+                                            @case (estados[1]) {
+                                                <mat-icon>person_off</mat-icon>
+                                            }
+
+                                            @case (estados[2]) {
+                                                <mat-icon>event_busy</mat-icon>
+                                            }
+
+                                            @case (estados[3]) {
+                                                <mat-icon>block</mat-icon>
+                                            }
+                                        }
+
+                                        {{ obtenerNombreEstado(empleado.estadoEmpleado) }}
+                                    </span>
+                                </td>
+
+                                <td class="columna-acciones">
+
+                                    <button type="button" class="boton-menu" (click)="alternarMenuEmpleado(empleado.idEmpleado)" [attr.aria-expanded]="menuEmpleadoAbierto === empleado.idEmpleado" aria-label="Opciones de empleado">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+
+                                    @if (menuEmpleadoAbierto === empleado.idEmpleado) {
+                                        <div class="menu-contextual">
+
+                                            <button type="button" (click)="abrirCambiarEstado(empleado)">
+
+                                                <mat-icon>sync</mat-icon>
+
+                                                Cambiar estado
+                                            </button>
+
+                                            <button type="button" (click)="abrirEditar(empleado)">
+
+                                                <mat-icon>edit</mat-icon>
+
+                                                Editar
+                                            </button>
+
+                                            <button type="button" (click)="abrirDarDeBaja(empleado)">
+
+                                                <mat-icon>person_off</mat-icon>
+
+                                                Dar de baja
+                                            </button>
+
+                                            <button type="button" class="opcion-peligrosa" (click)="abrirEliminar(empleado)">
+
+                                                <mat-icon>delete</mat-icon>
+
+                                                Eliminar cuenta
+                                            </button>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion">
+
+                <div class="paginacion-info">
+
+                    Mostrado
+
+                    <strong>{{ indiceInicio }}</strong>
+
+                    -
+
+                    <strong>{{ indiceFin }}</strong>
+
+                    de
+
+                    <strong>{{ empleadosFiltrados.length }}</strong>
+
+                    empleados
+                </div>
+
+                <div class="paginacion-controles">
+
+                    <label>
+
+                        Mostrar:
+
+                        <select [value]="empleadosPorPagina" (change)="cambiarCantidadPorPagina(+$any($event.target).value)">
+
+                            <option [value]="5">5</option>
+
+                            <option [value]="10">10</option>
+
+                            <option [value]="20">20</option>
+
+                            <option [value]="50">50</option>
+                        </select>
+                    </label>
+
+                    <button type="button" class="pagina-boton" [disabled]="paginaActual === 1" (click)="paginaAnterior()" aria-label="Pagina anterior">
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+
+                    @for (pagina of paginas; track pagina) {
+                        <button type="button" class="pagina-boton" [class.pagina-activa]="pagina === paginaActual" (click)="cambiarPagina(pagina)">{{ pagina }}</button>
+                    }
+
+                    <button type="button" class="pagina-boton" [disabled]="paginaActual === totalPaginas" (click)="paginaSiguiente()" aria-label="Pagina siguiente">
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+                </div>
+            </div>
+        }
+    </section>
+</div>
+
+@if (modalActivo === 'filtros') {
+
+    <div class="modal-overlay" (click)="cancelarFiltros()">
+
+        <div class="modal modal-filtros" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>Filtros</h2>
+                </div>
+
+                <button type="button" class="modal-cerrar" (click)="cancelarFiltros()" aria-label="Cerrar">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="campo">
+
+                    <label for="filtro-especialidad">Especialidad</label>
+
+                    <select id="filtro-especialidad" [(ngModel)]="especialidadFiltroTemporal">
+
+                        <option value="">Todas las especialidades</option>
+
+                        @for (especialidad of especialidades; track especialidad) {
+                            <option [value]="especialidad">{{ obtenerNombreEspecialidad(especialidad) }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="campo">
+
+                    <label for="filtro-estado">Estado</label>
+
+                    <select id="filtro-estado" [(ngModel)]="estadoFiltroTemporal">
+
+                        <option value="">Todos los estados</option>
+
+                        @for (estado of estados; track estado) {
+                            <option [value]="estado">{{ obtenerNombreEstado(estado) }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-texto" (click)="limpiarFiltros()">
+
+                    <mat-icon>filter_alt_off</mat-icon>
+
+                    Limpiar
+                </button>
+
+                <div class="modal-footer-derecha">
+
+                    <button type="button" class="boton boton-secundario" (click)="cancelarFiltros()">Cancelar</button>
+
+                    <button type="button" class="boton boton-principal" (click)="solicitarAplicarFiltros()">
+                        <mat-icon>filter_alt</mat-icon>
+
+                        Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (modalActivo === 'nuevo') {
+
+    <div class="modal-overlay" (click)="cancelarNuevoEmpleado()">
+
+        <div class="modal-empleado" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+                    <h2>Nuevo Empleado</h2>
+                </div>
+
+                <button type="button" class="modal-cerrar" (click)="cancelarNuevoEmpleado()" aria-label="Cerrar">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <form [formGroup]="formularioNuevoEmpleado" (ngSubmit)="solicitarAlta()">
+
+                <div class="modal-body">
+
+                    <div class="form-row">
+
+                        <div class="campo">
+
+                            <label for="nombre">Nombre</label>
+
+                            <input id="nombre" type="text" formControlName="nombre" placeholder="Nombre">
+
+                            @if (campoNuevoEmpleadoInvalido('nombre')) {
+
+                                <small class="mensaje-campo">
+
+                                    @if (nombreNuevoEmpleado?.hasError('required')) {
+                                        El nombre es obligatorio.
+                                    }
+
+                                    @else if (nombreNuevoEmpleado?.hasError('minlength')) {
+                                        El nombre debe tener al menos 2 caracteres.
+                                    }
+
+                                    @else if (nombreNuevoEmpleado?.hasError('maxlength')) {
+                                        El nombre no puede superar los 50 caracteres.
+                                    }
+                                </small>
+                            }
+                        </div>
+
+                        <div class="campo">
+
+                            <label for="apellido">Apellido</label>
+
+                            <input id="apellido" type="text" formControlName="apellido" placeholder="Apellido">
+
+                            @if (campoNuevoEmpleadoInvalido('apellido')) {
+                                <small class="mensaje-campo">
+
+                                    @if (apellidoNuevoEmpleado?.hasError('required')) {
+                                        El apellido es obligatorio.
+                                    }
+
+                                    @else if (apellidoNuevoEmpleado?.hasError('minlength')) {
+                                        El apellido debe tener al menos 2 caracteres.
+                                    }
+
+                                    @else if (apellidoNuevoEmpleado?.hasError('maxlength')) {
+                                        El apellido no puede superar los 50 caracteres.
+                                    }
+                                </small>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="email">Email</label>
+
+                        <input id="email" type="email" formControlName="email" placeholder="correo@ejemplo.com">
+
+                        @if (campoNuevoEmpleadoInvalido('email')) {
+                            <small class="mensaje-campo">
+
+                                @if (emailNuevoEmpleado?.hasError('required')) {
+                                    El email es obligatorio.
+                                }
+
+                                @else if (emailNuevoEmpleado?.hasError('email')) {
+                                    Ingrese un email válido.
+                                }
+                            </small>
+                        }
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="password">Contraseña</label>
+
+                        <input id="password" formControlName="password" placeholder="Contraseña">
+
+                        @if (campoNuevoEmpleadoInvalido('password')) {
+                            <small class="mensaje-campo">
+
+                                @if (passwordNuevoEmpleado?.hasError('required')) {
+                                    La contraseña es obligatoria.
+                                }
+
+                                @else if (passwordNuevoEmpleado?.hasError('minlength')) {
+                                    La contraseña debe tener al menos 8 caracteres.
+                                }
+                            </small>
+                        }
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="telefono">Telefono</label>
+
+                        <input id="telefono" type="tel" formControlName="telefono" placeholder="Telefono">
+
+                        @if (campoNuevoEmpleadoInvalido('telefono')) {
+                            <small class="mensaje-campo">
+
+                                @if (telefonoNuevoEmpleado?.hasError('required')) {
+                                    El telefono es obligatorio.
+                                }
+
+                                @else if (telefonoNuevoEmpleado?.hasError('minlength') || telefonoNuevoEmpleado?.hasError('maxlength')) {
+                                    El telefono debe tener entre 6 y 30 caracteres.
+                                }
+                            </small>
+                        }
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="especialidad">Especialidad</label>
+
+                        <select id="especialidad" formControlName="especialidad">
+
+                            <option value="">Seleccionar especialidad</option>
+
+                            @for (especialidad of especialidades; track especialidad) {
+
+                                <option [value]="especialidad">{{ obtenerNombreEspecialidad(especialidad) }}</option>
+                            }
+                        </select>
+
+                        @if (campoNuevoEmpleadoInvalido('especialidad')) {
+                            <small class="mensaje-campo">La especialidad es obligatoria.</small>
+                        }
+                    </div>
+
+                    <div class="horario-empleado">
+
+                        <div class="horario-titulo">
+                            <h3>Horarios de trabajo</h3>
+                        </div>
+
+                        <div class="lista-horarios">
+
+                            @for(dia of diasSemana; track dia.numero) {
+
+                                <div class="dia-horario">
+
+                                    <div class="dia-horario-header">
+
+                                        <label class="dia-checkbox">
+
+                                            <input type="checkbox" [(ngModel)]="horariosFormulario[dia.numero].seleccionado" [ngModelOptions]="{ standalone: true}">
+
+                                            <span>{{ dia.nombre }}</span>
+                                        </label>
+                                    </div>
+
+                                    @if (horariosFormulario[dia.numero].seleccionado) {
+
+                                        <div class="bloques-horario">
+
+                                            @for (bloque of horariosFormulario[dia.numero].bloques; track $index; let indice = $index) {
+
+                                                <div class="bloque-horario">
+
+                                                    <div class="campo-horario">
+
+                                                        <label [for]="'inicio-' + dia.numero + '-' + indice">Hora de inicio</label>
+
+                                                        <input [id]="'inicio-' + dia.numero + '-' + indice" type="time" [(ngModel)]="bloque.horaInicio" [ngModelOptions]="{ standalone: true}" min="08:00" max="20:00">
+                                                    </div>
+
+                                                    <div class="campo-horario">
+
+                                                        <label [for]="'fin-' + dia.numero + '-' + indice">Hora de fin</label>
+
+                                                        <input [id]="'fin-' + dia.numero + '-' + indice" type="time" [(ngModel)]="bloque.horaFin" [ngModelOptions]="{ standalone: true }" min="08:00" max="20:00">
+                                                    </div>
+
+                                                    @if (horariosFormulario[dia.numero].bloques.length > 1) {
+
+                                                        <button type="button" class="boton-eliminar-bloque" (click)="eliminarBloqueHorario(dia.numero, indice)" aria-label="Eliminar horario">
+                                                            <mat-icon>delete</mat-icon>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            }
+
+                                            <button type="button" class="boton-agregar-bloque" (click)="agregarBloqueHorario(dia.numero)">
+
+                                                <mat-icon>add</mat-icon>
+
+                                                Agregar horario
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="boton boton-secundario" (click)="cancelarNuevoEmpleado()" [disabled]="procesandoOperacion">Cancelar</button>
+
+                    <button type="submit" class="boton boton-principal" [disabled]="procesandoOperacion">
+
+                        @if (procesandoOperacion) {
+
+                            <span class="spinner-boton"></span>
+
+                            Procesando...
+                        }
+
+                        @else {
+
+                            <mat-icon>person_add</mat-icon>
+
+                            Dar alta
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (modalActivo === 'editar' && empleadoSeleccionado) {
+
+    <div class="modal-overlay" (click)="cancelarEditar()">
+
+        <div class="modal modal-empleado" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>Editar empleado</h2>
+
+                    <p>
+                        {{ empleadoSeleccionado.nombre }}
+                        {{ empleadoSeleccionado.apellido }}
+                    </p>
+                </div>
+
+                <button type="button" class="modal-cerrar" (click)="cancelarEditar()" aria-label="Cerrar">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <form [formGroup]="formularioEditarEmpleado" (ngSubmit)="solicitarGuardarEdicion()">
+
+                <div class="modal-body">
+
+                    <div class="informacion-empleada">
+
+                        <span>Email</span>
+
+                        <strong>{{ empleadoSeleccionado.email }}</strong>
+                    </div>
+
+                    <div class="informacion-empleada">
+
+                        <span>Telefono</span>
+
+                        <strong>{{ empleadoSeleccionado.telefono }}</strong>
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="editar-especialidad">Especialidad</label>
+
+                        <select id="editar-especialidad" formControlName="especialidad">
+
+                            @for (especialidad of especialidades; track especialidad) {
+                                <option [value]="especialidad">{{ obtenerNombreEspecialidad(especialidad) }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="boton boton-secundario" (click)="cancelarEditar()" [disabled]="procesandoOperacion">Cancelar</button>
+
+                    <button type="submit" class="boton boton-principal" [disabled]="procesandoOperacion">
+                        <mat-icon>save</mat-icon>
+
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (modalActivo === 'estado' && empleadoSeleccionado) {
+
+    <div class="modal-overlay" (click)="cancelarCambiarEstado()">
+
+        <div class="modal modal-estado" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>Cambiar estado</h2>
+
+                    <p>
+                        {{ empleadoSeleccionado.nombre }}
+                        {{ empleadoSeleccionado.apellido }}
+                    </p>
+                </div>
+
+                <button type="button" class="modal-cerrar" (click)="cancelarCambiarEstado()" aria-label="Cerrar">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="campo">
+
+                    <label for="nuevo-estado">Nuevo estado</label>
+
+                    <select id="nuevo-estado" [(ngModel)]="nuevoEstado">
+
+                        @for (estado of estados; track estado) {
+                            <option [value]="estado">{{ obtenerNombreEstado(estado) }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarCambiarEstado()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="solicitarCambioEstado()" [disabled]="!nuevoEstado">
+
+                    <mat-icon>sync</mat-icon>
+
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'filtros') {
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="confirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>¿Está segura?</h2>
+
+            <p>¿Desea aplicar los filtros seleccionados?</p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarConfirmacionFiltros()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="confimarAplicarFiltros()">
+
+                    <mat-icon>filter_alt</mat-icon>
+
+                    Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'alta') {
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="confirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>¿Está segura?</h2>
+
+            <p>¿Desea dar de alta a este empleado?</p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarConfirmacionAlta()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="confirmarAlta()" [disabled]="procesandoOperacion">
+
+                    @if (procesandoOperacion) {
+                        Procesando...
+                    }
+
+                    @else {
+                        <mat-icon>person_add</mat-icon>
+
+                        Dar alta
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'edicion') {
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="confirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>¿Guardar cambios?</h2>
+
+            <p>¿Está segura de que desea guardar los cambios realizados?</p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarConfirmacionEdicion()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="confirmarGuardarEdicion()" [disabled]="procesandoOperacion">
+
+                    @if (procesandoOperacion) {
+                        Procesando...
+                    }
+
+                    @else {
+
+                        <mat-icon>save</mat-icon>
+
+                        Guardar cambios
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'estado' && empleadoSeleccionado) {
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="confirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>¿Está segura?</h2>
+
+            <p>
+
+                ¿Desea cambiar el estado de
+
+                <strong>
+                    {{ empleadoSeleccionado.nombre }}
+                    {{ empleadoSeleccionado.apellido }}
+                </strong>
+
+                a
+
+                <strong>{{ obtenerNombreEstado(nuevoEstado! )}}</strong>
+            </p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarConfirmacionEstado()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="confirmarCambioEstado()" [disabled]="procesandoOperacion">
+
+                    @if (procesandoOperacion) {
+                        Procesando...
+                    }
+
+                    @else {
+
+                        <mat-icon>sync</mat-icon>
+
+                        Aplicar
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'baja' && empleadoSeleccionado){
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="condirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>¿Está segura?</h2>
+
+            <p>
+
+                ¿Desea dar de baja a
+
+                <strong>
+                    {{ empleadoSeleccionado.nombre }}
+                    {{ empleadoSeleccionado.apellido }}
+                </strong>
+            </p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarDarDeBaja()">Cancelar</button>
+
+                <button type="button" class="boton boton-principal" (click)="confirmaDarDeBaja()" [disabled]="procesandoOperacion">
+
+                    @if (procesandoOperacion) {
+
+                        Procesando...
+                    }
+
+                    @else {
+
+                        <mat-icon>person_off</mat-icon>
+
+                        Dar de baja
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (confirmacionActiva === 'eliminar' && empleadoSeleccionado) {
+
+    <div class="modal-overlay confirmacion-overlay">
+
+        <div class="modal modal-confirmacion">
+
+            <div class="confirmacion-icono peligro">
+                <mat-icon>warning</mat-icon>
+            </div>
+
+            <h2>¿Eliminar cuenta?</h2>
+
+            <p>
+                ¿Está segura de que desea eliminar la cuenta de
+
+                <strong>
+                    {{ empleadoSeleccionado.nombre }}
+                    {{ empleadoSeleccionado.apellido }}
+                </strong>
+            </p>
+
+            <p class="texto-advertencia">Esta acción no se puede deshacer.</p>
+
+            <div class="modal-footer">
+
+                <button type="button" class="boton boton-secundario" (click)="cancelarEliminar()">Cancelar</button>
+
+                <button type="button" class="boton boton-peligro" (click)="confirmarEliminar()" [disabled]="procesandoOperacion">
+
+                    @if (procesandoOperacion) {
+                        Procesando...
+                    }
+
+                    @else {
+
+                        <mat-icon>delete</mat-icon>
+
+                        Eliminar
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}

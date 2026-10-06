@@ -8,17 +8,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
 import com.example.beautymanager.Modelo.Entidad.BloqueoAgendaEntity;
 import com.example.beautymanager.Modelo.Entidad.EmpleadoEntity;
 import com.example.beautymanager.Modelo.Entidad.HorarioEmpleadoEntity;
 import com.example.beautymanager.Modelo.Entidad.ServicioEntity;
 import com.example.beautymanager.Modelo.Entidad.TurnoEntity;
+import com.example.beautymanager.Modelo.Enums.EstadoEmpleadoEnums;
 import com.example.beautymanager.Repositorio.BloqueoAgendaRepository;
 import com.example.beautymanager.Repositorio.EmpleadoRepository;
 import com.example.beautymanager.Repositorio.HorarioEmpleadoRepository;
 import com.example.beautymanager.Repositorio.ServicioRepository;
 import com.example.beautymanager.Repositorio.TurnoRepository;
 import com.example.beautymanager.Servicio.AgendaService;
+import com.example.beautymanager.Servicio.TurnoService;
 import com.example.beautymanager.exception.BusinessException;
 
 @Service
@@ -38,6 +41,9 @@ public class AgendaServiceImpl implements AgendaService {
 
    @Autowired
    private EmpleadoRepository empleadoRepository;
+
+   @Autowired
+   private TurnoService turnoService;
 
    //===========================
    //Disponibilidad por dia
@@ -110,6 +116,86 @@ public class AgendaServiceImpl implements AgendaService {
             .orElseThrow(() -> new BusinessException("El usuario no pertenece a un empleado"));
 
     return obtenerDisponibilidad(empleado.getId(), serviciosIds, fecha);
+   }
+
+   //=================================
+   //Obtener disponibilidad general
+   //=================================
+   @Override 
+   public List<LocalDateTime> obtenerDisponibilidadGeneral(LocalDate fecha) {
+
+    if(fecha == null) {
+        throw new BusinessException("La fecha es obligatoria");
+    }
+
+    List<LocalDateTime> disponibles = new ArrayList<>();
+
+    List<EmpleadoEntity> empleadosActivos = empleadoRepository.findByEstadoEmpleado(EstadoEmpleadoEnums.ACTIVO);
+
+    if(empleadosActivos.isEmpty()){
+        return disponibles;
+    }
+
+    for(int hora = 8; hora < 20; hora++){
+
+        for(int minuto = 0; minuto < 60; minuto += 30){
+
+            LocalDateTime inicio = fecha.atTime(hora, minuto);
+
+            LocalDateTime fin = inicio.plusMinutes(30);
+
+            boolean existeEmpleadoDisponible = false;
+
+            for(EmpleadoEntity empleado : empleadosActivos){
+
+                List<HorarioEmpleadoEntity> horarios = horarioEmpleadoRepository.findByEmpleadoIdAndDiaSemana(empleado.getId(), fecha.getDayOfWeek().getValue());
+
+                for(HorarioEmpleadoEntity horario : horarios){
+
+                    LocalDateTime inicioHorario = fecha.atTime(horario.getHoraInicio());
+
+                    LocalDateTime finHorario = fecha.atTime(horario.getHoraFin());
+
+                    if(!inicio.isBefore(inicioHorario) && !fin.isAfter(finHorario) && validarDisponibilidad(empleado.getId(), inicio, fin) && validarBloqueos(empleado.getId(), inicio, fin)){
+
+                        existeEmpleadoDisponible = true;
+                        
+                        break;
+                    }
+                }
+
+                if(existeEmpleadoDisponible){
+                    break;
+                }
+            }
+
+            if(existeEmpleadoDisponible){
+                disponibles.add(inicio);
+            }
+        }
+    }
+
+    return disponibles;
+   }
+
+   //========================
+   //Obtener turno
+   //========================
+   @Override
+   public List<ObtenerTurnoDTO> obtenerAgenda(LocalDate inicio, LocalDate fin){
+
+    if(inicio == null || fin == null){
+        throw new BusinessException("Las fechas son obligatorias");
+    }
+
+    if(inicio.isAfter(fin)){
+        throw new BusinessException("La fecha de inicio no puede ser mayor que la fecha de fin");
+    }
+
+    LocalDateTime fechaInicio = inicio.atStartOfDay();
+    LocalDateTime fechaFin = fin.atTime(20,00,00);
+
+    return turnoRepository.findByFechaHoraInicioBetween(fechaInicio, fechaFin).stream().map(turnoService::toMap).toList();
    }
 
    //===========================

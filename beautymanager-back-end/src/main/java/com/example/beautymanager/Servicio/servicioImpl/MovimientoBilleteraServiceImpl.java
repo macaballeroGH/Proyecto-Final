@@ -31,25 +31,25 @@ public class MovimientoBilleteraServiceImpl implements MovimientoBilleteraServic
     //=======================
     //Obtener billetera
     //=======================
-    private BilleteraEntity obtenerBilletera(String email){
-        UsuarioEntity usuario = usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado con ID: " + email));
-        
+    private BilleteraEntity obtenerBilletera(Long idUsuario){
+        UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
+            .orElseThrow(() -> new BusinessException("Usuario no encontrado con ID: " + idUsuario));
+
         if(usuario.getEstadoUsuario() != EstadoUsuarioEnums.ACTIVO){
             throw new BusinessException("El usuario no esta activo");
         }
 
         return billeteraRepository.findByUsuario(usuario)
-            .orElseThrow(() -> new BusinessException("Billetera no encontrada para el usuario con ID: " + email));
+            .orElseThrow(() -> new BusinessException("Billetera no encontrada para el usuario con ID: " + idUsuario));
     }
 
     //===========================
     //Movimiento por usuario
     //===========================
     @Override
-    public List<ObtenerMovimientoBilleteraDTO> obtenerMovimientosPorUsuario(String email){
+    public List<ObtenerMovimientoBilleteraDTO> obtenerMovimientosPorUsuario(Long idUsuario){
 
-        BilleteraEntity billetera = obtenerBilletera(email);
+        BilleteraEntity billetera =  obtenerBilletera(idUsuario);
 
         return movimientoBilleteraRepository.findByBilleteraOrderByFechaDesc(billetera).stream().map(this::toMap).toList();
     }
