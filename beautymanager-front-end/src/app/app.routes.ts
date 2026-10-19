@@ -18,6 +18,7 @@ import { InicioEmpleado } from "./features/empleados/inicio/inicio";
 import { AgendaAdmin } from "./features/admin/agenda/agenda";
 import { AgendaCliente } from "./features/clientes/agenda/agenda";
 import { AgendaEmpleado } from "./features/empleados/agenda/agenda";
+import { ReservaTurno } from "./features/clientes/reserva-turno/reserva-turno";
 
 import { authGuard } from "./core/guards/auth-guard";
 import { roleGuard } from "./core/guards/role-guard";
@@ -146,6 +147,10 @@ export const routes: Routes = [
                     {
                         path: 'agenda',
                         component: AgendaCliente
+                    },
+                    {
+                        path: 'reserva-turno',
+                        component: ReservaTurno
                     },
                     {
                         path: 'historial-tratamientos',

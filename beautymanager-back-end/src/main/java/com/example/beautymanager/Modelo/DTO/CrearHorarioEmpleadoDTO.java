@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 public class CrearHorarioEmpleadoDTO {
 
-    private Long idEmpleado;
     private Integer diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;

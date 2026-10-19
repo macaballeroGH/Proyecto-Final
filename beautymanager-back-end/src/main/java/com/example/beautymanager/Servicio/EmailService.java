@@ -5,4 +5,6 @@ import com.example.beautymanager.Modelo.Entidad.RecordatorioEntity;
 public interface EmailService {
     
     void enviarEmail(RecordatorioEntity recordatorio);
+
+    void enviarEmailPrueba(String destino);
 }

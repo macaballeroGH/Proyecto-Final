@@ -259,6 +259,8 @@ public class HistorialTratamientoServiceImpl implements HistorialTratamientoServ
             }
 
             obtenerHistorialTratamientoDTO.setServicios(turno.getServicios().stream().map(turnoServicio -> turnoServicio.getServicio().getNombre()).toList());
+
+            obtenerHistorialTratamientoDTO.setCategorias(turno.getServicios().stream().map(turnoServicio -> turnoServicio.getServicio().getCategoria().getNombre()).distinct().toList());
         }
 
         return obtenerHistorialTratamientoDTO;

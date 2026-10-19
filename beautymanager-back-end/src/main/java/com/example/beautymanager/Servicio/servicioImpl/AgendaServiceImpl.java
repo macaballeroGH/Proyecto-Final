@@ -124,6 +124,10 @@ public class AgendaServiceImpl implements AgendaService {
    @Override 
    public List<LocalDateTime> obtenerDisponibilidadGeneral(LocalDate fecha) {
 
+    System.out.println("ENTRO A OBTENER DISPONIBILIDAD GENERAL");
+
+    System.out.println("FECHA RECIBIDA: " + fecha);
+
     if(fecha == null) {
         throw new BusinessException("La fecha es obligatoria");
     }
@@ -132,8 +136,23 @@ public class AgendaServiceImpl implements AgendaService {
 
     List<EmpleadoEntity> empleadosActivos = empleadoRepository.findByEstadoEmpleado(EstadoEmpleadoEnums.ACTIVO);
 
+    System.out.println("FECHA CONSULTADA: " + fecha);
+
+    System.out.println("EMPLEADOS ACTIVOS: " + empleadosActivos.size());
+
     if(empleadosActivos.isEmpty()){
         return disponibles;
+    }
+
+    for(EmpleadoEntity empleado : empleadosActivos){
+
+        List<HorarioEmpleadoEntity> horarios = horarioEmpleadoRepository.findByEmpleadoIdAndDiaSemana(empleado.getId(), fecha.getDayOfWeek().getValue());
+
+        System.out.println("EMPLEADO: " + empleado.getId() + " - HORARIOS: " + horarios.size() + " - DIA SEMANA: " + fecha.getDayOfWeek().getValue());
+
+        for(HorarioEmpleadoEntity horario : horarios){
+            System.out.println("HORARIO: " + horario.getHoraInicio() + " - " + horario.getHoraFin());
+        }
     }
 
     for(int hora = 8; hora < 20; hora++){

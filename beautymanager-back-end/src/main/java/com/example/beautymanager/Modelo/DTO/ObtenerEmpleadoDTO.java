@@ -1,6 +1,7 @@
 package com.example.beautymanager.Modelo.DTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.beautymanager.Modelo.Enums.EspecialidadEmpleadoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoEmpleadoEnums;
@@ -26,4 +27,5 @@ public class ObtenerEmpleadoDTO {
     private LocalDateTime fechaAlta;
     private LocalDateTime fechaBaja;
     private EstadoEmpleadoEnums estadoEmpleado;
+    private List<CrearHorarioEmpleadoDTO> horarios;
 }

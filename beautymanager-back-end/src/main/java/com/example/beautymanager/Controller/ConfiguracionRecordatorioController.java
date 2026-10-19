@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautymanager.Modelo.DTO.ActualizarConfiguracionRecordatorioDTO;
 import com.example.beautymanager.Modelo.DTO.CrearConfiguracionRecordatorioDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerConfiguracionRecordatorioDTO;
+import com.example.beautymanager.Modelo.DTO.ProbarEmailDTO;
 import com.example.beautymanager.Servicio.ConfiguracionRecordatorioService;
+import com.example.beautymanager.Servicio.EmailService;
 
 @RestController
 @RequestMapping("/configuracion-recordatorios")
@@ -22,6 +24,9 @@ public class ConfiguracionRecordatorioController {
 
     @Autowired
     private ConfiguracionRecordatorioService configuracionRecordatorioService;
+
+    @Autowired
+    private EmailService emailService;
 
     //=======================
     //Crear configuracion
@@ -46,5 +51,22 @@ public class ConfiguracionRecordatorioController {
     @PutMapping
     public ResponseEntity<ObtenerConfiguracionRecordatorioDTO> actualizarConfiguracion(@RequestBody ActualizarConfiguracionRecordatorioDTO actualizarConfiguracion){
         return ResponseEntity.ok(configuracionRecordatorioService.actualizarConfiguracion(actualizarConfiguracion));
+    }
+
+    
+    //=======================
+    // Probar envio de email
+    //=======================
+    @PostMapping("/probar-email")
+    public ResponseEntity<String> probarEmail(@RequestBody ProbarEmailDTO probarEmailDTO) {
+
+        if (probarEmailDTO == null || probarEmailDTO.getEmail() == null || probarEmailDTO.getEmail().isBlank()) {
+
+            return ResponseEntity.badRequest().body("La dirección de correo es obligatoria");
+        }
+
+        emailService.enviarEmailPrueba(probarEmailDTO.getEmail());
+
+        return ResponseEntity.ok("Correo de prueba enviado correctamente");
     }
 }

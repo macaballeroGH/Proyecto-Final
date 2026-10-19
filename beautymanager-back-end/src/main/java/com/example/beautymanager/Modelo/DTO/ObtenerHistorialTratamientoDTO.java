@@ -37,4 +37,5 @@ public class ObtenerHistorialTratamientoDTO {
 
     //Servicios realizados
     private List<String> servicios;
+    private List<String> categorias;
 }

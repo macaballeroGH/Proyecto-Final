@@ -1,1 +1,317 @@
-<p>historial-tratamientos works!</p>
+<div class="historial-container">
+
+    <header class="historial-header">
+        <div>
+            <h1>Mi historial de tratamientos</h1>
+            <p>Consultá los tratamientos que recibiste y sus detalles.</p>
+        </div>
+    </header>
+
+    <section class="filtros-container">
+
+        <div class="filtro-campo">
+            <label for="fechaDesde">Desde</label>
+            <input
+                id="fechaDesde"
+                type="date"
+                [(ngModel)]="fechaDesde"
+            />
+        </div>
+
+        <div class="filtro-campo">
+            <label for="fechaHasta">Hasta</label>
+            <input
+                id="fechaHasta"
+                type="date"
+                [(ngModel)]="fechaHasta"
+                [min]="fechaDesde || null"
+            />
+        </div>
+
+        <div class="filtro-campo filtro-categoria">
+            <label for="categoria">Categoría</label>
+            <select
+                id="categoria"
+                [(ngModel)]="categoriaSeleccionada"
+            >
+                <option value="">Todas las categorías</option>
+
+                @for (categoria of categoriasDisponibles; track categoria) {
+                    <option [value]="categoria">
+                        {{ categoria }}
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="filtros-acciones">
+            <button
+                type="button"
+                class="btn-filtrar"
+                (click)="aplicarFiltros()"
+            >
+                Filtrar
+            </button>
+
+            <button
+                type="button"
+                class="btn-limpiar"
+                (click)="limpiarFiltros()"
+            >
+                Limpiar
+            </button>
+        </div>
+
+    </section>
+
+    @if (cargando) {
+        <div class="estado-mensaje">
+            <p>Cargando tu historial de tratamientos...</p>
+        </div>
+    }
+
+    @if (!cargando && errorCarga) {
+        <div class="estado-mensaje estado-error">
+            <p>{{ errorCarga }}</p>
+
+            <button
+                type="button"
+                class="btn-filtrar"
+                (click)="cargarTratamientos()"
+            >
+                Intentar nuevamente
+            </button>
+        </div>
+    }
+
+    @if (!cargando && !errorCarga && tratamientosFiltrados.length === 0) {
+        <div class="estado-vacio">
+            <h2>No hay tratamientos para mostrar</h2>
+
+            @if (tratamientos.length === 0) {
+                <p>Cuando completes un tratamiento y el personal registre su historial, aparecerá aquí.</p>
+            } @else {
+                <p>No encontramos tratamientos que coincidan con los filtros seleccionados.</p>
+
+                <button
+                    type="button"
+                    class="btn-limpiar"
+                    (click)="limpiarFiltros()"
+                >
+                    Quitar filtros
+                </button>
+            }
+        </div>
+    }
+
+    @if (!cargando && !errorCarga && tratamientosFiltrados.length > 0) {
+        <section class="tratamientos-listado">
+
+            <div class="listado-resumen">
+                <h2>Tratamientos registrados</h2>
+                <span>{{ tratamientosFiltrados.length }} resultados</span>
+            </div>
+
+            <div class="tratamientos-grid">
+
+                @for (tratamiento of tratamientosFiltrados; track tratamiento.idHistorial) {
+                    <article
+                        class="tratamiento-card"
+                        tabindex="0"
+                        role="button"
+                        (click)="verDetalle(tratamiento)"
+                        (keydown.enter)="verDetalle(tratamiento)"
+                        (keydown.space)="verDetalle(tratamiento); $event.preventDefault()"
+                        [attr.aria-label]="'Ver tratamiento del ' + (tratamiento.fechaHoraTurno | date:'dd/MM/yyyy')"
+                    >
+
+                        <div class="tarjeta-superior">
+                            <span class="tratamiento-etiqueta">
+                                Tratamiento
+                            </span>
+
+                            <span class="icono-detalle">↗</span>
+                        </div>
+
+                        <h3>
+                            {{ tratamiento.fechaHoraTurno | date:'dd/MM/yyyy' }}
+                        </h3>
+
+                        <p class="dato-empleado">
+                            <span class="dato-label">Profesional</span>
+                            {{ tratamiento.nombreEmpleado }}
+                            {{ tratamiento.apellidoEmpleado }}
+                        </p>
+
+                        <div class="categorias-container">
+                            <span class="dato-label">Categorías</span>
+
+                            <div class="categorias-listado">
+                                @for (categoria of tratamiento.categorias; track categoria) {
+                                    <span class="categoria-etiqueta">
+                                        {{ categoria }}
+                                    </span>
+                                } @empty {
+                                    <span class="texto-secundario">
+                                        Sin categorías registradas
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="tarjeta-pie">
+                            <span>Ver detalles</span>
+                            <span aria-hidden="true">→</span>
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        </section>
+    }
+
+</div>
+
+@if (tratamientoSeleccionado) {
+    <div
+        class="panel-fondo"
+        (click)="cerrarDetalle()"
+    ></div>
+
+    <aside
+        class="panel-detalle"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detalle-titulo"
+    >
+
+        <header class="panel-header">
+            <div>
+                <span class="panel-subtitulo">MI HISTORIAL</span>
+                <h2 id="detalle-titulo">Detalle del tratamiento</h2>
+            </div>
+
+            <button
+                type="button"
+                class="btn-cerrar"
+                aria-label="Cerrar detalles"
+                (click)="cerrarDetalle()"
+            >
+            </button>
+        </header>
+
+        <div class="panel-contenido">
+
+            <section class="detalle-fecha">
+                <span class="dato-label">Fecha del turno</span>
+                <h3>
+                    {{ tratamientoSeleccionado.fechaHoraTurno | date:'EEEE dd/MM/yyyy' }}
+                </h3>
+                <p>
+                    Registrado el
+                    {{ tratamientoSeleccionado.fecha | date:'dd/MM/yyyy' }}
+                </p>
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Profesional</h3>
+
+                <p class="detalle-dato">
+                    {{ tratamientoSeleccionado.nombreEmpleado }}
+                    {{ tratamientoSeleccionado.apellidoEmpleado }}
+                </p>
+
+                <p class="texto-secundario">
+                    {{ tratamientoSeleccionado.especialidadEmpleado }}
+                </p>
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Servicios realizados</h3>
+
+                @if (tratamientoSeleccionado.servicios && tratamientoSeleccionado.servicios.length > 0) {
+                    <ul class="servicios-lista">
+                        @for (servicio of tratamientoSeleccionado.servicios; track servicio) {
+                            <li>{{ servicio }}</li>
+                        }
+                    </ul>
+                } @else {
+                    <p class="texto-secundario">
+                        No hay servicios registrados.
+                    </p>
+                }
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Categorías</h3>
+
+                <div class="categorias-listado">
+                    @for (categoria of tratamientoSeleccionado.categorias; track categoria) {
+                        <span class="categoria-etiqueta">
+                            {{ categoria }}
+                        </span>
+                    } @empty {
+                        <span class="texto-secundario">
+                            Sin categorías registradas
+                        </span>
+                    }
+                </div>
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Productos utilizados</h3>
+
+                @if (tratamientoSeleccionado.productosUtilizados?.trim()) {
+                    <p class="detalle-texto">
+                        {{ tratamientoSeleccionado.productosUtilizados }}
+                    </p>
+                } @else {
+                    <p class="texto-secundario">
+                        No se registraron productos utilizados.
+                    </p>
+                }
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Observaciones del profesional</h3>
+
+                @if (tratamientoSeleccionado.observacion?.trim()) {
+                    <p class="detalle-texto observacion-texto">
+                        {{ tratamientoSeleccionado.observacion }}
+                    </p>
+                } @else {
+                    <p class="texto-secundario">
+                        No hay observaciones registradas.
+                    </p>
+                }
+            </section>
+
+            <section class="detalle-seccion">
+                <h3>Duración real</h3>
+
+                @if (tratamientoSeleccionado.duracionReal != null) {
+                    <p class="detalle-dato">
+                        {{ tratamientoSeleccionado.duracionReal }} minutos
+                    </p>
+                } @else {
+                    <p class="texto-secundario">
+                        Sin duración registrada.
+                    </p>
+                }
+            </section>
+
+        </div>
+
+        <footer class="panel-footer">
+            <button
+                type="button"
+                class="btn-filtrar"
+                (click)="cerrarDetalle()"
+            >
+                Cerrar detalles
+            </button>
+        </footer>
+
+    </aside>
+}

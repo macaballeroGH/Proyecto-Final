@@ -33,14 +33,14 @@ public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
     //=======================
     @Override
     @Transactional
-    public ObtenerHorarioEmpleadoDTO crearHorario(CrearHorarioEmpleadoDTO crearHorario){
+    public ObtenerHorarioEmpleadoDTO crearHorario(Long idEmpleado, CrearHorarioEmpleadoDTO crearHorario){
 
         validarHorario(crearHorario.getDiaSemana(), crearHorario.getHoraInicio(), crearHorario.getHoraFin());
 
-        EmpleadoEntity empleado = empleadoRepository.findById(crearHorario.getIdEmpleado())
+        EmpleadoEntity empleado = empleadoRepository.findById(idEmpleado)
             .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
 
-        boolean existeSuperposicion = horarioEmpleadoRepository.existsByEmpleadoIdAndDiaSemanaAndHoraInicioLessThanAndHoraFinGreaterThan(crearHorario.getIdEmpleado(), crearHorario.getDiaSemana(), crearHorario.getHoraFin(), crearHorario.getHoraInicio());
+        boolean existeSuperposicion = horarioEmpleadoRepository.existsByEmpleadoIdAndDiaSemanaAndHoraInicioLessThanAndHoraFinGreaterThan(idEmpleado, crearHorario.getDiaSemana(), crearHorario.getHoraFin(), crearHorario.getHoraInicio());
 
         if(existeSuperposicion){
             throw new BusinessException("El empleado ya tiene un horario superpuesto ese dia");

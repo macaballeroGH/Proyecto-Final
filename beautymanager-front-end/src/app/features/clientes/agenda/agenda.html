@@ -1,1 +1,279 @@
-<p>agenda works!</p>
+<div class="agenda-container">
+
+    <header class="agenda-header">
+
+        <div class="header-titulo">
+
+            <h1>Agenda</h1>
+
+            <span class="subtitulo-agenda">
+                Seleccioná un horario disponible
+            </span>
+
+        </div>
+
+        <div class="header-controles">
+
+            <button class="btn-icon" type="button" (click)="semanaAnterior()">
+                <mat-icon>
+                    chevron_left
+                </mat-icon>
+            </button>
+
+            <button class="btn-mes" type="button" (click)="abrirSelectorFecha()">
+
+                <span>
+                    {{ obtenerMesActual() }}
+                </span>
+
+                <mat-icon>expand_more</mat-icon>
+            </button>
+
+            <button class="btn-icon" type="button" (click)="semanaSiguiente()">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+
+            <button class="btn-hoy" type="button" (click)="irAHoy()">
+
+                <mat-icon>today</mat-icon>
+
+                Hoy
+            </button>
+        </div>
+    </header>
+
+    <main class="agenda-content">
+
+        <section class="agenda-calendar">
+
+            <div class="calendar-header">
+
+                <div class="calendar-title">
+                    Calendario semanal
+                </div>
+
+                <div class="calendar-range">
+                    {{ obtenerRangoSemana() }}
+                </div>
+
+            </div>
+
+            <div class="calendar-grid">
+
+                <div class="calendar-time-column">
+
+                    <div class="calendar-corner"></div>
+
+                    @for (hora of horas; track hora) {
+
+                        <div class="calendar-time">
+                            {{ hora }}
+                        </div>
+                    }
+                </div>
+
+                @for (dia of diasSemana; track dia.getTime()) {
+
+                    <div class="calendar-day" [class.dia-hoy]="esHoy(dia)">
+
+                        <div class="calendar-day-header">
+
+                            <span class="dia-nombre">
+                                {{ dia | date:'EEEE':'':'es-AR' }}
+                            </span>
+
+                            <span class="dia-numero">
+                                {{ dia | date:'d' }}
+                            </span>
+                        </div>
+
+                        <div class="calendar-day-slot">
+
+                            @for (hora of horas; track hora) {
+
+                                @if (estaDisponible(dia, hora)) {
+
+                                    <button type="button" class="calendar-slot slot-disponible" (click)="seleccionarHorario(dia, hora)" [attr.title]="'Disponible: ' + hora" (click)="seleccionarHorario(dia, hora)">
+                                    </button>
+
+                                } @else {
+
+                                    <div class="calendar-slot slot-no-disponible" [attr.title]="'No disponible: ' + hora"></div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    </main>
+
+    @if (mostrarSelectorFecha) {
+
+        <div class="selector-overlay" (click)="mostrarSelectorFecha = false">
+
+            <div class="selector-fecha" (click)="$event.stopPropagation()">
+
+                <div class="selector-header">
+
+                    <button type="button" class="btn-selector-titulo" (click)="cambiarVistaSelector()">
+
+                        @if (tipoSelector === 'dia') {
+
+                            {{ mesSelector | date:'MMMM yyyy':'':'es-AR' }}
+                        }
+
+                        @else if (tipoSelector === 'meses') {
+
+                            {{ anioSelector }}
+                        }
+
+                        @else {
+
+                            Seleccionar año
+                        }
+
+                        <mat-icon>expand_more</mat-icon>
+                    </button>
+
+                    <button type="button" class="btn-cerrar-selector" (click)="mostrarSelectorFecha = false">
+
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                @if (tipoSelector === 'dia') {
+
+                    <div class="selector-dias">
+
+                        <div class="dias-semana-selector">
+
+                            <span>L</span>
+                            <span>M</span>
+                            <span>M</span>
+                            <span>J</span>
+                            <span>V</span>
+                            <span>S</span>
+                            <span>D</span>
+
+                        </div>
+
+                        <div class="dias-grid">
+
+                            @for (
+                                dia of diasMes;
+                                track dia.getTime()
+                            ) {
+
+                                <button
+                                    type="button"
+                                    class="dia-selector"
+                                    [class.otro-mes]="
+                                        dia.getMonth()
+                                        !== mesSelector.getMonth()
+                                    "
+                                    [class.dia-hoy-selector]="
+                                        esHoy(dia)
+                                    "
+                                    [class.dia-seleccionado]="
+                                        esFechaSeleccionada(dia)
+                                    "
+                                    [class.dia-pasado]="
+                                        esFechaPasada(dia)
+                                    "
+                                    [disabled]="
+                                        esFechaPasada(dia)
+                                    "
+                                    (click)="seleccionarDia(dia)"
+                                >
+
+                                    {{ dia | date:'d' }}
+
+                                </button>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                }
+
+
+                <!-- ================================= -->
+                <!-- VISTA MESES -->
+                <!-- ================================= -->
+
+                @else if (
+                    tipoSelector === 'meses'
+                ) {
+
+                    <div class="meses-grid">
+
+                        @for (
+                            mes of meses;
+                            let i = $index;
+                            track mes
+                        ) {
+
+                            <button
+                                type="button"
+                                class="mes-selector"
+                                [class.mes-seleccionado]="
+                                    i === mesSelector.getMonth()
+                                    &&
+                                    anioSelector ===
+                                    mesSelector.getFullYear()
+                                "
+                                (click)="seleccionarMes(i)"
+                            >
+
+                                {{ mes }}
+
+                            </button>
+
+                        }
+
+                    </div>
+
+                }
+
+
+                <!-- ================================= -->
+                <!-- VISTA AÑOS -->
+                <!-- ================================= -->
+
+                @else {
+
+                    <div class="anios-grid">
+
+                        @for (
+                            anio of aniosDisponibles;
+                            track anio
+                        ) {
+
+                            <button
+                                type="button"
+                                class="anio-selector"
+                                [class.anio-seleccionado]="
+                                    anio === anioSelector
+                                "
+                                (click)="seleccionarAnio(anio)"
+                            >
+
+                                {{ anio }}
+
+                            </button>
+
+                        }
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    }
+</div>

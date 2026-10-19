@@ -551,14 +551,37 @@ export class Empleados implements OnInit {
 
     if(this.formularioNuevoEmpleado.invalid){
 
-      this.formularioNuevoEmpleado.markAllAsTouched();
+        this.formularioNuevoEmpleado.markAllAsTouched();
 
-      this.confirmacionActiva = null;
+        this.confirmacionActiva = null;
 
-      return;
+        return;
     }
 
-    const empleado: CrearEmpleado = this.formularioNuevoEmpleado.getRawValue();
+    const horarios: CrearHorarioEmpleado[] = [];
+
+    Object.entries(this.horariosFormulario).forEach(([dia, horarioFormulario]) => {
+
+        if(!horarioFormulario.seleccionado){
+            return;
+        }
+
+        horarioFormulario.bloques.forEach(bloque => {
+
+            horarios.push({
+                diaSemana: Number(dia),
+                horaInicio: bloque.horaInicio,
+                horaFin: bloque.horaFin
+            });
+        });
+    });
+
+    const empleado: CrearEmpleado = {
+        ...this.formularioNuevoEmpleado.getRawValue(),
+        horarios: horarios
+    };
+
+    console.log('EMPLEADO QUE SE ENVIA:', empleado);
 
     this.procesandoOperacion = true;
 
@@ -566,31 +589,31 @@ export class Empleados implements OnInit {
 
     this.empleadoService.crearEmpleado(empleado).subscribe({
 
-      next: () => {
+        next: () => {
 
-        this.procesandoOperacion = false;
+            this.procesandoOperacion = false;
 
-        this.mostrarMensajeExito('El empleado fue dado de alta correctamente.');
+            this.mostrarMensajeExito('El empleado fue dado de alta correctamente.');
 
-        this.confirmacionActiva = null;
+            this.confirmacionActiva = null;
 
-        this.modalActivo = null;
+            this.modalActivo = null;
 
-        this.formularioNuevoEmpleado.reset();
+            this.formularioNuevoEmpleado.reset();
 
-        this.cargarEmpleados();
-      },
+            this.cargarEmpleados();
+        },
 
-      error: (error) => {
+        error: (error) => {
 
-        console.error('Error al dar de alta:', error);
+            console.error('Error al dar de alta:', error);
 
-        this.procesandoOperacion = false;
+            this.procesandoOperacion = false;
 
-        this.error = 'No se pudo dar de alta al empleado.';
+            this.error = 'No se pudo dar de alta al empleado.';
 
-        this.confirmacionActiva = null;
-      }
+            this.confirmacionActiva = null;
+        }
     });
   }
 

@@ -1,4 +1,5 @@
 import { EspecialidadEmpleado } from "../enums/especialidadEmpleado";
+import { CrearHorarioEmpleado } from "./crear-horario-empleado";
 
 export interface CrearEmpleado {
     nombre: string;
@@ -7,4 +8,5 @@ export interface CrearEmpleado {
     password: string;
     telefono: string;
     especialidad: EspecialidadEmpleado;
+    horarios: CrearHorarioEmpleado[];
 }

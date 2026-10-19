@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarEmpleadoDTO;
 import com.example.beautymanager.Modelo.DTO.CrearEmpleadoDTO;
+import com.example.beautymanager.Modelo.DTO.CrearHorarioEmpleadoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerEmpleadoDTO;
 import com.example.beautymanager.Modelo.Entidad.EmpleadoEntity;
 import com.example.beautymanager.Modelo.Entidad.RolEntity;
@@ -21,7 +22,10 @@ import com.example.beautymanager.Repositorio.EmpleadoRepository;
 import com.example.beautymanager.Repositorio.RolRepository;
 import com.example.beautymanager.Repositorio.UsuarioRepository;
 import com.example.beautymanager.Servicio.EmpleadoService;
+import com.example.beautymanager.Servicio.HorarioEmpleadoService;
 import com.example.beautymanager.exception.BusinessException;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -38,12 +42,18 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private HorarioEmpleadoService horarioEmpleadoService;
+
     //======================
     //Crear empleado
     //======================
     @Override
-    public ObtenerEmpleadoDTO crearEmpleado (CrearEmpleadoDTO crearEmpleado) {
-        
+    @Transactional
+    public ObtenerEmpleadoDTO crearEmpleado(CrearEmpleadoDTO crearEmpleado) {
+
+        System.err.println("############# ENTRE A CREAR EMPLEADO #############");
+
         if(crearEmpleado == null){
             throw new BusinessException("El empleado no puede ser nulo");
         }
@@ -81,8 +91,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         RolEntity rol = rolRepository.findByNombre(RolesEnums.EMPLEADO)
                 .orElseThrow(() -> new BusinessException("Rol EMPLEADO no encontrado"));
 
-       
-
         UsuarioEntity usuario = new UsuarioEntity();
 
         usuario.setNombre(crearEmpleado.getNombre().trim());
@@ -102,7 +110,19 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleado.setEstadoEmpleado(EstadoEmpleadoEnums.ACTIVO);
         empleado.setFechaAlta(LocalDateTime.now());
 
-        return toMap(empleadoRepository.save(empleado));
+        empleado = empleadoRepository.save(empleado);
+
+        if(crearEmpleado.getHorarios() != null){
+
+            for(CrearHorarioEmpleadoDTO horario : crearEmpleado.getHorarios()){
+
+                horarioEmpleadoService.crearHorario(empleado.getId(), horario);
+            }
+        }
+
+        System.err.println("########## TERMINO CREAR EMPLEADO");
+
+        return toMap(empleado);
     }
 
     //=======================
@@ -321,6 +341,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         obtenerEmpleadoDTO.setFechaAlta(empleado.getFechaAlta());
         obtenerEmpleadoDTO.setFechaBaja(empleado.getFechaBaja());
         obtenerEmpleadoDTO.setEstadoEmpleado(empleado.getEstadoEmpleado());
+
+        if(empleado.getHorarios() != null){
+
+            List<CrearHorarioEmpleadoDTO> horarios = empleado.getHorarios().stream().map(horario -> {
+
+                CrearHorarioEmpleadoDTO horarioDTO = new CrearHorarioEmpleadoDTO();
+
+                horarioDTO.setDiaSemana(horario.getDiaSemana());
+                horarioDTO.setHoraInicio(horario.getHoraInicio());
+                horarioDTO.setHoraFin(horario.getHoraFin());
+
+                return horarioDTO;
+            }).toList();
+
+            obtenerEmpleadoDTO.setHorarios(horarios);
+        }
 
         return obtenerEmpleadoDTO;
     }

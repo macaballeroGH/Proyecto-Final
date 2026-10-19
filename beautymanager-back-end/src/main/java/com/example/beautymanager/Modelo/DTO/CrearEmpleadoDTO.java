@@ -1,5 +1,7 @@
 package com.example.beautymanager.Modelo.DTO;
 
+import java.util.List;
+
 import com.example.beautymanager.Modelo.Enums.EspecialidadEmpleadoEnums;
 
 import lombok.Data;
@@ -16,4 +18,5 @@ public class CrearEmpleadoDTO {
 
     //Datos del empleado
     private EspecialidadEmpleadoEnums especialidad;
+    private List<CrearHorarioEmpleadoDTO> horarios;
 }

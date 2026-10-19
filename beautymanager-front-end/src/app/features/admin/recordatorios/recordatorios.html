@@ -1,1 +1,240 @@
-<h2>Recordatorios</h2>
+
+<div class="recordatorios-container">
+
+    <!-- Encabezado -->
+    <header class="recordatorios-header">
+        <div class="recordatorios-titulo">
+            <h1>Configuración de recordatorios</h1>
+        </div>
+    </header>
+
+    <!-- Cargando configuración -->
+    @if (cargando) {
+        <div class="estado-carga">
+            <p>Cargando configuración de recordatorios...</p>
+        </div>
+    }
+
+    @else {
+
+        <!-- Mensajes generales -->
+        @if (mensajeExito) {
+            <div class="mensaje mensaje-exito" role="status">
+                {{ mensajeExito }}
+            </div>
+        }
+
+        @if (mensajeError) {
+            <div class="mensaje mensaje-error" role="alert">
+                {{ mensajeError }}
+            </div>
+        }
+
+        <!-- Correo electrónico -->
+        <section class="tarjeta-recordatorio tarjeta-correo">
+
+            <div class="tarjeta-encabezado">
+                <div class="canal-informacion">
+                    <div class="canal-icono icono-correo">
+                        <mat-icon>mail</mat-icon>
+                    </div>
+
+                    <div class="canal-texto">
+                        <h2>Correo electrónico</h2>
+                        <p>
+                            Enviá recordatorios a los clientes por correo
+                            electrónico.
+                        </p>
+                    </div>
+                </div>
+
+                <label class="interruptor" for="correoActivo">
+                    <input
+                        id="correoActivo"
+                        type="checkbox"
+                        [ngModel]="correoActivo"
+                        (ngModelChange)="correoActivo = $event"
+                        [disabled]="cargando || guardando"
+                        aria-label="Activar o desactivar correo electrónico"
+                    >
+                    <span class="interruptor-deslizante"></span>
+                </label>
+            </div>
+
+            <div class="tarjeta-contenido">
+                <div class="horarios-encabezado">
+                    <h3>Horarios de envío</h3>
+                    <p>
+                        Definí con cuántas horas de anticipación se
+                        enviarán los recordatorios.
+                    </p>
+                </div>
+
+                <div class="horarios-grid">
+
+                    <div class="campo-horario">
+                        <label for="primerRecordatorio">
+                            Primer recordatorio
+                        </label>
+
+                        <div class="campo-numero">
+                            <input
+                                id="primerRecordatorio"
+                                type="number"
+                                min="1"
+                                step="1"
+                                [(ngModel)]="primerRecordatorioHoras"
+                                [disabled]="cargando || guardando"
+                                placeholder="Ej. 24"
+                            >
+                            <span>horas antes</span>
+                        </div>
+                    </div>
+
+                    <div class="campo-horario">
+                        <label for="segundoRecordatorio">
+                            Segundo recordatorio
+                        </label>
+
+                        <div class="campo-numero">
+                            <input
+                                id="segundoRecordatorio"
+                                type="number"
+                                min="1"
+                                step="1"
+                                [(ngModel)]="segundoRecordatorioHoras"
+                                [disabled]="cargando || guardando"
+                                placeholder="Ej. 2"
+                            >
+                            <span>horas antes</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="correo-prueba">
+                    <div class="correo-prueba-texto">
+                        <h3>Prueba de correo</h3>
+                        <p>
+                            Comprobá el funcionamiento del envío de correos.
+                        </p>
+                    </div>
+
+                    <button type="button" class="boton-prueba-correo" disabled title="La función se habilitará cuando se implemente el endpoint del backend">
+                        <mat-icon>send</mat-icon>
+                        Probar envío
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="tarjeta-recordatorio tarjeta-notificacion">
+
+            <div class="tarjeta-encabezado">
+                <div class="canal-informacion">
+                    <div class="canal-icono icono-notificacion">
+                        <mat-icon>notifications</mat-icon>
+                    </div>
+
+                    <div class="canal-texto">
+                        <h2>Notificación interna</h2>
+                        <p>
+                            Mostrá avisos de recordatorios dentro de
+                            BeautyManager.
+                        </p>
+                    </div>
+                </div>
+
+                <label class="interruptor" for="notificacionInternaActiva">
+
+                    <input id="notificacionInternaActiva" type="checkbox" [ngModel]="notificacionInternaActiva" (ngModelChange)="notificacionInternaActiva = $event" [disabled]="cargando || guardando" aria-label="Activar o desactivar notificaciones internas">
+
+                    <span class="interruptor-deslizante"></span>
+                </label>
+            </div>
+
+            <div class="tarjeta-contenido">
+
+                <p class="descripcion-canal">
+                    Las notificaciones se generarán dentro del sistema
+                    según los horarios configurados y se mostrarán al
+                    usuario correspondiente.
+                </p>
+            </div>
+        </section>
+
+        <section class="tarjeta-recordatorio tarjeta-whatsapp">
+
+            <div class="tarjeta-encabezado">
+
+                <div class="canal-informacion">
+
+                    <div class="canal-icono icono-whatsapp">
+
+                        <mat-icon>chat</mat-icon>
+                    </div>
+
+                    <div class="canal-texto">
+
+                        <h2>WhatsApp</h2>
+
+                        <p>
+                            Canal de comunicación previsto para una
+                            futura versión.
+                        </p>
+                    </div>
+                </div>
+
+                <label class="interruptor" for="whatsappActivo">
+
+                    <input id="whatsappActivo" type="checkbox" [ngModel]="whatsappActivo" (ngModelChange)="cambiarEstadoWhatsapp($event)" [disabled]="cargando || guardando" aria-label="Activar demostración de WhatsApp">
+
+                    <span class="interruptor-deslizante"></span>
+                </label>
+            </div>
+
+            @if (whatsappActivo) {
+
+                <div class="aviso-whatsapp" role="status">
+
+                    <mat-icon>info</mat-icon>
+
+                    <div>
+                        <h3>Integración próximamente</h3>
+
+                        <p>{{ mensajeWhatsapp }}</p>
+                    </div>
+                </div>
+            }
+
+            @else {
+                <div class="tarjeta-contenido">
+
+                    <p class="descripcion-canal">
+
+                        Esta integración todavía no está disponible.
+                        Podrás conocer su funcionamiento en una próxima
+                        versión de BeautyManager.
+                    </p>
+                </div>
+            }
+        </section>
+
+        <footer class="recordatorios-acciones">
+
+            <button type="button" class="boton-guardar" (click)="guardarConfiguracion()" [disabled]="cargando || guardando">
+                @if (guardando) {
+
+                    Guardando...
+                }
+                @else {
+
+                    <mat-icon>save</mat-icon>
+
+                    Guardar configuración
+                }
+            </button>
+        </footer>
+    }
+</div>

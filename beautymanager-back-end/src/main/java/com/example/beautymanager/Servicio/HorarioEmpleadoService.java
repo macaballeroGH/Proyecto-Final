@@ -11,7 +11,7 @@ public interface HorarioEmpleadoService {
 
     ObtenerHorarioEmpleadoDTO toMap(HorarioEmpleadoEntity horario);
 
-    ObtenerHorarioEmpleadoDTO crearHorario(CrearHorarioEmpleadoDTO crearHorario);
+    ObtenerHorarioEmpleadoDTO crearHorario(Long idEmpleado, CrearHorarioEmpleadoDTO crearHorario);
 
     ObtenerHorarioEmpleadoDTO actualizarHorario(Long idHorario, ActualizarHorarioEmpleadoDTO actualizarHorario);
 

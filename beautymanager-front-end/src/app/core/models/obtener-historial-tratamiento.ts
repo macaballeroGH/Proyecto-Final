@@ -19,4 +19,5 @@ export interface ObtenerHistorialTratamiento {
     apellidoEmpleado: string;
     especialidadEmpleado: EspecialidadEmpleado;
     servicios: string[];
+    categorias: string[];
 }

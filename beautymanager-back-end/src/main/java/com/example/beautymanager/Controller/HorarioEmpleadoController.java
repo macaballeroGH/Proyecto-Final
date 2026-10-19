@@ -30,11 +30,11 @@ public class HorarioEmpleadoController {
     //=======================
     //Crear horario
     //=======================
-    @PostMapping("/crear")
+    @PostMapping("/crear/{idEmpleado}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ObtenerHorarioEmpleadoDTO> crearHorario(@RequestBody CrearHorarioEmpleadoDTO crearHorario){
+    public ResponseEntity<ObtenerHorarioEmpleadoDTO> crearHorario(@PathVariable Long idEmpleado, @RequestBody CrearHorarioEmpleadoDTO crearHorario){
 
-        ObtenerHorarioEmpleadoDTO response = horarioEmpleadoService.crearHorario(crearHorario);
+        ObtenerHorarioEmpleadoDTO response = horarioEmpleadoService.crearHorario(idEmpleado, crearHorario);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
