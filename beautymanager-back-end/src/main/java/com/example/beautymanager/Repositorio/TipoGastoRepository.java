@@ -6,15 +6,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.beautymanager.Modelo.Entidad.TipoGastoEntity;
+import com.example.beautymanager.Modelo.Enums.TipoGastoEnums;
 
 public interface TipoGastoRepository extends JpaRepository<TipoGastoEntity, Long> {
-    Optional<TipoGastoEntity> findByNombreGasto(String nombreGasto);
+    Optional<TipoGastoEntity> findByNombreGasto(TipoGastoEnums nombreGasto);
 
-    boolean existsByNombreGasto(String nombreGasto);
-
-    boolean existsByNombreGastoIgnoreCase(String nombreGasto);
-
-    List<TipoGastoEntity> findByNombreGastoContainingIgnoreCase(String nombreGasto);
+    boolean existsByNombreGasto(TipoGastoEnums nombreGasto);
 
     List<TipoGastoEntity> findByDescripcionContainingIgnoreCase(String descripcion);
 

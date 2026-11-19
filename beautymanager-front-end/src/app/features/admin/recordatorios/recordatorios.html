@@ -1,4 +1,3 @@
-
 <div class="recordatorios-container">
 
     <!-- Encabezado -->
@@ -49,14 +48,7 @@
                 </div>
 
                 <label class="interruptor" for="correoActivo">
-                    <input
-                        id="correoActivo"
-                        type="checkbox"
-                        [ngModel]="correoActivo"
-                        (ngModelChange)="correoActivo = $event"
-                        [disabled]="cargando || guardando"
-                        aria-label="Activar o desactivar correo electrónico"
-                    >
+                    <input id="correoActivo" type="checkbox" [ngModel]="correoActivo" (ngModelChange)="correoActivo = $event" [disabled]="cargando || guardando" aria-label="Activar o desactivar correo electrónico">
                     <span class="interruptor-deslizante"></span>
                 </label>
             </div>
@@ -78,15 +70,7 @@
                         </label>
 
                         <div class="campo-numero">
-                            <input
-                                id="primerRecordatorio"
-                                type="number"
-                                min="1"
-                                step="1"
-                                [(ngModel)]="primerRecordatorioHoras"
-                                [disabled]="cargando || guardando"
-                                placeholder="Ej. 24"
-                            >
+                            <input id="primerRecordatorio" type="number" min="1" step="1" [(ngModel)]="primerRecordatorioHoras" [disabled]="cargando || guardando" placeholder="Ej. 24">
                             <span>horas antes</span>
                         </div>
                     </div>
@@ -97,15 +81,7 @@
                         </label>
 
                         <div class="campo-numero">
-                            <input
-                                id="segundoRecordatorio"
-                                type="number"
-                                min="1"
-                                step="1"
-                                [(ngModel)]="segundoRecordatorioHoras"
-                                [disabled]="cargando || guardando"
-                                placeholder="Ej. 2"
-                            >
+                            <input id="segundoRecordatorio" type="number" min="1" step="1" [(ngModel)]="segundoRecordatorioHoras" [disabled]="cargando || guardando" placeholder="Ej. 2">
                             <span>horas antes</span>
                         </div>
                     </div>
@@ -115,16 +91,30 @@
                 <div class="correo-prueba">
                     <div class="correo-prueba-texto">
                         <h3>Prueba de correo</h3>
-                        <p>
-                            Comprobá el funcionamiento del envío de correos.
-                        </p>
+                        <p>Ingresá una dirección para comprobar el envío de correos.</p>
                     </div>
 
-                    <button type="button" class="boton-prueba-correo" disabled title="La función se habilitará cuando se implemente el endpoint del backend">
-                        <mat-icon>send</mat-icon>
-                        Probar envío
-                    </button>
+                    <div class="correo-prueba-formulario">
+                        <label for="emailPrueba">Correo de destino</label>
+
+                        <input id="emailPrueba" type="email" [(ngModel)]="emailPrueba" [disabled]="probandoEmail || guardando" placeholder="ejemplo@correo.com" autocomplete="email">
+
+                        <button type="button" class="boton-prueba-correo" (click)="probarEnvioEmail()" [disabled]="probandoEmail || guardando || cargando">
+
+                            <mat-icon>send</mat-icon>
+                            {{ probandoEmail ? 'Enviando...' : 'Probar envío' }}
+                        </button>
+                    </div>
                 </div>
+
+                @if (mensajePruebaEmail) {
+                    <p class="mensaje mensaje-exito" role="status">{{ mensajePruebaEmail }}</p>
+                }
+
+                @if (errorPruebaEmail) {
+                    <p class="mensaje mensaje-error" role="alert">{{ errorPruebaEmail }}</p>
+                }
+
             </div>
 
         </section>

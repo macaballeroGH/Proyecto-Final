@@ -10,15 +10,22 @@ import com.example.beautymanager.Modelo.Enums.EstadoMovimientoEnums;
 import com.example.beautymanager.Modelo.Enums.TipoMovimientoEnums;
 
 public interface MovimientoFinanzasRepository extends JpaRepository<MovimientoFinanzasEntity, Long> {
-    List<MovimientoFinanzasEntity> findByFecha(LocalDateTime fecha);
 
-    List<MovimientoFinanzasEntity> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<MovimientoFinanzasEntity> findByFechaGasto(LocalDateTime fechaGasto);
+
+    List<MovimientoFinanzasEntity> findByFechaGastoBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    List<MovimientoFinanzasEntity> findByFechaRegistroBetween(LocalDateTime inicio, LocalDateTime fin);
 
     List<MovimientoFinanzasEntity> findByTipoMovimiento(TipoMovimientoEnums tipoMovimiento);
 
     List<MovimientoFinanzasEntity> findByUsuarioId(Long idUsuario);
 
+    List<MovimientoFinanzasEntity> findByUsuarioIdAndFechaGastoBetween(Long idUsuario, LocalDateTime inicio, LocalDateTime fin);
+
     List<MovimientoFinanzasEntity> findByTipoGastoId(Long idTipoGasto);
+
+    List<MovimientoFinanzasEntity> findByTipoGastoIdAndFechaGastoBetween(Long idTipoGasto, LocalDateTime inicio, LocalDateTime fin);
 
     List<MovimientoFinanzasEntity> findByCompraId(Long idCompra);
 
@@ -26,11 +33,11 @@ public interface MovimientoFinanzasRepository extends JpaRepository<MovimientoFi
 
     List<MovimientoFinanzasEntity> findByDescripcionContainingIgnoreCase(String descripcion);
 
-    List<MovimientoFinanzasEntity> findByTipoMovimientoAndFechaBetween(TipoMovimientoEnums tipoMovimiento, LocalDateTime inicio, LocalDateTime fin);
+    List<MovimientoFinanzasEntity> findByTipoMovimientoAndFechaGastoBetween(TipoMovimientoEnums tipoMovimiento, LocalDateTime inicio, LocalDateTime fin);
 
-    List<MovimientoFinanzasEntity> findByTipoMovimientoAndEstadoAndFechaBetween(TipoMovimientoEnums tipoMovimiento, EstadoMovimientoEnums estado, LocalDateTime inicio, LocalDateTime fin);
+    List<MovimientoFinanzasEntity> findByTipoMovimientoAndEstadoAndFechaGastoBetween(TipoMovimientoEnums tipoMovimiento, EstadoMovimientoEnums estado, LocalDateTime inicio, LocalDateTime fin);
 
-    List<MovimientoFinanzasEntity> findByUsuarioIdAndFechaBetween(Long idUsuario, LocalDateTime inicio, LocalDateTime fin);
+    List<MovimientoFinanzasEntity> findByTipoMovimientoAndFechaGastoGreaterThanEqual(TipoMovimientoEnums tipoMovimiento, LocalDateTime fechaDesde);
 
-    List<MovimientoFinanzasEntity> findByTipoGastoIdAndFechaBetween(Long idTipoGasto, LocalDateTime inicio, LocalDateTime fin);
+    List<MovimientoFinanzasEntity> findByTipoMovimientoAndFechaGastoLessThanEqual(TipoMovimientoEnums tipoMovimiento, LocalDateTime fechaHasta);
 }

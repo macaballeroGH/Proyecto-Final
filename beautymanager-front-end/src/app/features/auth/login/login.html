@@ -1,30 +1,156 @@
-<mat-card>
-    <h2>Iniciar Sesión</h2>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" [(ngModel)]="email">
-    </mat-form-field>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" [(ngModel)]="password">
-    </mat-form-field>
+<section class="login-page">
 
-    <button mat-raised-button (click)="iniciarSesion()">
-        Iniciar Sesión
-    </button>
+    <mat-card class="login-card">
 
-    <p>
-        <a routerLink="/forgot-password">
-            ¿Olvidaste tu contraseña?
-        </a>
-    </p>
+        <!-- ENCABEZADO -->
 
-    <p>
-        ¿No tienes una cuenta?
-        <a routerLink="/registro">
-            Registrate
-        </a>
-    </p>
-</mat-card>
+        <div class="login-encabezado">
+
+            <span class="login-etiqueta">
+                BEAUTYMANAGER
+            </span>
+
+            <h1>Iniciar sesión</h1>
+
+            <p>
+                Ingresá tus datos para acceder
+                a tu cuenta de BeautyManager.
+            </p>
+
+        </div>
+
+        <!-- FORMULARIO -->
+
+        <form
+            #formLogin="ngForm"
+            (ngSubmit)="iniciarSesion(formLogin)"
+            novalidate>
+
+            <div class="login-campos">
+
+                <!-- CORREO ELECTRÓNICO -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="login-campo">
+
+                    <mat-label>Correo electrónico</mat-label>
+
+                    <input
+                        matInput
+                        type="email"
+                        name="email"
+                        [(ngModel)]="email"
+                        #emailControl="ngModel"
+                        autocomplete="email"
+                        email
+                        required>
+
+                    @if (emailControl.hasError('required')) {
+
+                        <mat-error>
+                            El correo electrónico es obligatorio.
+                        </mat-error>
+
+                    } @else if (emailControl.hasError('email')) {
+
+                        <mat-error>
+                            Ingresá un correo electrónico válido.
+                        </mat-error>
+
+                    }
+
+                </mat-form-field>
+
+                <!-- CONTRASEÑA -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="login-campo">
+
+                    <mat-label>Contraseña</mat-label>
+
+                    <input
+                        matInput
+                        type="password"
+                        name="password"
+                        [(ngModel)]="password"
+                        #passwordControl="ngModel"
+                        autocomplete="current-password"
+                        required>
+
+                    @if (passwordControl.hasError('required')) {
+
+                        <mat-error>
+                            La contraseña es obligatoria.
+                        </mat-error>
+
+                    }
+
+                </mat-form-field>
+
+            </div>
+
+            <!-- RECUPERACIÓN DE CONTRASEÑA -->
+
+            <div class="login-recuperacion">
+
+                <a routerLink="/forgot-password">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+            </div>
+
+            <!-- ERROR DEL SERVIDOR -->
+
+            @if (errorLogin) {
+
+                <div
+                    class="login-error-general"
+                    role="alert">
+
+                    {{ errorLogin }}
+
+                </div>
+
+            }
+
+            <!-- BOTÓN PRINCIPAL -->
+
+            <div class="login-acciones">
+
+                <button
+                    mat-raised-button
+                    class="login-boton"
+                    type="submit"
+                    [disabled]="iniciandoSesion">
+
+                    @if (iniciandoSesion) {
+                        Iniciando sesión...
+                    } @else {
+                        Iniciar sesión
+                    }
+
+                </button>
+
+            </div>
+
+            <!-- ENLACE A REGISTRO -->
+
+            <p class="login-registro">
+
+                ¿Todavía no tenés una cuenta?
+
+                <a routerLink="/registro">
+                    Registrate
+                </a>
+
+            </p>
+
+        </form>
+
+    </mat-card>
+
+</section>

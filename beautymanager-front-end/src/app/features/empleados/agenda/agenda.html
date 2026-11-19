@@ -1,1 +1,1246 @@
-<p>agenda works!</p>
+<div class="agenda-empleado-container">
+
+    <!-- ======================================== -->
+    <!-- ENCABEZADO                               -->
+    <!-- ======================================== -->
+
+    <header class="agenda-header">
+
+        <div class="header-titulo">
+
+            <h1>Mi agenda</h1>
+
+        </div>
+
+        <div class="header-acciones">
+
+            <button
+                type="button"
+                class="btn-hoy"
+                (click)="irAHoy()"
+            >
+                <mat-icon>today</mat-icon>
+                Hoy
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- RESUMEN DE LA AGENDA                     -->
+    <!-- ======================================== -->
+
+    <section class="agenda-resumen">
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono">
+                <mat-icon>event</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>
+                    Turnos del período
+                </span>
+
+                <strong>
+                    {{ obtenerCantidadTurnos() }}
+                </strong>
+
+            </div>
+
+        </article>
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono pendiente">
+                <mat-icon>pending_actions</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>
+                    Pendientes
+                </span>
+
+                <strong>
+                    {{ obtenerCantidadPendientes() }}
+                </strong>
+
+            </div>
+
+        </article>
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono horario">
+                <mat-icon>schedule</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>
+                    Jornadas configuradas
+                </span>
+
+                <strong>
+                    {{ horariosEmpleado.length }}
+                </strong>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- CONTROLES DEL CALENDARIO                 -->
+    <!-- ======================================== -->
+
+    <section class="agenda-controles">
+
+        <div class="controles-periodo">
+
+            <button
+                type="button"
+                class="btn-navegacion"
+                (click)="periodoAnterior()"
+                aria-label="Período anterior"
+            >
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div class="periodo-actual">
+
+                <mat-icon>calendar_month</mat-icon>
+
+                <span>
+                    {{ obtenerMesActual() }}
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn-navegacion"
+                (click)="periodoSiguiente()"
+                aria-label="Período siguiente"
+            >
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+
+            <input
+                type="date"
+                class="selector-fecha"
+                [(ngModel)]="fechaSeleccionadaTexto"
+                (change)="seleccionarFecha()"
+                aria-label="Seleccionar fecha"
+            >
+
+        </div>
+
+        <div class="controles-vista">
+
+            <button
+                type="button"
+                class="btn-vista"
+                [class.activo]="vista === 'dia'"
+                (click)="cambiarVista('dia')"
+            >
+                Día
+            </button>
+
+            <button
+                type="button"
+                class="btn-vista"
+                [class.activo]="vista === 'semana'"
+                (click)="cambiarVista('semana')"
+            >
+                Semana
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- BÚSQUEDA Y FILTROS                       -->
+    <!-- ======================================== -->
+
+    <section class="agenda-filtros">
+
+        <div class="agenda-busqueda">
+
+            <mat-icon>search</mat-icon>
+
+            <input
+                type="text"
+                placeholder="Buscar clienta o servicio..."
+                [(ngModel)]="textoBusqueda"
+                (input)="aplicarFiltros()"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-filtros"
+            [class.activo]="mostrarFiltros"
+            (click)="mostrarFiltros = !mostrarFiltros"
+        >
+            <mat-icon>filter_alt</mat-icon>
+            Filtros
+        </button>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- PANEL DE FILTROS                         -->
+    <!-- ======================================== -->
+
+    @if (mostrarFiltros) {
+
+        <section class="filtros-panel">
+
+            <div class="filtro-campo">
+
+                <label for="filtro-estado-empleado">
+                    Estado del turno
+                </label>
+
+                <select
+                    id="filtro-estado-empleado"
+                    [(ngModel)]="filtroEstado"
+                    (ngModelChange)="aplicarFiltros()"
+                >
+
+                    <option [ngValue]="null">
+                        Todos
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.PENDIENTE">
+                        Pendiente
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.CONFIRMADO">
+                        Confirmado
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.EN_CURSO">
+                        En curso
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.FINALIZADO">
+                        Finalizado
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.CANCELADO">
+                        Cancelado
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.AUSENTE">
+                        Ausente
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.RECHAZADO">
+                        Rechazado
+                    </option>
+
+                    <option [ngValue]="EstadoTurno.REPROGRAMADO">
+                        Reprogramado
+                    </option>
+
+                </select>
+
+            </div>
+
+            <label class="filtro-checkbox">
+
+                <input
+                    type="checkbox"
+                    [(ngModel)]="mostrarCanceladosYRechazados"
+                    (ngModelChange)="aplicarFiltros()"
+                >
+
+                Mostrar turnos cancelados y rechazados
+
+            </label>
+
+            <button
+                type="button"
+                class="btn-limpiar-filtros"
+                (click)="limpiarFiltros()"
+            >
+                <mat-icon>restart_alt</mat-icon>
+                Limpiar filtros
+            </button>
+
+        </section>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- MENSAJES DE CARGA                        -->
+    <!-- ======================================== -->
+
+    @if (cargandoAgenda) {
+
+        <div class="agenda-mensaje cargando" role="status">
+
+            <mat-icon>hourglass_empty</mat-icon>
+
+            <span>
+                Cargando agenda...
+            </span>
+
+        </div>
+
+    }
+
+    @if (errorCarga) {
+
+        <div class="agenda-mensaje error" role="alert">
+
+            <mat-icon>error_outline</mat-icon>
+
+            <span>
+                {{ errorCarga }}
+            </span>
+
+            <button
+                type="button"
+                (click)="cargarDatos()"
+            >
+                Reintentar
+            </button>
+
+        </div>
+
+    }
+
+
+@if (errorHorarios) {
+
+    <div class="agenda-mensaje error" role="alert">
+
+        <mat-icon>warning_amber</mat-icon>
+
+        <span>
+            {{ errorHorarios }}
+            Los turnos disponibles se mostrarán igualmente.
+        </span>
+
+    </div>
+
+}
+
+
+
+    <!-- ======================================== -->
+    <!-- CALENDARIO                               -->
+    <!-- ======================================== -->
+
+    @if (!errorCarga && !cargandoAgenda) {
+
+        <section class="agenda-calendar">
+
+            <div class="calendar-header">
+
+                <div class="calendar-titulo">
+
+                    <mat-icon>calendar_month</mat-icon>
+
+                    <h2>
+                        Calendario de turnos
+                    </h2>
+
+                </div>
+
+                <span class="calendar-subtitulo">
+
+                    {{
+                        vista === 'dia'
+                            ? 'Vista diaria'
+                            : 'Vista semanal'
+                    }}
+
+                </span>
+
+            </div>
+
+            @if (horas.length === 0) {
+
+                <div class="agenda-sin-horarios">
+
+                    <mat-icon>event_busy</mat-icon>
+
+                    <h3>
+                        Sin horarios para mostrar
+                    </h3>
+
+                    <p>
+                        No hay jornadas laborales ni turnos
+                        registrados en este período.
+                    </p>
+
+                </div>
+
+            } @else {
+
+                <div class="calendar-scroll">
+
+                    <div
+                        class="calendar-grid"
+                        [style.grid-template-columns]="
+                            '65px repeat(' +
+                            diasVisibles.length +
+                            ', minmax(145px, 1fr))'
+                        "
+                    >
+
+                        <!-- ================================= -->
+                        <!-- COLUMNA DE HORAS -->
+                        <!-- ================================= -->
+
+                        <div class="calendar-time-column">
+
+                            <div class="calendar-corner">
+
+                                <mat-icon>schedule</mat-icon>
+
+                            </div>
+
+                            @for (hora of horas; track hora) {
+
+                                <div class="calendar-time">
+
+                                    {{ hora }}
+
+                                </div>
+
+                            }
+
+                        </div>
+
+
+                        <!-- ================================= -->
+                        <!-- DÍAS DEL CALENDARIO -->
+                        <!-- ================================= -->
+
+                        @for (
+                            dia of diasVisibles;
+                            track dia.getTime()
+                        ) {
+
+                            <div
+                                class="calendar-day"
+                                [class.dia-hoy]="esHoy(dia)"
+                                [class.dia-no-laboral]="!esDiaLaboral(dia)"
+                            >
+
+                                <!-- Encabezado del día -->
+
+                                <div class="calendar-day-header">
+
+                                    <span class="dia-nombre">
+
+                                        {{ dia | date:'EEEE':'':'es-AR' }}
+
+                                    </span>
+
+                                    <strong class="dia-numero">
+
+                                        {{ dia | date:'d' }}
+
+                                    </strong>
+
+                                    <small class="dia-horario">
+
+                                        {{ obtenerTextoHorarioDia(dia) }}
+
+                                    </small>
+
+                                </div>
+
+
+                                <!-- Franjas horarias -->
+
+                                <div class="calendar-day-slots">
+
+                                    @for (
+                                        hora of horas;
+                                        track hora
+                                    ) {
+
+                                        <div
+                                            class="calendar-slot"
+                                            [class.slot-laboral]="esFranjaLaboral(dia, hora)"
+                                            [class.slot-fuera-horario]="!esFranjaLaboral(dia, hora)"
+                                            [style.height.px]="alturaFranja"
+                                        >
+
+                                            <!-- Turnos que empiezan aquí -->
+
+                                            @for (
+                                                turno of obtenerTurnos(dia, hora);
+                                                track turno.id
+                                            ) {
+
+                                                <button
+                                                    type="button"
+                                                    class="turno-card"
+                                                    [ngClass]="obtenerClaseEstado(turno)"
+                                                    [style.height.px]="obtenerAlturaTurno(turno)"
+                                                    [style.top.px]="obtenerDesfaseInicio(turno)"
+                                                    (click)="abrirDetalle(turno)"
+                                                    [attr.aria-label]="
+                                                        'Ver turno de ' +
+                                                        obtenerNombreCliente(turno)
+                                                    "
+                                                >
+
+                                                    <span class="turno-estado">
+
+                                                        <span class="estado-punto"></span>
+
+                                                        {{ obtenerEstado(turno) }}
+
+                                                    </span>
+
+                                                    <strong class="turno-cliente">
+
+                                                        {{ obtenerNombreCliente(turno) }}
+
+                                                    </strong>
+
+                                                    <span class="turno-horario">
+
+                                                        {{ obtenerHorario(turno) }}
+
+                                                    </span>
+
+                                                    <span class="turno-servicio">
+
+                                                        {{ obtenerServicioPrincipal(turno) }}
+
+                                                    </span>
+
+                                                </button>
+
+                                            }
+
+                                        </div>
+
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        }
+
+                    </div>
+
+                </div>
+
+            }
+
+        </section>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- LEYENDA DE ESTADOS                      -->
+    <!-- ======================================== -->
+
+    <section class="agenda-leyenda">
+
+        <h3>Estados de los turnos</h3>
+
+        <div class="leyenda-items">
+
+            <span class="leyenda-item">
+                <span class="leyenda-color pendiente"></span>
+                Pendiente
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color confirmado"></span>
+                Confirmado
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color en-curso"></span>
+                En curso
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color finalizado"></span>
+                Finalizado
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color cancelado"></span>
+                Cancelado
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color ausente"></span>
+                Ausente
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color rechazado"></span>
+                Rechazado
+            </span>
+
+            <span class="leyenda-item">
+                <span class="leyenda-color reprogramado"></span>
+                Reprogramado
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- DETALLE DEL TURNO                        -->
+    <!-- ======================================== -->
+
+    @if (turnoSeleccionado; as turno) {
+
+        <dialog #dialogDetalle class="detalle-overlay" (click)="cerrarDetalle()" (cancel)="manejarCancelacionDialogo($event)">
+
+            <div class="detalle-panel" [class.panel-tratamiento]="mostrarFormularioTratamiento" (click)="$event.stopPropagation()">
+
+                @if (mostrarFormularioTratamiento) {
+
+                    @if (errorServicios) {
+
+            <div
+                class="detalle-mensaje error"
+                role="alert"
+            >
+
+                <mat-icon>warning_amber</mat-icon>
+
+                <span>
+                    {{ errorServicios }}
+                    Los servicios originalmente reservados
+                    seguirán disponibles.
+                </span>
+
+            </div>
+
+        }
+
+        <!-- ==================================== -->
+        <!-- REGISTRO DEL TRATAMIENTO             -->
+        <!-- ==================================== -->
+
+        <app-formulario-tratamiento
+            [turno]="turno"
+            [serviciosDisponibles]="serviciosDisponibles"
+            [enviando]="enviandoTratamiento"
+            [errorServidor]="errorTratamiento"
+            (guardarTratamiento)="prepararTratamiento($event)"
+            (cancelar)="cerrarFormularioTratamiento()"
+        ></app-formulario-tratamiento>
+
+                } @else {
+
+
+                <!-- Cerrar detalle -->
+
+                <button
+                    type="button"
+                    class="btn-cerrar-detalle"
+                    (click)="cerrarDetalle()"
+                    [disabled]="ejecutandoAccion || enviandoReprogramacion"
+                    aria-label="Cerrar detalle"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+
+
+                <!-- ================================= -->
+                <!-- ENCABEZADO -->
+                <!-- ================================= -->
+
+                <div class="detalle-header">
+
+                    <span class="detalle-etiqueta">
+
+                        Detalle del turno
+
+                    </span>
+
+                    <h2>
+
+                        {{ obtenerNombreCliente(turno) }}
+
+                    </h2>
+
+                    <span
+                        class="detalle-estado"
+                        [ngClass]="obtenerClaseEstado(turno)"
+                    >
+
+                        <span class="estado-punto"></span>
+
+                        {{ obtenerEstado(turno) }}
+
+                    </span>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- INFORMACIÓN -->
+                <!-- ================================= -->
+
+                <div class="detalle-informacion">
+
+                    <div class="detalle-item">
+
+                        <mat-icon>event</mat-icon>
+
+                        <div>
+
+                            <span>Fecha</span>
+
+                            <strong>
+                                {{ obtenerFechaCompleta(turno) }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>schedule</mat-icon>
+
+                        <div>
+
+                            <span>Horario</span>
+
+                            <strong>
+                                {{ obtenerHorario(turno) }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>content_cut</mat-icon>
+
+                        <div>
+
+                            <span>Servicios</span>
+
+                            <strong>
+                                {{ obtenerServicios(turno) }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="detalle-item">
+
+                        <mat-icon>payments</mat-icon>
+
+                        <div>
+
+                            <span>Total</span>
+
+                            <strong>
+                                $ {{ turno.precioTotal | number:'1.2-2' }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- MENSAJES DE ACCIONES -->
+                <!-- ================================= -->
+
+                @if (mensajeAccion) {
+
+                    <div
+                        class="detalle-mensaje exito"
+                        role="status"
+                    >
+
+                        <mat-icon>check_circle</mat-icon>
+
+                        {{ mensajeAccion }}
+
+                    </div>
+
+                }
+
+                @if (errorAccion) {
+
+                    <div
+                        class="detalle-mensaje error"
+                        role="alert"
+                    >
+
+                        <mat-icon>error_outline</mat-icon>
+
+                        {{ errorAccion }}
+
+                    </div>
+
+                }
+
+                @if (historialPendiente) {
+
+                    <div class="detalle-mensaje informacion">
+
+                        <mat-icon>history_edu</mat-icon>
+
+                        Recordá registrar el tratamiento realizado
+                        en el historial de la clienta.
+
+                    </div>
+
+                }
+
+
+                <!-- ================================= -->
+                <!-- CONFIRMACIÓN DE ACCIÓN -->
+                <!-- ================================= -->
+
+                @if (accionPendiente; as accion) {
+
+                    <section class="confirmacion-accion">
+
+                        <div class="confirmacion-encabezado">
+
+                            <mat-icon>help_outline</mat-icon>
+
+                            <h3>
+                                Confirmar acción
+                            </h3>
+
+                        </div>
+
+                        <p>
+
+                            ¿Querés
+                            {{ obtenerTextoAccion(accion) }}
+                            este turno?
+
+                        </p>
+
+                        <div class="confirmacion-botones">
+
+                            <button
+                                type="button"
+                                class="btn-volver"
+                                (click)="cancelarAccion()"
+                                [disabled]="ejecutandoAccion"
+                            >
+                                Volver
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn-confirmar-accion"
+                                (click)="confirmarAccion()"
+                                [disabled]="ejecutandoAccion"
+                            >
+
+                                <mat-icon>
+                                    {{ ejecutandoAccion ? 'hourglass_top' : 'check' }}
+                                </mat-icon>
+
+                                {{
+                                    ejecutandoAccion
+                                        ? 'Procesando...'
+                                        : 'Confirmar'
+                                }}
+
+                            </button>
+
+                        </div>
+
+                    </section>
+
+                }
+
+
+                <!-- ================================= -->
+                <!-- ACCIONES DEL TURNO -->
+                <!-- ================================= -->
+
+                @if (
+                    !accionPendiente &&
+                    !mostrarFormularioReprogramacion
+                ) {
+
+                    <section class="detalle-acciones">
+
+                        <h3>
+                            Gestionar turno
+                        </h3>
+
+                        <div class="acciones-grid">
+
+                            @if (puedeAceptar(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion aceptar"
+                                    (click)="solicitarAccion('aceptar')"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>check_circle</mat-icon>
+
+                                    Confirmar turno
+
+                                </button>
+
+                            }
+
+                            @if (puedeRechazar(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion rechazar"
+                                    (click)="solicitarAccion('rechazar')"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>cancel</mat-icon>
+
+                                    Rechazar turno
+
+                                </button>
+
+                            }
+
+                            @if (puedeIniciar(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion iniciar"
+                                    (click)="solicitarAccion('iniciar')"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>play_circle</mat-icon>
+
+                                    Iniciar turno
+
+                                </button>
+
+                            }
+
+                            @if (puedeFinalizar(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion finalizar"
+                                    (click)="solicitarAccion('finalizar')"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>task_alt</mat-icon>
+
+                                    Finalizar turno
+
+                                </button>
+
+                            }
+
+                            @if (puedeMarcarAusente(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion ausente"
+                                    (click)="solicitarAccion('ausente')"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>person_off</mat-icon>
+
+                                    Marcar ausencia
+
+                                </button>
+
+                            }
+
+                            @if (puedeReprogramar(turno)) {
+
+                                <button
+                                    type="button"
+                                    class="btn-accion reprogramar"
+                                    (click)="abrirFormularioReprogramacion()"
+                                    [disabled]="ejecutandoAccion"
+                                >
+
+                                    <mat-icon>event_repeat</mat-icon>
+
+                                    Proponer reprogramación
+
+                                </button>
+
+                            }
+
+                        </div>
+
+                    </section>
+
+                }
+
+
+                <!-- ================================= -->
+                <!-- FORMULARIO DE REPROGRAMACIÓN -->
+                <!-- ================================= -->
+
+                @if (mostrarFormularioReprogramacion) {
+
+                    <section class="detalle-reprogramacion">
+
+                        <div class="reprogramacion-header">
+
+                            <div>
+
+                                <h3>
+                                    Proponer nuevo horario
+                                </h3>
+
+                                <p>
+                                    La clienta deberá aceptar el cambio.
+                                </p>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn-cerrar-reprogramacion"
+                                (click)="cerrarFormularioReprogramacion()"
+                                [disabled]="enviandoReprogramacion"
+                                aria-label="Cerrar formulario de reprogramación"
+                            >
+
+                                <mat-icon>close</mat-icon>
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- Horario actual -->
+
+                        <div class="reprogramacion-horario-actual">
+
+                            <mat-icon>schedule</mat-icon>
+
+                            <div>
+
+                                <span>Horario actual</span>
+
+                                <strong>
+
+                                    {{ turno.fechaHoraInicio | date:'dd/MM/yyyy' }}
+
+                                    ·
+
+                                    {{ obtenerHorario(turno) }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Formulario -->
+
+                        <form
+                            class="reprogramacion-formulario"
+                            (ngSubmit)="proponerReprogramacion()"
+                        >
+
+                            <div class="reprogramacion-campos">
+
+                                <div class="campo-formulario">
+
+                                    <label for="fecha-reprogramacion-empleado">
+                                        Nueva fecha
+                                    </label>
+
+                                    <input
+                                        id="fecha-reprogramacion-empleado"
+                                        name="fechaReprogramacion"
+                                        type="date"
+                                        [(ngModel)]="fechaReprogramacion"
+                                        [disabled]="enviandoReprogramacion"
+                                        required
+                                    >
+
+                                </div>
+
+                                <div class="campo-formulario">
+
+                                    <label for="hora-reprogramacion-empleado">
+                                        Nueva hora
+                                    </label>
+
+                                    <input
+                                        id="hora-reprogramacion-empleado"
+                                        name="horaReprogramacion"
+                                        type="time"
+                                        step="900"
+                                        [(ngModel)]="horaReprogramacion"
+                                        [disabled]="enviandoReprogramacion"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="campo-formulario">
+
+                                <label for="motivo-reprogramacion-empleado">
+                                    Motivo del cambio
+                                </label>
+
+                                <textarea
+                                    id="motivo-reprogramacion-empleado"
+                                    name="motivoReprogramacion"
+                                    rows="4"
+                                    maxlength="500"
+                                    placeholder="Explicá por qué necesitás cambiar el horario..."
+                                    [(ngModel)]="motivoReprogramacion"
+                                    [disabled]="enviandoReprogramacion"
+                                    required
+                                ></textarea>
+
+                                <span class="contador-caracteres">
+                                    {{ motivoReprogramacion.length }} / 500
+                                </span>
+
+                            </div>
+
+
+                            <div class="reprogramacion-aviso">
+
+                                <mat-icon>info_outline</mat-icon>
+
+                                <p>
+                                    El turno conservará su fecha y hora
+                                    originales hasta que la clienta
+                                    acepte la propuesta.
+                                </p>
+
+                            </div>
+
+
+                            @if (errorReprogramacion) {
+
+                                <div
+                                    class="detalle-mensaje error"
+                                    role="alert"
+                                >
+
+                                    <mat-icon>error_outline</mat-icon>
+
+                                    {{ errorReprogramacion }}
+
+                                </div>
+
+                            }
+
+
+                            <div class="reprogramacion-acciones">
+
+                                <button
+                                    type="button"
+                                    class="btn-volver"
+                                    (click)="cerrarFormularioReprogramacion()"
+                                    [disabled]="enviandoReprogramacion"
+                                >
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    class="btn-enviar-propuesta"
+                                    [disabled]="!formularioReprogramacionValido()"
+                                >
+
+                                    <mat-icon>
+                                        {{
+                                            enviandoReprogramacion
+                                                ? 'hourglass_top'
+                                                : 'send'
+                                        }}
+                                    </mat-icon>
+
+                                    {{
+                                        enviandoReprogramacion
+                                            ? 'Enviando...'
+                                            : 'Enviar propuesta'
+                                    }}
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </section>
+
+                }
+
+
+                <!-- Mensaje de propuesta enviada -->
+
+                @if (mensajeReprogramacion) {
+
+                    <div
+                        class="detalle-mensaje exito"
+                        role="status"
+                    >
+
+                        <mat-icon>check_circle</mat-icon>
+
+                        {{ mensajeReprogramacion }}
+
+                    </div>
+
+                }
+
+            }
+
+            </div>
+
+        </dialog>
+
+    }
+
+</div>

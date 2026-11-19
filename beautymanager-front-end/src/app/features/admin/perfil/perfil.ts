@@ -6,11 +6,13 @@ import { UsuarioPerfil } from "../../../core/models/usuario-perfil";
 import { CommonModule } from "@angular/common";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { ConfirmacionDialog } from "../../../shared/components/dialogs/confirmacion-dialog/confirmacion-dialog";
-
+import { RouterLink } from "@angular/router";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-perfil',
-  imports: [MatCardModule, MatButtonModule, CommonModule, MatDialogModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink, MatCardModule, MatIcon, MatDialogModule],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })
@@ -18,7 +20,10 @@ export class PerfilAdmin implements OnInit {
 
   usuario = signal<UsuarioPerfil | null>(null);
 
-  constructor(private usuarioService: Usuario, private dialog: MatDialog) {}
+  constructor(
+    private usuarioService: Usuario,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.cargarPerfil();
@@ -46,7 +51,7 @@ export class PerfilAdmin implements OnInit {
 
     const input = event.target as HTMLInputElement;
 
-    if(!input.files || input.files.length === 0){
+    if (!input.files || input.files.length === 0) {
       return;
     }
 
@@ -56,14 +61,17 @@ export class PerfilAdmin implements OnInit {
 
       next: () => {
 
-        console.log("Foto actualizada correctamente");
+        console.log('Foto actualizada correctamente');
 
         this.cargarPerfil();
+
+        input.value = '';
       },
 
       error: (error) => {
 
-        console.error("Error al actualizar foto", error);
+        console.error('Error al actualizar foto', error);
+        input.value = '';
       }
     });
   }
@@ -74,7 +82,7 @@ export class PerfilAdmin implements OnInit {
 
     dialogRef.afterClosed().subscribe((confirmado) => {
 
-      if(!confirmado) {
+      if (!confirmado) {
         return;
       }
 
@@ -82,14 +90,14 @@ export class PerfilAdmin implements OnInit {
 
         next: () => {
 
-          console.log("Foto eliminada correctamente");
+          console.log('Foto eliminada correctamente');
 
           this.cargarPerfil();
         },
 
         error: (error) => {
 
-          console.error("Error al eliminar foto", error);
+          console.error('Error al eliminar foto', error);
         }
       });
     });

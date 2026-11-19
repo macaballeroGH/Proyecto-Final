@@ -1,1 +1,1160 @@
-<p>tienda works!</p>
+<div class="tienda-container">
+
+    <!--========================
+        ENCABEZADO
+    ========================-->
+    <header class="tienda-header">
+
+        <div class="tienda-titulo">
+
+            <span class="tienda-subtitulo">
+                BeautyManager
+            </span>
+
+            <h1>Nuestra tienda</h1>
+
+            <p>
+                Descubrí nuestros productos de belleza
+                y cuidado personal.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-carrito"
+            (click)="abrirCarrito()">
+
+            <mat-icon>shopping_cart</mat-icon>
+
+            <span>Mi carrito</span>
+
+            <span class="carrito-contador">
+                {{ cantidadEnCarrito() }}
+            </span>
+
+        </button>
+
+    </header>
+
+
+    <!--========================
+        MENSAJES
+    ========================-->
+    @if(mensaje()) {
+
+        <div class="mensaje-exito" role="status">
+
+            <mat-icon>check_circle</mat-icon>
+
+            <span>{{ mensaje() }}</span>
+
+        </div>
+
+    }
+
+    @if(errorOperacion()) {
+
+        <div class="mensaje-error" role="alert">
+
+            <mat-icon>error_outline</mat-icon>
+
+            <span>{{ errorOperacion() }}</span>
+
+        </div>
+
+    }
+
+
+    <!--========================
+        COMPRA PENDIENTE
+    ========================-->
+    @if(clavePendiente()) {
+
+        <div class="compra-pendiente">
+
+            <div class="compra-pendiente-info">
+
+                <mat-icon>info_outline</mat-icon>
+
+                <p>
+                    Hay una compra cuyo resultado
+                    todavía no fue confirmado.
+                    Podés verificar la misma operación
+                    sin generar otra compra.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                (click)="reintentarCompraPendiente()"
+                [disabled]="procesandoCompra() ||
+                            !pagosHabilitados">
+
+                <mat-icon>refresh</mat-icon>
+
+                <span>
+                    @if(procesandoCompra()) {
+
+                        Verificando compra...
+
+                    }
+                    @else {
+
+                        Verificar compra pendiente
+
+                    }
+                </span>
+
+            </button>
+
+        </div>
+
+    }
+
+
+    <!--========================
+        FILTROS
+    ========================-->
+    <section class="tienda-filtros">
+
+        <div class="buscador-productos">
+
+            <label for="buscar-productos">
+                Buscar productos
+            </label>
+
+            <div class="buscador-input">
+
+                <mat-icon>search</mat-icon>
+
+                <input
+                    id="buscar-productos"
+                    type="search"
+                    placeholder="¿Qué producto estás buscando?"
+                    [value]="busqueda()"
+                    (input)="buscarProductos($any($event.target).value)">
+
+            </div>
+
+        </div>
+
+        <div class="ordenar-productos">
+
+            <label for="orden-productos">
+                Ordenar por
+            </label>
+
+            <div class="ordenar-select">
+
+                <mat-icon>sort</mat-icon>
+
+                <select
+                    id="orden-productos"
+                    [value]="ordenProductos()"
+                    (change)="cambiarOrden($any($event.target).value)">
+
+                    <option value="nombre">
+                        Nombre
+                    </option>
+
+                    <option value="precioAsc">
+                        Menor precio
+                    </option>
+
+                    <option value="precioDesc">
+                        Mayor precio
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-actualizar"
+            (click)="actualizarTienda()"
+            [disabled]="cargandoProductos() ||
+                        cargandoCarrito() ||
+                        procesandoCarrito() ||
+                        procesandoCompra() ||
+                        preparandoCompra()">
+
+            <mat-icon>refresh</mat-icon>
+
+            <span>Actualizar</span>
+
+        </button>
+
+    </section>
+
+
+    <!--========================
+        CATÁLOGO
+    ========================-->
+    <section class="catalogo-productos">
+
+        <div class="catalogo-header">
+
+            <div class="catalogo-titulo">
+
+                <mat-icon>spa</mat-icon>
+
+                <h2>Productos</h2>
+
+            </div>
+
+            <span class="catalogo-cantidad">
+                {{ productosVisibles().length }} productos
+            </span>
+
+        </div>
+
+
+        <!--CARGANDO-->
+        @if(cargandoProductos()) {
+
+            <div class="estado-catalogo">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <p>Cargando productos...</p>
+
+            </div>
+
+        }
+
+        <!--ERROR-->
+        @else if(errorProductos()) {
+
+            <div class="estado-catalogo error">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <p>{{ errorProductos() }}</p>
+
+                <button
+                    type="button"
+                    (click)="cargarProductos()">
+
+                    <mat-icon>refresh</mat-icon>
+
+                    Reintentar
+
+                </button>
+
+            </div>
+
+        }
+
+        <!--SIN PRODUCTOS-->
+        @else if(productosVisibles().length === 0) {
+
+            <div class="estado-catalogo vacio">
+
+                <mat-icon>inventory_2</mat-icon>
+
+                <h3>No encontramos productos</h3>
+
+                <p>
+                    Probá con otra búsqueda o volvé
+                    más tarde.
+                </p>
+
+            </div>
+
+        }
+
+        <!--PRODUCTOS-->
+        @else {
+
+            <div class="productos-grid">
+
+                @for(
+                    producto of productosVisibles();
+                    track producto.idProducto
+                ) {
+
+                    <article class="producto-card">
+
+                        <!--========================
+                            IMAGEN
+                        ========================-->
+                        <div class="producto-imagen">
+
+                            @if(producto.foto) {
+
+                                <img
+                                    [src]="'http://localhost:8080/' + producto.foto"
+                                    [alt]="producto.nombre"
+                                    loading="lazy">
+
+                            }
+                            @else {
+
+                                <div class="producto-sin-imagen">
+
+                                    <mat-icon>
+                                        image_not_supported
+                                    </mat-icon>
+
+                                    <span>BeautyManager</span>
+
+                                </div>
+
+                            }
+
+                            @if(
+                                producto.stock <= 0 ||
+                                producto.estadoProducto !==
+                                EstadoProducto.ACTIVO
+                            ) {
+
+                                <span class="etiqueta-agotado">
+
+                                    <mat-icon>block</mat-icon>
+
+                                    Agotado
+
+                                </span>
+
+                            }
+
+                        </div>
+
+
+                        <!--========================
+                            INFORMACIÓN
+                        ========================-->
+                        <div class="producto-informacion">
+
+                            <h3>{{ producto.nombre }}</h3>
+
+                            <p class="producto-descripcion">
+                                {{
+                                    producto.descripcion ||
+                                    'Producto de belleza y cuidado personal.'
+                                }}
+                            </p>
+
+
+                            <!--PRECIO-->
+                            <div class="producto-precio">
+
+                                {{
+                                    formatearPrecio(producto.precio)
+                                }}
+
+                            </div>
+
+
+                            <!--STOCK-->
+                            <div class="producto-stock">
+
+                                @if(
+                                    producto.stock > 0 &&
+                                    producto.estadoProducto ===
+                                    EstadoProducto.ACTIVO
+                                ) {
+
+                                    <mat-icon>
+                                        inventory_2
+                                    </mat-icon>
+
+                                    <span>
+                                        {{ producto.stock }}
+                                        unidades disponibles
+                                    </span>
+
+                                }
+                                @else {
+
+                                    <mat-icon>
+                                        remove_shopping_cart
+                                    </mat-icon>
+
+                                    <span>
+                                        Sin stock disponible
+                                    </span>
+
+                                }
+
+                            </div>
+
+
+                            <!--========================
+                                CANTIDAD
+                            ========================-->
+                            <div class="cantidad-selector">
+
+                                <button
+                                    type="button"
+                                    aria-label="Disminuir cantidad"
+                                    (click)="cambiarCantidad(producto, -1)"
+                                    [disabled]="!puedeAgregar(producto) ||
+                                                cantidadSeleccionada(producto.idProducto) <= 1">
+
+                                    <mat-icon>remove</mat-icon>
+
+                                </button>
+
+                                <span class="cantidad-valor">
+                                    {{
+                                        cantidadSeleccionada(
+                                            producto.idProducto
+                                        )
+                                    }}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    aria-label="Aumentar cantidad"
+                                    (click)="cambiarCantidad(producto, 1)"
+                                    [disabled]="!puedeAgregar(producto) ||
+                                                cantidadSeleccionada(producto.idProducto) >=
+                                                stockDisponibleParaAgregar(producto)">
+
+                                    <mat-icon>add</mat-icon>
+
+                                </button>
+
+                            </div>
+
+
+                            <!--========================
+                                AGREGAR AL CARRITO
+                            ========================-->
+                            <button
+                                type="button"
+                                class="btn-agregar-carrito"
+                                (click)="agregarAlCarrito(producto)"
+                                [disabled]="!puedeAgregar(producto)">
+
+                                @if(
+                                    productoEnProceso() ===
+                                    producto.idProducto
+                                ) {
+
+                                    <mat-icon>
+                                        hourglass_empty
+                                    </mat-icon>
+
+                                    <span>Agregando...</span>
+
+                                }
+                                @else if(
+                                    stockDisponibleParaAgregar(producto) <= 0
+                                ) {
+
+                                    <mat-icon>
+                                        remove_shopping_cart
+                                    </mat-icon>
+
+                                    <span>No disponible</span>
+
+                                }
+                                @else {
+
+                                    <mat-icon>
+                                        add_shopping_cart
+                                    </mat-icon>
+
+                                    <span>
+                                        Agregar al carrito
+                                    </span>
+
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                }
+
+            </div>
+
+        }
+
+    </section>
+
+
+    <!--========================
+        CARRITO
+    ========================-->
+    @if(carritoAbierto()) {
+
+        <div class="carrito-overlay">
+
+            <aside
+                class="carrito-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Mi carrito">
+
+                <!--ENCABEZADO-->
+                <header class="carrito-header">
+
+                    <div class="carrito-header-info">
+
+                        <h2>
+
+                            <mat-icon>
+                                shopping_cart
+                            </mat-icon>
+
+                            Mi carrito
+
+                        </h2>
+
+                        <p>
+                            {{ cantidadEnCarrito() }}
+                            artículos
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-cerrar"
+                        aria-label="Cerrar carrito"
+                        (click)="cerrarCarrito()">
+
+                        <mat-icon>close</mat-icon>
+
+                    </button>
+
+                </header>
+
+
+                <!--MENSAJE DE ERROR-->
+                @if(errorOperacion()) {
+
+                    <div class="mensaje-error" role="alert">
+
+                        <mat-icon>error_outline</mat-icon>
+
+                        <span>{{ errorOperacion() }}</span>
+
+                    </div>
+
+                }
+
+
+                <!--CARGANDO-->
+                @if(cargandoCarrito()) {
+
+                    <div class="carrito-vacio">
+
+                        <mat-icon>
+                            hourglass_empty
+                        </mat-icon>
+
+                        <p>Cargando carrito...</p>
+
+                    </div>
+
+                }
+
+                <!--CARRITO DISPONIBLE-->
+                @else if(carrito(); as carritoActual) {
+
+                    <!--CARRITO VACÍO-->
+                    @if(carritoActual.items.length === 0) {
+
+                        <div class="carrito-vacio">
+
+                            <mat-icon>
+                                shopping_cart
+                            </mat-icon>
+
+                            <h3>Tu carrito está vacío</h3>
+
+                            <p>
+                                Agregá productos para comenzar
+                                tu compra.
+                            </p>
+
+                            <button
+                                type="button"
+                                (click)="cerrarCarrito()">
+
+                                <mat-icon>
+                                    shopping_bag
+                                </mat-icon>
+
+                                Explorar productos
+
+                            </button>
+
+                        </div>
+
+                    }
+
+                    <!--CARRITO CON PRODUCTOS-->
+                    @else {
+
+                        <div class="carrito-contenido">
+
+                            <!--CAMBIOS DE PRECIO-->
+                            @if(hayCambiosPrecio()) {
+
+                                <div class="aviso-precios">
+
+                                    <mat-icon>
+                                        price_change
+                                    </mat-icon>
+
+                                    <span>
+                                        Algunos productos
+                                        cambiaron de precio.
+                                        Revisá los nuevos importes
+                                        antes de pagar.
+                                    </span>
+
+                                </div>
+
+                            }
+
+
+                            <!--PROBLEMAS DE STOCK-->
+                            @if(hayProblemasStock()) {
+
+                                <div class="aviso-stock">
+
+                                    <mat-icon>
+                                        warning_amber
+                                    </mat-icon>
+
+                                    <span>
+                                        Algunos productos ya no
+                                        tienen stock suficiente.
+                                        Revisá tu carrito.
+                                    </span>
+
+                                </div>
+
+                            }
+
+
+                            <!--========================
+                                PRODUCTOS DEL CARRITO
+                            ========================-->
+                            <div class="carrito-items">
+
+                                @for(
+                                    item of carritoActual.items;
+                                    track item.idCarritoItem
+                                ) {
+
+                                    <article class="carrito-item">
+
+                                        <div class="carrito-item-info">
+
+                                            <h3>
+                                                {{ item.nombreProducto }}
+                                            </h3>
+
+                                            <p>
+                                                {{
+                                                    item.descripcionProducto
+                                                }}
+                                            </p>
+
+
+                                            <!--PRECIO MODIFICADO-->
+                                            @if(precioModificado(item)) {
+
+                                                <div class="precio-anterior">
+
+                                                    Antes:
+                                                    {{
+                                                        formatearPrecio(
+                                                            item.precioUnitario
+                                                        )
+                                                    }}
+
+                                                </div>
+
+                                                <div class="precio-nuevo">
+
+                                                    Ahora:
+                                                    {{
+                                                        formatearPrecio(
+                                                            precioVigente(item)
+                                                        )
+                                                    }}
+
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    class="btn-aceptar-precio"
+                                                    (click)="aceptarCambioPrecio(item)"
+                                                    [disabled]="procesandoCarrito() ||
+                                                                procesandoCompra() ||
+                                                                clavePendiente() !== null">
+
+                                                    <mat-icon>
+                                                        check_circle_outline
+                                                    </mat-icon>
+
+                                                    Aceptar nuevo precio
+
+                                                </button>
+
+                                            }
+
+                                            <!--PRECIO SIN CAMBIOS-->
+                                            @else {
+
+                                                <div class="carrito-item-precio">
+
+                                                    {{
+                                                        formatearPrecio(
+                                                            item.precioUnitario
+                                                        )
+                                                    }}
+
+                                                </div>
+
+                                            }
+
+                                        </div>
+
+
+                                        <!--CONTROLES-->
+                                        <div class="carrito-item-controles">
+
+                                            <div class="cantidad-selector">
+
+                                                <button
+                                                    type="button"
+                                                    aria-label="Disminuir unidades"
+                                                    (click)="cambiarCantidadCarrito(item, -1)"
+                                                    [disabled]="procesandoCarrito() ||
+                                                                procesandoCompra() ||
+                                                                clavePendiente() !== null ||
+                                                                item.cantidad <= 1">
+
+                                                    <mat-icon>
+                                                        remove
+                                                    </mat-icon>
+
+                                                </button>
+
+                                                <span class="cantidad-valor">
+                                                    {{ item.cantidad }}
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    aria-label="Aumentar unidades"
+                                                    (click)="cambiarCantidadCarrito(item, 1)"
+                                                    [disabled]="procesandoCarrito() ||
+                                                                procesandoCompra() ||
+                                                                clavePendiente() !== null">
+
+                                                    <mat-icon>
+                                                        add
+                                                    </mat-icon>
+
+                                                </button>
+
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                class="btn-eliminar"
+                                                (click)="eliminarDelCarrito(item)"
+                                                [disabled]="procesandoCarrito() ||
+                                                            procesandoCompra() ||
+                                                            clavePendiente() !== null">
+
+                                                <mat-icon>
+                                                    delete_outline
+                                                </mat-icon>
+
+                                                Eliminar
+
+                                            </button>
+
+                                        </div>
+
+
+                                        <!--SUBTOTAL-->
+                                        <div class="carrito-item-subtotal">
+
+                                            <span>Subtotal</span>
+
+                                            <strong>
+                                                {{
+                                                    formatearPrecio(
+                                                        item.subtotal
+                                                    )
+                                                }}
+                                            </strong>
+
+                                        </div>
+
+                                    </article>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <!--========================
+                            TOTAL DEL CARRITO
+                        ========================-->
+                        <footer class="carrito-footer">
+
+                            <div class="carrito-total">
+
+                                <span>
+                                    Total del carrito
+                                </span>
+
+                                <strong>
+                                    {{
+                                        formatearPrecio(
+                                            totalCarrito()
+                                        )
+                                    }}
+                                </strong>
+
+                            </div>
+
+                            @if(hayCambiosPrecio()) {
+
+                                <div class="carrito-total-actualizado">
+
+                                    <span>
+                                        Total con precios vigentes
+                                    </span>
+
+                                    <strong>
+                                        {{
+                                            formatearPrecio(
+                                                totalActualizadoCarrito()
+                                            )
+                                        }}
+                                    </strong>
+
+                                </div>
+
+                            }
+
+                            <button
+                                type="button"
+                                class="btn-confirmar-compra"
+                                (click)="abrirConfirmacionCompra()"
+                                [disabled]="!puedeConfirmarCompra()">
+
+                                <mat-icon>
+                                    shopping_bag
+                                </mat-icon>
+
+                                <span>
+                                    Continuar con la compra
+                                </span>
+
+                            </button>
+
+                        </footer>
+
+                    }
+
+                }
+
+            </aside>
+
+        </div>
+
+    }
+
+
+    <!--========================
+        CONFIRMACIÓN DE COMPRA
+    ========================-->
+    @if(confirmacionAbierta()) {
+
+        <div class="modal-overlay">
+
+            <section
+                class="modal-compra"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Confirmar compra">
+
+                <div class="modal-compra-icono">
+
+                    <mat-icon>
+                        receipt_long
+                    </mat-icon>
+
+                </div>
+
+                <h2>Confirmar compra</h2>
+
+                <p>
+                    Revisá los productos y el importe
+                    antes de realizar el pago simulado.
+                </p>
+
+
+                <!--ERRORES-->
+                @if(errorOperacion()) {
+
+                    <div class="mensaje-error" role="alert">
+
+                        <mat-icon>error_outline</mat-icon>
+
+                        <span>{{ errorOperacion() }}</span>
+
+                    </div>
+
+                }
+
+
+                <!--RESUMEN-->
+                @if(carrito(); as carritoActual) {
+
+                    <div class="resumen-compra">
+
+                        @for(
+                            item of carritoActual.items;
+                            track item.idCarritoItem
+                        ) {
+
+                            <div class="resumen-item">
+
+                                <span>
+                                    {{ item.nombreProducto }}
+                                    × {{ item.cantidad }}
+                                </span>
+
+                                <strong>
+                                    {{
+                                        formatearPrecio(
+                                            item.subtotal
+                                        )
+                                    }}
+                                </strong>
+
+                            </div>
+
+                        }
+
+                        <div class="resumen-total">
+
+                            <span>Total a pagar</span>
+
+                            <strong>
+                                {{
+                                    formatearPrecio(
+                                        totalCarrito()
+                                    )
+                                }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                }
+
+
+                <!--MÉTODO DE PAGO-->
+                <div class="modal-metodo-pago">
+
+                    <mat-icon>
+                        account_balance_wallet
+                    </mat-icon>
+
+                    <span>
+                        Pago con billetera virtual
+                    </span>
+
+                </div>
+
+
+                <!--ACCIONES-->
+                <div class="modal-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-cancelar"
+                        (click)="cerrarConfirmacionCompra()"
+                        [disabled]="procesandoCompra()">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-pagar"
+                        (click)="confirmarCompra()"
+                        [disabled]="!puedeConfirmarCompra()">
+
+                        @if(procesandoCompra()) {
+
+                            <mat-icon>
+                                hourglass_empty
+                            </mat-icon>
+
+                            Procesando...
+
+                        }
+                        @else {
+
+                            <mat-icon>
+                                payments
+                            </mat-icon>
+
+                            Confirmar y pagar
+
+                        }
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    }
+
+
+    <!--========================
+        COMPROBANTE DE COMPRA
+    ========================-->
+    @if(compraRealizada(); as compra) {
+
+        <div class="modal-overlay">
+
+            <section
+                class="modal-comprobante"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Comprobante de compra">
+
+                <div class="comprobante-icono">
+
+                    <mat-icon>
+                        check_circle
+                    </mat-icon>
+
+                </div>
+
+                <h2>¡Compra realizada!</h2>
+
+                <p>
+                    Tu compra fue registrada
+                    correctamente.
+                </p>
+
+
+                <!--DATOS DE COMPRA-->
+                <div class="comprobante-datos">
+
+                    <div class="comprobante-identificador">
+
+                        <mat-icon>
+                            receipt_long
+                        </mat-icon>
+
+                        <span>
+                            Compra #{{ compra.idCompra }}
+                        </span>
+
+                    </div>
+
+                    <div class="comprobante-estado">
+
+                        <mat-icon>
+                            check_circle_outline
+                        </mat-icon>
+
+                        Estado: {{ compra.estadoCompra }}
+
+                    </div>
+
+
+                    <!--PRODUCTOS COMPRADOS-->
+                    <h3>Productos comprados</h3>
+
+                    @for(
+                        detalle of compra.detalles;
+                        track detalle.idDetalleCompra
+                    ) {
+
+                        <div class="comprobante-item">
+
+                            <span>
+                                {{ detalle.nombreProducto }}
+                                × {{ detalle.cantidad }}
+                            </span>
+
+                            <strong>
+                                {{
+                                    formatearPrecio(
+                                        detalle.subtotal
+                                    )
+                                }}
+                            </strong>
+
+                        </div>
+
+                    }
+
+
+                    <!--TOTAL PAGADO-->
+                    <div class="comprobante-total">
+
+                        <span>
+                            Total pagado
+                        </span>
+
+                        <strong>
+                            {{
+                                formatearPrecio(
+                                    compra.total
+                                )
+                            }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!--FINALIZAR-->
+                <button
+                    type="button"
+                    class="btn-finalizar"
+                    (click)="cerrarComprobante()">
+
+                    <mat-icon>
+                        done_all
+                    </mat-icon>
+
+                    Finalizar
+
+                </button>
+
+            </section>
+
+        </div>
+
+    }
+
+</div>

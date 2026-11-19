@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarCantidadCarritoDTO;
@@ -16,8 +15,10 @@ import com.example.beautymanager.Modelo.Entidad.CarritoItemEntity;
 import com.example.beautymanager.Modelo.Entidad.ProductoEntity;
 import com.example.beautymanager.Modelo.Entidad.UsuarioEntity;
 import com.example.beautymanager.Modelo.Enums.EstadoCarritoEnums;
+import com.example.beautymanager.Modelo.Enums.EstadoProductoEnums;
 import com.example.beautymanager.Repositorio.CarritoItemRepository;
 import com.example.beautymanager.Repositorio.CarritoRepository;
+import com.example.beautymanager.Repositorio.ClienteRepository;
 import com.example.beautymanager.Repositorio.ProductoRepository;
 import com.example.beautymanager.Repositorio.UsuarioRepository;
 import com.example.beautymanager.Servicio.CarritoService;
@@ -28,17 +29,28 @@ import jakarta.transaction.Transactional;
 @Service
 public class CarritoServiceImpl implements CarritoService {
 
-    @Autowired
-    private CarritoRepository carritoRepository;
+    private final CarritoRepository carritoRepository;
 
-    @Autowired
-    private CarritoItemRepository carritoItemRepository;
+    private final CarritoItemRepository carritoItemRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
+
+    private final ClienteRepository clienteRepository;
+
+    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoItemRepository carritoItemRepository, UsuarioRepository usuarioRepository, ProductoRepository productoRepository, ClienteRepository clienteRepository){
+
+        this.carritoRepository = carritoRepository;
+
+        this.carritoItemRepository = carritoItemRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.productoRepository = productoRepository;
+
+        this.clienteRepository = clienteRepository;
+    }
 
     //==========================
     //Obtener usuario por email
@@ -52,6 +64,33 @@ public class CarritoServiceImpl implements CarritoService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
     }
+
+
+//==========================
+//Bloquear cliente para modificar carrito
+//==========================
+private void bloquearClienteParaCarrito(
+        UsuarioEntity usuario) {
+
+    if(usuario == null ||
+       usuario.getCliente() == null ||
+       usuario.getCliente().getId() == null) {
+
+        throw new BusinessException(
+            "El usuario no tiene un perfil de cliente válido"
+        );
+    }
+
+    Long idCliente = usuario.getCliente().getId();
+
+    clienteRepository.bloquearParaReserva(idCliente)
+        .orElseThrow(() ->
+            new BusinessException(
+                "No se encontró el perfil de cliente"
+            )
+        );
+}
+
 
     //==========================
     //Obtener o crear carrito
@@ -71,6 +110,7 @@ public class CarritoServiceImpl implements CarritoService {
     //Ver carrito
     //=======================
     @Override
+    @Transactional
     public ObtenerCarritoDTO obtenerCarrito(String email){
 
         UsuarioEntity usuario = obtenerUsuario(email);
@@ -85,33 +125,151 @@ public class CarritoServiceImpl implements CarritoService {
     @Transactional
     public ObtenerCarritoDTO agregarProducto(String email, AgregarProductoCarritoDTO agregarProductoCarrito){
 
-        if(agregarProductoCarrito == null || agregarProductoCarrito.getCantidad() == null || agregarProductoCarrito.getCantidad() <= 0){
-            throw new BusinessException("Cantidad invalida");
+        if(agregarProductoCarrito == null) {
+            throw new BusinessException(
+                "Los datos del producto son obligatorios"
+            );
         }
 
+        Long idProducto = agregarProductoCarrito.getIdProducto();
+
+        Integer cantidad = agregarProductoCarrito.getCantidad();
+
+        if(idProducto == null || idProducto <= 0) {
+            throw new BusinessException(
+                "El ID del producto es inválido"
+            );
+        }
+
+        if(cantidad == null || cantidad <= 0) {
+            throw new BusinessException(
+                "La cantidad debe ser mayor a cero"
+            );
+        }
+
+        //=======================
+        //Obtener usuario
+        //=======================
         UsuarioEntity usuario = obtenerUsuario(email);
 
-        ProductoEntity producto = productoRepository.findById(agregarProductoCarrito.getIdProducto())
-                .orElseThrow(() -> new BusinessException("Producto no encontrado"));
+        bloquearClienteParaCarrito(usuario);
 
+        //=======================
+        //Buscar producto
+        //=======================
+        ProductoEntity producto = productoRepository
+            .findById(idProducto)
+            .orElseThrow(() ->
+                new BusinessException(
+                    "Producto no encontrado"
+                )
+            );
+
+        //=======================
+        //Validar estado
+        //=======================
+        if(producto.getEstadoProducto() != EstadoProductoEnums.ACTIVO) {
+
+            throw new BusinessException(
+                "El producto no está disponible para la venta: "
+                + producto.getNombre()
+            );
+        }
+
+        //=======================
+        //Validar precio
+        //=======================
+        if(producto.getPrecio() == null ||
+           producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new BusinessException(
+                "El producto tiene un precio inválido"
+            );
+        }
+
+        //=======================
+        //Validar stock
+        //=======================
+        if(producto.getStock() == null ||
+           producto.getStock() <= 0) {
+
+            throw new BusinessException(
+                "El producto está agotado: "
+                + producto.getNombre()
+            );
+        }
+
+        //=======================
+        //Obtener carrito
+        //=======================
         CarritoEntity carrito = obtenerOCrearCarrito(usuario);
 
-        CarritoItemEntity item = carritoItemRepository.findByCarritoAndProducto(carrito, producto)
-             .orElse(null);
+        //=======================
+        //Buscar producto en carrito
+        //=======================
+        CarritoItemEntity item = carritoItemRepository
+            .findByCarritoAndProducto(carrito, producto)
+            .orElse(null);
 
-        if(item != null){
-            item.setCantidad(item.getCantidad() + agregarProductoCarrito.getCantidad());
+        //=======================
+        //Calcular cantidad total
+        //=======================
+        Integer cantidadGuardada = item != null ? item.getCantidad() : null;
+
+        long cantidadActual = cantidadGuardada == null ? 0L : cantidadGuardada.longValue();
+
+        long cantidadTotal = cantidadActual + cantidad.longValue();
+
+        //=======================
+        //Comprobar disponibilidad
+        //=======================
+        if(cantidadTotal > producto.getStock()) {
+
+            throw new BusinessException(
+                "Stock insuficiente para "
+                + producto.getNombre()
+                + ". Unidades disponibles: "
+                + producto.getStock()
+            );
+        }
+
+        //=======================
+        //Actualizar producto existente
+        //=======================
+        if(item != null) {
+
+            item.setCantidad((int) cantidadTotal);
+
+            //Usar precio vigente
+            item.setPrecioUnitario(
+                producto.getPrecio()
+            );
+
+            carritoItemRepository.save(item);
+
         } else {
 
+            //=======================
+            //Agregar nuevo producto
+            //=======================
             CarritoItemEntity nuevoItem = new CarritoItemEntity();
+
             nuevoItem.setCarrito(carrito);
+
             nuevoItem.setProducto(producto);
-            nuevoItem.setCantidad(agregarProductoCarrito.getCantidad());
-            nuevoItem.setPrecioUnitario(producto.getPrecio());
+
+            nuevoItem.setCantidad(cantidad);
+
+            nuevoItem.setPrecioUnitario(
+                producto.getPrecio()
+            );
 
             carritoItemRepository.save(nuevoItem);
         }
 
+        //=======================
+        //Devolver carrito actualizado
+        //=======================
         return toMap(carrito);
     }
 
@@ -123,6 +281,8 @@ public class CarritoServiceImpl implements CarritoService {
     public ObtenerCarritoDTO eliminarProducto(String email, Long idProducto){
 
         UsuarioEntity usuario = obtenerUsuario(email);
+
+        bloquearClienteParaCarrito(usuario);
 
         ProductoEntity producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new BusinessException("Producto no encontrado"));
@@ -144,62 +304,227 @@ public class CarritoServiceImpl implements CarritoService {
     @Transactional
     public ObtenerCarritoDTO actualizarCantidad(String email, ActualizarCantidadCarritoDTO actualizarCantidadCarrito){
 
-        if(actualizarCantidadCarrito == null || actualizarCantidadCarrito.getCantidad() == null || actualizarCantidadCarrito.getCantidad() <= 0){
-            throw new BusinessException("Cantidad invalida");
+        if(actualizarCantidadCarrito == null) {
+            throw new BusinessException(
+                "Los datos del producto son obligatorios"
+            );
         }
 
+        Long idProducto = actualizarCantidadCarrito.getIdProducto();
+
+        Integer cantidad = actualizarCantidadCarrito.getCantidad();
+
+        if(idProducto == null || idProducto <= 0) {
+            throw new BusinessException(
+                "El ID del producto es inválido"
+            );
+        }
+
+        if(cantidad == null || cantidad <= 0) {
+            throw new BusinessException(
+                "La cantidad debe ser mayor a cero"
+            );
+        }
+
+        //=======================
+        //Obtener usuario
+        //=======================
         UsuarioEntity usuario = obtenerUsuario(email);
 
-        ProductoEntity producto = productoRepository.findById(actualizarCantidadCarrito.getIdProducto())
-                .orElseThrow(() -> new BusinessException("Producto no encontrado"));
+        bloquearClienteParaCarrito(usuario);
 
+        //=======================
+        //Obtener producto
+        //=======================
+        ProductoEntity producto = productoRepository
+            .findById(idProducto)
+            .orElseThrow(() ->
+                new BusinessException("Producto no encontrado")
+            );
+
+        //=======================
+        //Validar estado
+        //=======================
+        if(producto.getEstadoProducto() != EstadoProductoEnums.ACTIVO) {
+
+            throw new BusinessException(
+                "El producto no está disponible para la venta: "
+                + producto.getNombre()
+            );
+        }
+
+        //=======================
+        //Validar stock
+        //=======================
+        
+        Integer stockActual = producto.getStock();
+
+        if(stockActual == null || stockActual < cantidad) {
+
+            throw new BusinessException("Stock insuficiente para " + producto.getNombre() + ". Unidades disponibles: " + (stockActual == null ? "0" : stockActual.toString()));
+        }
+
+
+        //=======================
+        //Validar precio
+        //=======================
+        if(producto.getPrecio() == null ||
+           producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new BusinessException(
+                "El producto tiene un precio inválido"
+            );
+        }
+
+        //=======================
+        //Obtener carrito
+        //=======================
         CarritoEntity carrito = obtenerOCrearCarrito(usuario);
 
-        CarritoItemEntity item = carritoItemRepository.findByCarritoAndProducto(carrito, producto)
-                .orElseThrow(() -> new BusinessException("El producto no esta en el carrito"));
+        //=======================
+        //Buscar artículo
+        //=======================
+        CarritoItemEntity item = carritoItemRepository
+            .findByCarritoAndProducto(carrito, producto)
+            .orElseThrow(() ->
+                new BusinessException(
+                    "El producto no está en el carrito"
+                )
+            );
 
-        item.setCantidad(actualizarCantidadCarrito.getCantidad());
+        //=======================
+        //Actualizar cantidad
+        //=======================
+        item.setCantidad(cantidad);
 
+        //=======================
+        //Actualizar precio vigente
+        //=======================
+        item.setPrecioUnitario(
+            producto.getPrecio()
+        );
+
+        //=======================
+        //Guardar cambios
+        //=======================
         carritoItemRepository.save(item);
 
+        //=======================
+        //Devolver carrito
+        //=======================
         return toMap(carrito);
     }
 
     @Override
     public ObtenerCarritoDTO toMap(CarritoEntity carrito) {
         
-        ObtenerCarritoDTO obtenerCarritoDTO = new ObtenerCarritoDTO();
+        ObtenerCarritoDTO obtenerCarritoDTO =
+            new ObtenerCarritoDTO();
 
-        obtenerCarritoDTO.setIdCarrito(carrito.getId());
-        obtenerCarritoDTO.setFechaCreacion(carrito.getFechaCreacion());
-        obtenerCarritoDTO.setEstadoCarrito(carrito.getEstado());
+        //========================
+        //Datos del carrito
+        //========================
+        obtenerCarritoDTO.setIdCarrito(
+            carrito.getId()
+        );
 
-        obtenerCarritoDTO.setIdUsuario(carrito.getUsuario().getId());
-        obtenerCarritoDTO.setNombreUsuario(carrito.getUsuario().getNombre());
-        obtenerCarritoDTO.setApellidoUsuario(carrito.getUsuario().getApellido());
+        obtenerCarritoDTO.setFechaCreacion(
+            carrito.getFechaCreacion()
+        );
 
-        List<CarritoItemDTO> itemsDTO = new ArrayList<>();
+        obtenerCarritoDTO.setEstadoCarrito(
+            carrito.getEstado()
+        );
+
+        //========================
+        //Datos del usuario
+        //========================
+        obtenerCarritoDTO.setIdUsuario(
+            carrito.getUsuario().getId()
+        );
+
+        obtenerCarritoDTO.setNombreUsuario(
+            carrito.getUsuario().getNombre()
+        );
+
+        obtenerCarritoDTO.setApellidoUsuario(
+            carrito.getUsuario().getApellido()
+        );
+
+        //========================
+        //Consultar productos del carrito
+        //========================
+        List<CarritoItemEntity> items =
+            carritoItemRepository.findByCarrito(carrito);
+
+        List<CarritoItemDTO> itemsDTO =
+            new ArrayList<>();
+
         BigDecimal total = BigDecimal.ZERO;
 
-        for(CarritoItemEntity item : carrito.getItems()){
+        //========================
+        //Convertir productos
+        //========================
+        for(CarritoItemEntity item : items) {
 
-            CarritoItemDTO itemDTO = new CarritoItemDTO();
+            CarritoItemDTO itemDTO =
+                new CarritoItemDTO();
 
-            itemDTO.setIdCarritoItem(item.getId());
-            itemDTO.setIdProducto(item.getProducto().getId());
-            itemDTO.setNombreProducto(item.getProducto().getNombre());
-            itemDTO.setDescripcionProducto(item.getProducto().getDescripcion());
-            itemDTO.setPrecioProducto(item.getProducto().getPrecio());
-            itemDTO.setCantidad(item.getCantidad());
-            itemDTO.setPrecioProducto(item.getPrecioUnitario());
-            itemDTO.setSubtotal(item.getSubTotal());
+            itemDTO.setIdCarritoItem(
+                item.getId()
+            );
 
-            total = total.add(item.getSubTotal());
+            itemDTO.setIdProducto(
+                item.getProducto().getId()
+            );
+
+            itemDTO.setNombreProducto(
+                item.getProducto().getNombre()
+            );
+
+            itemDTO.setDescripcionProducto(
+                item.getProducto().getDescripcion()
+            );
+
+            //========================
+            //Precio registrado en carrito
+            //========================
+            itemDTO.setPrecioProducto(
+                item.getProducto().getPrecio()
+            );
+
+            //========================
+            //Precio registrado en carrito
+            //========================
+            itemDTO.setPrecioUnitario(
+                item.getPrecioUnitario()
+            );
+
+            //========================
+            //Cantidad
+            //========================
+            itemDTO.setCantidad(
+                item.getCantidad()
+            );
+
+            //========================
+            //Subtotal
+            //========================
+            BigDecimal subtotal =
+                item.getSubTotal();
+
+            itemDTO.setSubtotal(subtotal);
+
+            total = total.add(subtotal);
 
             itemsDTO.add(itemDTO);
         }
 
+        //========================
+        //Resultado
+        //========================
         obtenerCarritoDTO.setItems(itemsDTO);
+
         obtenerCarritoDTO.setTotal(total);
 
         return obtenerCarritoDTO;

@@ -15,9 +15,7 @@
         <div class="header-controles">
 
             <button class="btn-icon" type="button" (click)="semanaAnterior()">
-                <mat-icon>
-                    chevron_left
-                </mat-icon>
+                <mat-icon>chevron_left</mat-icon>
             </button>
 
             <button class="btn-mes" type="button" (click)="abrirSelectorFecha()">
@@ -39,10 +37,335 @@
 
                 Hoy
             </button>
+
         </div>
+
     </header>
 
     <main class="agenda-content">
+
+        <!-- ================================= -->
+        <!-- MENSAJES DE REPROGRAMACIÓN -->
+        <!-- ================================= -->
+
+        @if (mensajePropuesta) {
+
+            <div class="mensaje-reprogramacion mensaje-exito" role="status">
+
+                <mat-icon>check_circle</mat-icon>
+
+                <span>
+                    {{ mensajePropuesta }}
+                </span>
+
+            </div>
+
+        }
+
+        @if (errorAccionPropuesta) {
+
+            <div class="mensaje-reprogramacion mensaje-error" role="alert">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <span>
+                    {{ errorAccionPropuesta }}
+                </span>
+
+            </div>
+
+        }
+
+        <!-- ================================= -->
+        <!-- PROPUESTAS DE REPROGRAMACIÓN -->
+        <!-- ================================= -->
+
+        @if (
+            cargandoPropuestas ||
+            errorPropuestas ||
+            propuestasPendientes.length > 0
+        ) {
+
+            <section class="reprogramaciones-section" aria-labelledby="reprogramaciones-titulo">
+
+                <div class="reprogramaciones-header">
+
+                    <div class="reprogramaciones-titulo">
+
+                        <mat-icon>event_repeat</mat-icon>
+
+                        <div>
+
+                            <h2 id="reprogramaciones-titulo">
+                                Propuestas de reprogramación
+                            </h2>
+
+                            <p>
+                                Revisá los cambios de horario solicitados
+                                para tus turnos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    @if (propuestasPendientes.length > 0) {
+
+                        <span class="reprogramaciones-cantidad">
+                            {{ propuestasPendientes.length }}
+                            pendiente(s)
+                        </span>
+
+                    }
+
+                </div>
+
+                <!-- ================================= -->
+                <!-- ESTADO DE CARGA -->
+                <!-- ================================= -->
+
+                @if (cargandoPropuestas) {
+
+                    <div class="reprogramaciones-cargando">
+
+                        <mat-icon>hourglass_empty</mat-icon>
+
+                        <span>
+                            Cargando propuestas...
+                        </span>
+
+                    </div>
+
+                }
+
+                <!-- ================================= -->
+                <!-- ERROR DE CONSULTA -->
+                <!-- ================================= -->
+
+                @else if (errorPropuestas) {
+
+                    <div class="reprogramaciones-error" role="alert">
+
+                        <mat-icon>error_outline</mat-icon>
+
+                        <span>
+                            {{ errorPropuestas }}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="btn-reintentar-propuestas"
+                            (click)="cargarPropuestasPendientes()"
+                        >
+                            Reintentar
+                        </button>
+
+                    </div>
+
+                }
+
+                <!-- ================================= -->
+                <!-- LISTA DE PROPUESTAS -->
+                <!-- ================================= -->
+
+                @else {
+
+                    <div class="reprogramaciones-lista">
+
+                        @for (
+                            propuesta of propuestasPendientes;
+                            track propuesta.idReprogramacion
+                        ) {
+
+                            <article class="propuesta-card">
+
+                                <!-- Encabezado -->
+
+                                <div class="propuesta-card-header">
+
+                                    <div class="propuesta-identificacion">
+
+                                        <mat-icon>event</mat-icon>
+
+                                        <span>
+                                            Turno #{{ propuesta.idTurno }}
+                                        </span>
+
+                                    </div>
+
+                                    <span class="propuesta-estado">
+                                        <mat-icon>schedule</mat-icon>
+                                        Pendiente
+                                    </span>
+
+                                </div>
+
+                                <!-- Comparación de horarios -->
+
+                                <div class="propuesta-comparacion">
+
+                                    <div class="propuesta-horario horario-actual">
+
+                                        <span class="horario-label">
+                                            Horario actual
+                                        </span>
+
+                                        <div class="horario-fecha">
+
+                                            <mat-icon>calendar_today</mat-icon>
+
+                                            <strong>
+                                                {{ propuesta.inicioAnterior | date:'dd/MM/yyyy' }}
+                                            </strong>
+
+                                        </div>
+
+                                        <div class="horario-hora">
+
+                                            <mat-icon>schedule</mat-icon>
+
+                                            <span>
+                                                {{ propuesta.inicioAnterior | date:'HH:mm' }}
+                                                -
+                                                {{ propuesta.finAnterior | date:'HH:mm' }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="propuesta-flecha">
+
+                                        <mat-icon>arrow_forward</mat-icon>
+
+                                    </div>
+
+                                    <div class="propuesta-horario horario-nuevo">
+
+                                        <span class="horario-label">
+                                            Horario propuesto
+                                        </span>
+
+                                        <div class="horario-fecha">
+
+                                            <mat-icon>calendar_today</mat-icon>
+
+                                            <strong>
+                                                {{ propuesta.inicioNuevo | date:'dd/MM/yyyy' }}
+                                            </strong>
+
+                                        </div>
+
+                                        <div class="horario-hora">
+
+                                            <mat-icon>schedule</mat-icon>
+
+                                            <span>
+                                                {{ propuesta.inicioNuevo | date:'HH:mm' }}
+                                                -
+                                                {{ propuesta.finNuevo | date:'HH:mm' }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Motivo -->
+
+                                @if (propuesta.motivo) {
+
+                                    <div class="propuesta-motivo">
+
+                                        <mat-icon>info_outline</mat-icon>
+
+                                        <div>
+
+                                            <strong>
+                                                Motivo del cambio
+                                            </strong>
+
+                                            <p>
+                                                {{ propuesta.motivo }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                }
+
+                                <!-- Acciones -->
+
+                                <div class="propuesta-acciones">
+
+                                    <button
+                                        type="button"
+                                        class="btn-aceptar-propuesta"
+                                        [disabled]="idPropuestaProcesando !== null"
+                                        (click)="aceptarReprogramacion(propuesta.idReprogramacion)"
+                                    >
+
+                                        <mat-icon>check_circle</mat-icon>
+
+                                        <span>
+                                            Aceptar cambio
+                                        </span>
+
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="btn-rechazar-propuesta"
+                                        [disabled]="idPropuestaProcesando !== null"
+                                        (click)="rechazarReprogramacion(propuesta.idReprogramacion)"
+                                    >
+
+                                        <mat-icon>close</mat-icon>
+
+                                        <span>
+                                            Rechazar
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                                <!-- Procesando respuesta -->
+
+                                @if (
+                                    idPropuestaProcesando ===
+                                    propuesta.idReprogramacion
+                                ) {
+
+                                    <div class="propuesta-procesando" role="status">
+
+                                        <mat-icon>hourglass_top</mat-icon>
+
+                                        <span>
+                                            Guardando tu respuesta...
+                                        </span>
+
+                                    </div>
+
+                                }
+
+                            </article>
+
+                        }
+
+                    </div>
+
+                }
+
+            </section>
+
+        }
+
+        <!-- ================================= -->
+        <!-- CALENDARIO SEMANAL -->
+        <!-- ================================= -->
 
         <section class="agenda-calendar">
 
@@ -69,12 +392,17 @@
                         <div class="calendar-time">
                             {{ hora }}
                         </div>
+
                     }
+
                 </div>
 
                 @for (dia of diasSemana; track dia.getTime()) {
 
-                    <div class="calendar-day" [class.dia-hoy]="esHoy(dia)">
+                    <div
+                        class="calendar-day"
+                        [class.dia-hoy]="esHoy(dia)"
+                    >
 
                         <div class="calendar-day-header">
 
@@ -85,62 +413,164 @@
                             <span class="dia-numero">
                                 {{ dia | date:'d' }}
                             </span>
+
                         </div>
 
                         <div class="calendar-day-slot">
 
                             @for (hora of horas; track hora) {
 
-                                @if (estaDisponible(dia, hora)) {
+        <div
+            class="calendar-slot"
+            [class.slot-disponible]="estaDisponible(dia, hora)"
+            [class.slot-no-disponible]="
+                !estaDisponible(dia, hora) &&
+                !cargandoDisponibilidad &&
+                !cargandoTurnos &&
+                !errorDisponibilidad &&
+                !errorTurnos
+            "
+            [class.slot-cargando]="
+                cargandoDisponibilidad ||
+                cargandoTurnos ||
+                !!errorDisponibilidad ||
+                !!errorTurnos
+            ">
 
-                                    <button type="button" class="calendar-slot slot-disponible" (click)="seleccionarHorario(dia, hora)" [attr.title]="'Disponible: ' + hora" (click)="seleccionarHorario(dia, hora)">
-                                    </button>
+            <!-- HORARIO PARA RESERVAR -->
+            @if (
+                !cargandoDisponibilidad &&
+                !cargandoTurnos &&
+                !errorDisponibilidad &&
+                !errorTurnos &&
+                estaDisponible(dia, hora)
+            ) {
 
-                                } @else {
+                <button
+                    type="button"
+                    class="slot-area-disponible"
+                    [attr.aria-label]="
+                        'Reservar el ' +
+                        formatearFecha(dia) +
+                        ' a las ' + hora
+                    "
+                    (click)="seleccionarHorario(dia, hora)">
+                </button>
+            }
 
-                                    <div class="calendar-slot slot-no-disponible" [attr.title]="'No disponible: ' + hora"></div>
-                                }
-                            }
+            <!-- TURNOS PROPIOS -->
+            @for (
+                turno of obtenerTurnosPropiosEnFranja(dia, hora);
+                track turno.id
+            ) {
+
+                <button
+                    type="button"
+                    class="turno-propio"
+                    [ngClass]="obtenerClaseTurno(turno)"
+                    [attr.data-estado]="turno.estadoTurno"
+                    [style.top.px]="obtenerDesfaseTarjeta(turno)"
+                    [style.height.px]="obtenerAlturaTarjeta(turno)"
+                    (click)="abrirDetalleTurnoCliente(turno)">
+
+                    <span class="turno-propio-horario">
+                        {{ obtenerHorarioTurno(turno) }}
+                    </span>
+
+                    @if (obtenerAlturaTarjeta(turno) > 55) {
+
+                        <span class="turno-propio-servicio">
+                            {{ obtenerServiciosTurno(turno) }}
+                        </span>
+                    }
+
+                    @if (obtenerAlturaTarjeta(turno) > 85) {
+
+                        <span class="turno-propio-empleada">
+                            {{ obtenerNombreEmpleadoTurno(turno) }}
+                        </span>
+                    }
+
+                    @if (obtenerAlturaTarjeta(turno) > 110) {
+
+                        <span class="turno-propio-estado">
+                            {{ obtenerEstadoTurno(turno) }}
+                        </span>
+                    }
+
+                </button>
+            }
+
+        </div>
+    }
+
                         </div>
+
                     </div>
+
                 }
+
             </div>
+
         </section>
+
     </main>
+
+    <!-- ================================= -->
+    <!-- SELECTOR DE FECHA -->
+    <!-- ================================= -->
 
     @if (mostrarSelectorFecha) {
 
-        <div class="selector-overlay" (click)="mostrarSelectorFecha = false">
+        <div
+            class="selector-overlay"
+            (click)="mostrarSelectorFecha = false"
+        >
 
-            <div class="selector-fecha" (click)="$event.stopPropagation()">
+            <div
+                class="selector-fecha"
+                (click)="$event.stopPropagation()"
+            >
 
                 <div class="selector-header">
 
-                    <button type="button" class="btn-selector-titulo" (click)="cambiarVistaSelector()">
+                    <button
+                        type="button"
+                        class="btn-selector-titulo"
+                        (click)="cambiarVistaSelector()"
+                    >
 
                         @if (tipoSelector === 'dia') {
 
                             {{ mesSelector | date:'MMMM yyyy':'':'es-AR' }}
-                        }
 
-                        @else if (tipoSelector === 'meses') {
+                        } @else if (tipoSelector === 'meses') {
 
                             {{ anioSelector }}
-                        }
 
-                        @else {
+                        } @else {
 
                             Seleccionar año
+
                         }
 
                         <mat-icon>expand_more</mat-icon>
+
                     </button>
 
-                    <button type="button" class="btn-cerrar-selector" (click)="mostrarSelectorFecha = false">
+                    <button
+                        type="button"
+                        class="btn-cerrar-selector"
+                        (click)="mostrarSelectorFecha = false"
+                    >
 
                         <mat-icon>close</mat-icon>
+
                     </button>
+
                 </div>
+
+                <!-- VISTA DÍAS -->
 
                 @if (tipoSelector === 'dia') {
 
@@ -169,21 +599,12 @@
                                     type="button"
                                     class="dia-selector"
                                     [class.otro-mes]="
-                                        dia.getMonth()
-                                        !== mesSelector.getMonth()
+                                        dia.getMonth() !== mesSelector.getMonth()
                                     "
-                                    [class.dia-hoy-selector]="
-                                        esHoy(dia)
-                                    "
-                                    [class.dia-seleccionado]="
-                                        esFechaSeleccionada(dia)
-                                    "
-                                    [class.dia-pasado]="
-                                        esFechaPasada(dia)
-                                    "
-                                    [disabled]="
-                                        esFechaPasada(dia)
-                                    "
+                                    [class.dia-hoy-selector]="esHoy(dia)"
+                                    [class.dia-seleccionado]="esFechaSeleccionada(dia)"
+                                    [class.dia-pasado]="esFechaPasada(dia)"
+                                    [disabled]="esFechaPasada(dia)"
                                     (click)="seleccionarDia(dia)"
                                 >
 
@@ -199,14 +620,9 @@
 
                 }
 
-
-                <!-- ================================= -->
                 <!-- VISTA MESES -->
-                <!-- ================================= -->
 
-                @else if (
-                    tipoSelector === 'meses'
-                ) {
+                @else if (tipoSelector === 'meses') {
 
                     <div class="meses-grid">
 
@@ -222,8 +638,7 @@
                                 [class.mes-seleccionado]="
                                     i === mesSelector.getMonth()
                                     &&
-                                    anioSelector ===
-                                    mesSelector.getFullYear()
+                                    anioSelector === mesSelector.getFullYear()
                                 "
                                 (click)="seleccionarMes(i)"
                             >
@@ -238,10 +653,7 @@
 
                 }
 
-
-                <!-- ================================= -->
                 <!-- VISTA AÑOS -->
-                <!-- ================================= -->
 
                 @else {
 
@@ -255,9 +667,7 @@
                             <button
                                 type="button"
                                 class="anio-selector"
-                                [class.anio-seleccionado]="
-                                    anio === anioSelector
-                                "
+                                [class.anio-seleccionado]="anio === anioSelector"
                                 (click)="seleccionarAnio(anio)"
                             >
 
@@ -276,4 +686,119 @@
         </div>
 
     }
+
+
+@if (turnoSeleccionado) {
+
+    <dialog
+        #dialogTurnoCliente
+        class="detalle-turno-cliente-overlay"
+        (cancel)="cerrarDetalleTurnoCliente($event)"
+        (click)="cerrarDetalleTurnoCliente()">
+
+        <article
+            class="detalle-turno-cliente"
+            (click)="$event.stopPropagation()">
+
+            <header class="detalle-cliente-header">
+
+                <div>
+                    <span class="detalle-cliente-etiqueta">
+                        Mi reserva
+                    </span>
+
+                    <h2>Detalle de mi turno</h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="detalle-cliente-cerrar"
+                    aria-label="Cerrar detalle"
+                    (click)="cerrarDetalleTurnoCliente()">
+
+                    <mat-icon>close</mat-icon>
+                </button>
+
+            </header>
+
+            <div
+                class="detalle-cliente-estado"
+                [ngClass]="obtenerClaseTurno(turnoSeleccionado)"
+                [attr.data-estado]="turnoSeleccionado.estadoTurno">
+
+                {{ obtenerEstadoTurno(turnoSeleccionado) }}
+            </div>
+
+            <section class="detalle-cliente-datos">
+
+                <div class="detalle-cliente-item">
+                    <mat-icon>event</mat-icon>
+
+                    <div>
+                        <span>Fecha</span>
+                        <strong>
+                            {{ turnoSeleccionado.fechaHoraInicio | date:'fullDate':'':'es-AR' }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="detalle-cliente-item">
+                    <mat-icon>schedule</mat-icon>
+
+                    <div>
+                        <span>Horario</span>
+                        <strong>
+                            {{ obtenerHorarioTurno(turnoSeleccionado) }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="detalle-cliente-item">
+                    <mat-icon>person</mat-icon>
+
+                    <div>
+                        <span>Empleada asignada</span>
+                        <strong>
+                            {{ obtenerNombreEmpleadoTurno(turnoSeleccionado) }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="detalle-cliente-item">
+                    <mat-icon>content_cut</mat-icon>
+
+                    <div>
+                        <span>Servicios</span>
+                        <strong>
+                            {{ obtenerServiciosTurno(turnoSeleccionado) }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="detalle-cliente-item">
+                    <mat-icon>payments</mat-icon>
+
+                    <div>
+                        <span>Total</span>
+                        <strong>
+                            $ {{ turnoSeleccionado.precioTotal | number:'1.2-2' }}
+                        </strong>
+                    </div>
+                </div>
+
+            </section>
+
+            <footer class="detalle-cliente-footer">
+                <button
+                    type="button"
+                    (click)="cerrarDetalleTurnoCliente()">
+                    Cerrar
+                </button>
+            </footer>
+
+        </article>
+    </dialog>
+}
+
+
 </div>

@@ -1,1 +1,423 @@
-<p>notificaciones works!</p>
+<div class="notificaciones-container">
+
+    <!-- Encabezado -->
+    <header class="notificaciones-header">
+
+        <div class="notificaciones-titulo">
+            <span class="notificaciones-subtitulo">TU ESPACIO PERSONAL</span>
+
+            <h1>Notificaciones</h1>
+
+            <p>
+                Mantenete al tanto de las novedades y recordatorios
+                de tus turnos.
+            </p>
+        </div>
+
+        <div class="notificaciones-icono">
+            <mat-icon>notifications_none</mat-icon>
+        </div>
+
+    </header>
+
+    <!-- Cargando notificaciones -->
+    @if (cargando) {
+
+        <div class="estado-carga">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Cargando tus notificaciones...</p>
+        </div>
+
+    }
+
+    @else {
+
+        <!-- Error de carga -->
+        @if (errorCarga) {
+
+            <div class="mensaje mensaje-error" role="alert">
+                <mat-icon>error_outline</mat-icon>
+
+                <p>{{ errorCarga }}</p>
+
+                <button type="button" (click)="cargarNotificaciones()">
+                    Reintentar
+                </button>
+            </div>
+
+        }
+
+        @else {
+
+            <!-- Resumen de notificaciones -->
+            <section class="notificaciones-resumen">
+
+                <div class="resumen-tarjeta">
+
+                    <div class="resumen-informacion">
+                        <span class="resumen-etiqueta">
+                            NOTIFICACIONES
+                        </span>
+
+                        <span class="resumen-cantidad">
+                            {{ cantidadNotificaciones }}
+                        </span>
+
+                        <span class="resumen-descripcion">
+                            En total
+                        </span>
+                    </div>
+
+                    <div class="resumen-icono">
+                        <mat-icon>notifications</mat-icon>
+                    </div>
+
+                </div>
+
+                <div class="resumen-tarjeta">
+
+                    <div class="resumen-informacion">
+                        <span class="resumen-etiqueta">
+                            PENDIENTES
+                        </span>
+
+                        <span class="resumen-cantidad">
+                            {{ cantidadNoLeidas }}
+                        </span>
+
+                        <span class="resumen-descripcion">
+                            Sin leer
+                        </span>
+                    </div>
+
+                    <div class="resumen-icono">
+                        <mat-icon>mark_email_unread</mat-icon>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Actividad -->
+            <section class="notificaciones-actividad">
+
+                <div class="actividad-encabezado">
+
+                    <div class="actividad-titulo">
+                        <h2>Tu actividad</h2>
+
+                        <p>
+                            Consultá tus avisos y recordatorios.
+                        </p>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="notificaciones-filtros">
+
+                        <button
+                            type="button"
+                            class="filtro-boton"
+                            [class.filtro-activo]="filtroSeleccionado === 'TODAS'"
+                            (click)="cambiarFiltro('TODAS')">
+
+                            Todas
+
+                            <span>{{ cantidadNotificaciones }}</span>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="filtro-boton"
+                            [class.filtro-activo]="filtroSeleccionado === 'NO_LEIDAS'"
+                            (click)="cambiarFiltro('NO_LEIDAS')">
+
+                            Sin leer
+
+                            <span>{{ cantidadNoLeidas }}</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- Lista de notificaciones -->
+                @if (notificacionesFiltradas.length > 0) {
+
+                    <div class="notificaciones-lista">
+
+                        @for (grupo of gruposNotificaciones; track grupo.titulo) {
+
+                            <div class="notificaciones-grupo">
+
+                                <h3 class="grupo-titulo">
+                                    {{ grupo.titulo }}
+                                </h3>
+
+                                <div class="grupo-lista">
+
+                                    @for (notificacion of grupo.notificaciones; track notificacion.idNotificacion) {
+
+                                        <article
+                                            class="notificacion-tarjeta"
+                                            [class.notificacion-no-leida]="!notificacion.leida">
+
+                                            <button
+                                                type="button"
+                                                class="notificacion-contenido"
+                                                (click)="abrirDetalle(notificacion)"
+                                                [attr.aria-label]="'Ver notificación: ' + notificacion.mensaje">
+
+                                                <div class="notificacion-icono">
+                                                    <mat-icon>event_note</mat-icon>
+                                                </div>
+
+                                                <div class="notificacion-informacion">
+
+                                                    <div class="notificacion-encabezado">
+
+                                                        <h4>Recordatorio de turno</h4>
+
+                                                        @if (!notificacion.leida) {
+                                                            <span class="notificacion-indicador">
+                                                                Nueva
+                                                            </span>
+                                                        }
+
+                                                    </div>
+
+                                                    <p class="notificacion-mensaje">
+                                                        {{ notificacion.mensaje }}
+                                                    </p>
+
+                                                    <span class="notificacion-fecha">
+                                                        {{ notificacion.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                                                    </span>
+
+                                                </div>
+
+                                                <mat-icon class="notificacion-flecha">
+                                                    chevron_right
+                                                </mat-icon>
+
+                                            </button>
+
+                                            <div class="notificacion-estado">
+
+                                                @if (notificacion.leida) {
+
+                                                    <span class="estado-leida">
+                                                        <mat-icon>done_all</mat-icon>
+                                                        Leída
+                                                    </span>
+
+                                                }
+
+                                                @else {
+
+                                                    <button
+                                                        type="button"
+                                                        class="boton-marcar-leida"
+                                                        (click)="marcarComoLeida(notificacion)"
+                                                        [disabled]="actualizando">
+
+                                                        @if (idNotificacionActualizando === notificacion.idNotificacion) {
+                                                            Actualizando...
+                                                        }
+                                                        @else {
+                                                            Marcar como leída
+                                                        }
+
+                                                    </button>
+
+                                                }
+
+                                            </div>
+
+                                        </article>
+
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        }
+
+                    </div>
+
+                }
+
+                @else {
+
+                    <!-- Estado vacío -->
+                    <div class="estado-vacio">
+
+                        @if (filtroSeleccionado === 'NO_LEIDAS') {
+
+                            <div class="estado-vacio-icono">
+                                <mat-icon>mark_email_read</mat-icon>
+                            </div>
+
+                            <h3>¡Todo al día!</h3>
+
+                            <p>
+                                No tenés notificaciones pendientes de lectura.
+                            </p>
+
+                        }
+
+                        @else {
+
+                            <div class="estado-vacio-icono">
+                                <mat-icon>notifications_none</mat-icon>
+                            </div>
+
+                            <h3>Todavía no tenés notificaciones</h3>
+
+                            <p>
+                                Cuando haya novedades o recordatorios de tus
+                                turnos, los encontrarás aquí.
+                            </p>
+
+                        }
+
+                    </div>
+
+                }
+
+            </section>
+
+        }
+
+    }
+
+    <!-- Error al actualizar -->
+    @if (errorActualizacion) {
+
+        <div class="mensaje mensaje-error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <p>{{ errorActualizacion }}</p>
+        </div>
+
+    }
+
+    <!-- Detalle de notificación -->
+    @if (notificacionSeleccionada) {
+
+        <div class="detalle-overlay" (click)="cerrarDetalle()">
+
+            <section
+                class="detalle-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="detalleTitulo"
+                (click)="$event.stopPropagation()">
+
+                <header class="detalle-encabezado">
+
+                    <div>
+                        <span class="detalle-subtitulo">
+                            DETALLE DE NOTIFICACIÓN
+                        </span>
+
+                        <h2 id="detalleTitulo">
+                            Recordatorio de turno
+                        </h2>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="detalle-cerrar"
+                        (click)="cerrarDetalle()"
+                        aria-label="Cerrar detalle">
+
+                        <mat-icon>close</mat-icon>
+
+                    </button>
+
+                </header>
+
+                <div class="detalle-contenido">
+
+                    <div class="detalle-icono">
+                        <mat-icon>event_note</mat-icon>
+                    </div>
+
+                    <p class="detalle-mensaje">
+                        {{ notificacionSeleccionada.mensaje }}
+                    </p>
+
+                    <div class="detalle-fecha">
+                        <mat-icon>schedule</mat-icon>
+
+                        <span>
+                            {{ notificacionSeleccionada.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                        </span>
+                    </div>
+
+                    <div class="detalle-estado">
+
+                        @if (notificacionSeleccionada.leida) {
+
+                            <span class="estado-leida">
+                                <mat-icon>done_all</mat-icon>
+                                Notificación leída
+                            </span>
+
+                        }
+
+                        @else {
+
+                            <span class="estado-pendiente">
+                                <mat-icon>mark_email_unread</mat-icon>
+                                Pendiente de lectura
+                            </span>
+
+                        }
+
+                    </div>
+
+                </div>
+
+                <footer class="detalle-acciones">
+
+                    <button
+                        type="button"
+                        class="boton-cerrar-detalle"
+                        (click)="cerrarDetalle()">
+
+                        Cerrar
+
+                    </button>
+
+                    @if (!notificacionSeleccionada.leida) {
+
+                        <button
+                            type="button"
+                            class="boton-detalle-leida"
+                            (click)="marcarComoLeida(notificacionSeleccionada)"
+                            [disabled]="actualizando">
+
+                            @if (idNotificacionActualizando === notificacionSeleccionada.idNotificacion) {
+                                Actualizando...
+                            }
+                            @else {
+                                <mat-icon>done</mat-icon>
+                                Marcar como leída
+                            }
+
+                        </button>
+
+                    }
+
+                </footer>
+
+            </section>
+
+        </div>
+
+    }
+
+</div>

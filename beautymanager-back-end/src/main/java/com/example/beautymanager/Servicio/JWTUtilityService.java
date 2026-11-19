@@ -19,4 +19,8 @@ public interface JWTUtilityService {
 
     boolean isTokenValid(String token);
 
+    String getJwtId(String token) throws Exception;
+
+    boolean isTokenRevocado(String jwtId);
+
 }

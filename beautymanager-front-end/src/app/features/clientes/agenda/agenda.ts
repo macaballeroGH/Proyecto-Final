@@ -1,10 +1,14 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AgendaService } from '../../../core/services/agenda';
+import { ObtenerReprogramacionTurno } from '../../../core/models/obtener-reprogramacion-turno';
+import { TurnoService } from '../../../core/services/turno';
+import { Turno } from '../../../core/models/turno';
+import { EstadoTurno } from '../../../core/enums/estadoTurno';
 
 
 @Component({
@@ -52,8 +56,35 @@ export class AgendaCliente implements OnInit {
 
   disponibilidadPorDia: { [fecha: string]: string[] } = {};
 
+  cargandoDisponibilidad: boolean = false;
 
-  constructor(private agendaService: AgendaService, private router: Router, private cdr: ChangeDetectorRef) {}
+  errorDisponibilidad: string = '';
+
+  propuestasPendientes: ObtenerReprogramacionTurno[] = [];
+
+  cargandoPropuestas: boolean = false;
+
+  idPropuestaProcesando: number | null = null;
+
+  errorPropuestas: string = '';
+
+  errorAccionPropuesta: string = '';
+
+  mensajePropuesta: string = '';
+
+  turnosPropios: Turno[] = [];
+
+  cargandoTurnos: boolean = false;
+
+  errorTurnos: string = '';
+
+  turnoSeleccionado: Turno | null = null;
+
+  readonly EstadoTurno = EstadoTurno;
+
+  readonly alturaFranja = 48;
+
+  constructor(private agendaService: AgendaService, private turnoService: TurnoService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
 
@@ -66,7 +97,192 @@ export class AgendaCliente implements OnInit {
     this.generarAnios();
 
     this.cargarDisponibilidadSemana();
+
+    this.cargarPropuestasPendientes();
+
+    this.cargarMisTurnos();
   }
+
+
+  //========================================
+  //Cargar propuestas pendientes
+  //========================================
+  cargarPropuestasPendientes(): void {
+
+    this.cargandoPropuestas = true;
+
+    this.errorPropuestas = '';
+
+    this.turnoService
+      .obtenerReprogramacionesPendientesCliente()
+      .subscribe({
+
+        next: (propuestas) => {
+
+          this.propuestasPendientes = [...propuestas];
+
+          this.cargandoPropuestas = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error al cargar propuestas de reprogramación:',
+            error
+          );
+
+          this.propuestasPendientes = [];
+
+          this.errorPropuestas =
+            'No se pudieron cargar las propuestas de reprogramación.';
+
+          this.cargandoPropuestas = false;
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  //========================================
+  //Aceptar propuesta de reprogramación
+  //========================================
+  aceptarReprogramacion(idReprogramacion: number): void {
+
+    if (this.idPropuestaProcesando !== null) {
+      return;
+    }
+
+    this.idPropuestaProcesando = idReprogramacion;
+
+    this.errorAccionPropuesta = '';
+
+    this.mensajePropuesta = '';
+
+    this.turnoService
+      .aceptarReprogramacion(idReprogramacion)
+      .subscribe({
+
+        next: () => {
+
+          this.idPropuestaProcesando = null;
+
+          this.mensajePropuesta =
+            'Aceptaste la reprogramación. Tu turno ya tiene el nuevo horario.';
+
+          //Actualizar propuestas y disponibilidad
+          this.cargarPropuestasPendientes();
+
+          this.cargarDisponibilidadSemana();
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error al aceptar la reprogramación:',
+            error
+          );
+
+          this.idPropuestaProcesando = null;
+
+          this.errorAccionPropuesta =
+            this.obtenerMensajeErrorReprogramacion(
+              error,
+              'No se pudo aceptar la reprogramación.'
+            );
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  //========================================
+  //Rechazar propuesta de reprogramación
+  //========================================
+  rechazarReprogramacion(idReprogramacion: number): void {
+
+    if (this.idPropuestaProcesando !== null) {
+      return;
+    }
+
+    this.idPropuestaProcesando = idReprogramacion;
+
+    this.errorAccionPropuesta = '';
+
+    this.mensajePropuesta = '';
+
+    this.turnoService
+      .rechazarReprogramacion(idReprogramacion)
+      .subscribe({
+
+        next: () => {
+
+          this.idPropuestaProcesando = null;
+
+          this.mensajePropuesta =
+            'Rechazaste la propuesta. Tu turno conserva su horario original.';
+
+          //Actualizar propuestas y disponibilidad
+          this.cargarPropuestasPendientes();
+
+          this.cargarDisponibilidadSemana();
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error al rechazar la reprogramación:',
+            error
+          );
+
+          this.idPropuestaProcesando = null;
+
+          this.errorAccionPropuesta =
+            this.obtenerMensajeErrorReprogramacion(
+              error,
+              'No se pudo rechazar la reprogramación.'
+            );
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  //========================================
+  //Obtener mensaje de error del backend
+  //========================================
+  private obtenerMensajeErrorReprogramacion(
+    error: any,
+    mensajePredeterminado: string
+  ): string {
+
+    const respuesta = error?.error;
+
+    if (
+      typeof respuesta?.mensaje === 'string' &&
+      respuesta.mensaje.trim()
+    ) {
+      return respuesta.mensaje;
+    }
+
+    if (
+      typeof respuesta?.message === 'string' &&
+      respuesta.message.trim()
+    ) {
+      return respuesta.message;
+    }
+
+    return mensajePredeterminado;
+  }
+
 
   generarHorario(): void {
 
@@ -98,60 +314,63 @@ export class AgendaCliente implements OnInit {
     this.fechaSeleccionada = new Date(hoy);
   }
 
+  private obtenerLunesSemana(fecha: Date): Date {
+
+    const lunes = new Date(fecha);
+
+    lunes.setHours(0, 0, 0, 0);
+
+    const diaSemana = lunes.getDay();
+
+    const diasRetroceder = diaSemana === 0 ? 6 : diaSemana - 1;
+
+    lunes.setDate(lunes.getDate() - diasRetroceder);
+
+    return lunes;
+  }
+
   generarDiasSemana(): void {
 
     this.diasSemana = [];
-
-    const inicio = new Date(this.fechaInicioSemana);
 
     const hoy = new Date();
 
     hoy.setHours(0, 0, 0, 0);
 
-    const esSemanaActual = this.esMismaSemanaActual(inicio);
+    const lunesActual = this.obtenerLunesSemana(hoy);
 
+    const lunesMostrado = this.obtenerLunesSemana(this.fechaInicioSemana);
 
-    if (esSemanaActual) {
+    const esSemanaActual = this.esMismaSemanaActual(this.fechaInicioSemana);
 
-      const diaSemana = inicio.getDay();
+    const inicio = esSemanaActual || lunesMostrado < lunesActual ? new Date(hoy) : new Date(lunesMostrado);
 
-      const diasRestantes = 7 - diaSemana;
+    const lunesReferencia = lunesMostrado < lunesActual ? lunesActual : lunesMostrado;
 
-      for (let i = 0; i < diasRestantes; i++) {
+    const domingo = new Date(lunesReferencia);
 
-        const dia = new Date(inicio);
+    domingo.setDate(domingo.getDate() + 6);
 
-        dia.setDate(inicio.getDate() + i);
+    this.fechaInicioSemana = new Date(inicio);
 
-        this.diasSemana.push(dia);
-      }
-
-      return;
-    }
-
-    const diaSemana = inicio.getDay();
-
-    const diferenciaLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
-
-    inicio.setDate(inicio.getDate() + diferenciaLunes);
-
-    for (let i = 0; i < 7; i++) {
-
-      const dia = new Date(inicio);
-
-      dia.setDate(inicio.getDate() + i);
-
-      this.diasSemana.push(dia);
+    for(const dia = new Date(inicio); dia <= domingo; dia.setDate(dia.getDate() + 1)){
+      this.diasSemana.push(new Date(dia));
     }
   }
 
   semanaSiguiente(): void {
 
-    const ultimaFecha = this.diasSemana[this.diasSemana.length - 1];
+    if(this.diasSemana.length === 0){
+      return;
+    }
 
-    const siguienteLunes = new Date(ultimaFecha);
+    const ultimoDia = this.diasSemana[this.diasSemana.length - 1];
 
-    siguienteLunes.setDate(ultimaFecha.getDate() + 1);
+    const siguienteLunes = new Date(ultimoDia);
+
+    siguienteLunes.setDate(siguienteLunes.getDate() + 1);
+
+    siguienteLunes.setHours(0, 0, 0, 0);
 
     this.fechaInicioSemana = siguienteLunes;
 
@@ -166,22 +385,19 @@ export class AgendaCliente implements OnInit {
 
     hoy.setHours(0, 0, 0, 0);
 
-    if (this.esMismaSemanaActual(this.fechaInicioSemana)) {
+    const lunesActual = this.obtenerLunesSemana(hoy);
+
+    const lunesMostrado = this.obtenerLunesSemana(this.fechaInicioSemana);
+
+    if(lunesMostrado <= lunesActual){
       return;
     }
 
-    const inicioAnterior = new Date(this.fechaInicioSemana);
+    const lunesAnterior = new Date(lunesMostrado);
 
-    inicioAnterior.setDate(inicioAnterior.getDate() - 7);
+    lunesAnterior.setDate(lunesAnterior.getDate() - 7);
 
-    if (inicioAnterior < hoy) {
-
-      this.fechaInicioSemana = new Date(hoy);
-
-    } else {
-
-      this.fechaInicioSemana = inicioAnterior;
-    }
+    this.fechaInicioSemana = lunesAnterior <= lunesActual ? new Date(hoy) : lunesAnterior;
 
     this.generarDiasSemana();
 
@@ -205,76 +421,82 @@ export class AgendaCliente implements OnInit {
 
   cargarDisponibilidadSemana(): void {
 
+    this.cargandoDisponibilidad = true;
+    this.errorDisponibilidad = '';
+
     this.disponibilidadPorDia = {};
 
     const diasConsultados = [...this.diasSemana];
 
-    console.log('FECHAS QUE ESTAN CONSULTANDO:', diasConsultados.map(dia => this.formatearFecha(dia)));
-
     const consultas = diasConsultados.map(dia => {
 
-      const fecha = this.formatearFecha(dia);
+        const fecha = this.formatearFecha(dia);
 
-      return this.agendaService.obtenerDisponibilidadGeneral(fecha);
+        return this.agendaService.obtenerDisponibilidadGeneral(fecha);
     });
 
-    if(consultas.length === 0){
-      return;
+    if (consultas.length === 0) {
+
+        this.cargandoDisponibilidad = false;
+        return;
     }
 
     forkJoin(consultas).subscribe({
 
-      next: (resultados) => {
+        next: (resultados) => {
 
-        const nuevaDisponibilidad: { [fecha: string]: string[] } = {};
+            const nuevaDisponibilidad: {
+                [fecha: string]: string[]
+            } = {};
 
-        diasConsultados.forEach((dia, index) => {
+            diasConsultados.forEach((dia, index) => {
 
-          const fecha = this.formatearFecha(dia);
+                const fecha = this.formatearFecha(dia);
 
-          nuevaDisponibilidad[fecha] = resultados[index];
-        });
+                nuevaDisponibilidad[fecha] = resultados[index];
+            });
 
-        this.disponibilidadPorDia = nuevaDisponibilidad;
-        
-        this.cdr.detectChanges();
+            this.disponibilidadPorDia = nuevaDisponibilidad;
 
-        console.log('DISPONIBILIDAD CARGADA:', this.disponibilidadPorDia);
+            this.cargandoDisponibilidad = false;
 
-        console.log('FECHAS MOSTRADAS:', this.diasSemana.map(dia => this.formatearFecha(dia)));
+            this.cdr.detectChanges();
+        },
 
-        console.log('DISPONIBILIDAD DEL PRIMER DIA:', this.disponibilidadPorDia[this.formatearFecha(this.diasSemana[0])]);
-      },
+        error: (error) => {
 
-      error: (error) => {
+            console.error(
+                'Error al cargar la disponibilidad:',
+                error
+            );
 
-        console.error('Error al cargar la disponibilidad:', error);
+            this.disponibilidadPorDia = {};
 
-        this.disponibilidadPorDia = {};
-      }
+            this.errorDisponibilidad =
+                'No se pudo consultar la disponibilidad. Intentá nuevamente.';
+
+            this.cargandoDisponibilidad = false;
+
+            this.cdr.detectChanges();
+        }
     });
   }
 
   estaDisponible(dia: Date, hora: string): boolean {
 
-    const fecha = this.formatearFecha(dia);
-    const disponibilidad = this.disponibilidadPorDia[fecha] ?? [];
-    const fechaHora = `${fecha}T${hora}:00`;
-
-    const disponible = disponibilidad.some(fechaDisponible => fechaDisponible === fechaHora);
-
-    if (fecha === '2026-10-12' && hora === '08:00') {
-      console.log('COMPROBACIÓN FINAL', {
-        fecha,
-        hora,
-        cantidadHorarios: disponibilidad.length,
-        primerHorario: disponibilidad[0],
-        fechaHora,
-        disponible
-      });
+    if (this.tengoTurnoEnFranja(dia, hora)) {
+        return false;
     }
 
-    return disponible;
+    const fecha = this.formatearFecha(dia);
+
+    const disponibilidad = this.disponibilidadPorDia[fecha] ?? [];
+
+    const fechaHora = `${fecha}T${hora}:00`;
+
+    return disponibilidad.some(
+        fechaDisponible => fechaDisponible === fechaHora
+    );
   }
 
   seleccionarHorario(dia: Date, hora: string): void {
@@ -471,7 +693,7 @@ export class AgendaCliente implements OnInit {
     return `${diaInicio} de ${mesInicio} ${anioInicio} - ${diaFin} de ${mesFin} ${anioFin}`;
   }
 
-  private formatearFecha(fecha: Date): string {
+  formatearFecha(fecha: Date): string {
 
     const anio = fecha.getFullYear();
 
@@ -511,25 +733,204 @@ export class AgendaCliente implements OnInit {
 
     const hoy = new Date();
 
-    hoy.setHours(0, 0, 0, 0);
+    const lunesActual = this.obtenerLunesSemana(hoy);
 
-    const inicioSemanaActual = new Date(hoy);
+    const lunesComparado = this.obtenerLunesSemana(fecha);
 
-    const diaSemana = inicioSemanaActual.getDay();
-
-    if (diaSemana === 0) {
-
-      inicioSemanaActual.setDate(inicioSemanaActual.getDate());
-
-    } else {
-
-      inicioSemanaActual.setDate(inicioSemanaActual.getDate() - (diaSemana - 1));
-    }
-
-    const fechaComparar = new Date(fecha);
-
-    fechaComparar.setHours(0, 0, 0, 0);
-
-    return fechaComparar >= inicioSemanaActual && fechaComparar <= hoy;
+    return lunesActual.getTime() === lunesComparado.getTime();
   }
+
+
+  cargarMisTurnos(): void {
+
+    this.cargandoTurnos = true;
+    this.errorTurnos = '';
+
+    this.turnoService.obtenerMisTurnosCliente().subscribe({
+
+      next: (turnos: Turno[]) => {
+
+        this.turnosPropios = [...turnos].sort((a, b) => new Date(a.fechaHoraInicio).getTime() - new Date(b.fechaHoraInicio).getTime());
+
+        this.cargandoTurnos = false;
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error('Error al cargar mis turnos:', error);
+
+        this.errorTurnos = 'No se pudieron cargar tus reservas. Intentá nuevamente.';
+
+        this.cargandoTurnos = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+
+  //========================================
+  //TURNOS VIGENTES EN EL CALENDARIO
+  //========================================
+
+  private ocupaAgendaCliente(turno: Turno): boolean {
+
+    return turno.estadoTurno !== EstadoTurno.CANCELADO && turno.estadoTurno !== EstadoTurno.RECHAZADO;
+  }
+
+
+  //========================================
+  //TURNOS QUE COMIENZAN EN UNA FRANJA
+  //========================================
+
+  obtenerTurnosPropiosEnFranja(dia: Date, hora: string): Turno[] {
+
+    const fecha = this.formatearFecha(dia);
+
+    const [h, m] = hora.split(':').map(Number);
+
+    const minutosFranja = h * 60 + m;
+
+    return this.turnosPropios.filter(turno => {
+
+        if (!this.ocupaAgendaCliente(turno)) {
+            return false;
+        }
+
+        const inicio = new Date(turno.fechaHoraInicio);
+
+        const minutosInicio =
+            inicio.getHours() * 60 + inicio.getMinutes();
+
+        const franjaInicio =
+            Math.floor(minutosInicio / 30) * 30;
+
+        return this.formatearFecha(inicio) === fecha &&
+               franjaInicio === minutosFranja;
+    });
+  }
+
+
+  //========================================
+  //SUPERPOSICIÓN CON UNA RESERVA PROPIA
+  //========================================
+
+  tengoTurnoEnFranja(dia: Date, hora: string): boolean {
+
+    const fecha = this.formatearFecha(dia);
+
+    const inicioFranja = new Date(`${fecha}T${hora}:00`);
+
+    const finFranja = new Date(
+        inicioFranja.getTime() + 30 * 60000
+    );
+
+    return this.turnosPropios.some(turno => {
+
+        if (!this.ocupaAgendaCliente(turno)) {
+            return false;
+        }
+
+        const inicio = new Date(turno.fechaHoraInicio);
+        const fin = new Date(turno.fechaHoraFin);
+
+        return inicio < finFranja && fin > inicioFranja;
+    });
+  }
+
+
+  //========================================
+  //ALTURA Y POSICIÓN DE TARJETA
+  //========================================
+
+  obtenerAlturaTarjeta(turno: Turno): number {
+
+    const inicio = new Date(turno.fechaHoraInicio).getTime();
+    const fin = new Date(turno.fechaHoraFin).getTime();
+
+    const duracionMinutos = Math.max(
+        0,
+        (fin - inicio) / 60000
+    );
+
+    return Math.max(
+        24,
+        duracionMinutos / 30 * this.alturaFranja - 3
+    );
+  }
+
+  obtenerDesfaseTarjeta(turno: Turno): number {
+
+    const inicio = new Date(turno.fechaHoraInicio);
+
+    return (inicio.getMinutes() % 30) / 30 *
+        this.alturaFranja;
+  }
+
+
+  //========================================
+  //DATOS VISIBLES DEL TURNO
+  //========================================
+
+  obtenerHorarioTurno(turno: Turno): string {
+
+    const inicio = new Date(turno.fechaHoraInicio);
+    const fin = new Date(turno.fechaHoraFin);
+
+    const opciones: Intl.DateTimeFormatOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+
+    return `${inicio.toLocaleTimeString('es-AR', opciones)} - ` +
+           `${fin.toLocaleTimeString('es-AR', opciones)}`;
+  }
+
+  obtenerNombreEmpleadoTurno(turno: Turno): string {
+
+    return `${turno.nombreEmpleado} ${turno.apellidoEmpleado}`.trim();
+  }
+
+  obtenerServiciosTurno(turno: Turno): string {
+
+    return turno.servicios
+        .map(servicio => servicio.nombre)
+        .join(', ');
+  }
+
+  obtenerEstadoTurno(turno: Turno): string {
+
+    return String(turno.estadoTurno).replace(/_/g, ' ');
+  }
+
+  obtenerClaseTurno(turno: Turno): string {
+
+    return `turno-propio-${String(turno.estadoTurno).toLowerCase()}`;
+  }
+
+
+  //========================================
+  //DETALLE DE TURNO
+  //========================================
+
+  abrirDetalleTurnoCliente(turno: Turno): void {
+    this.turnoSeleccionado = turno;
+  }
+
+  cerrarDetalleTurnoCliente(evento?: Event): void {
+
+    evento?.preventDefault();
+    this.turnoSeleccionado = null;
+  }
+
+  @ViewChild('dialogTurnoCliente')
+  set dialogTurnoCliente(elemento: ElementRef<HTMLDialogElement> | undefined) {
+
+    if (elemento && !elemento.nativeElement.open) {
+        elemento.nativeElement.showModal();
+    }
+  }
+
+
 }

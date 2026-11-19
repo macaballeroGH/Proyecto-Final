@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautymanager.Modelo.DTO.ObtenerDisponibilidadReservaDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
 import com.example.beautymanager.Servicio.AgendaService;
 
@@ -23,8 +23,11 @@ import com.example.beautymanager.Servicio.AgendaService;
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLEADO', 'CLIENTE')")
 public class AgendaController {
 
-    @Autowired
-    private AgendaService agendaService;
+    private final AgendaService agendaService;
+
+    public AgendaController(AgendaService agendaService){
+        this.agendaService = agendaService;
+    }
 
     //=========================
     //Obtener disponibilidad
@@ -32,6 +35,17 @@ public class AgendaController {
     @GetMapping("/disponibilidad/{idEmpleado}")
     public ResponseEntity<List<LocalDateTime>> obtenerDisponibilidad(@PathVariable Long idEmpleado, @RequestParam List<Long> serviciosIds, @RequestParam LocalDate fecha){
         return ResponseEntity.ok(agendaService.obtenerDisponibilidad(idEmpleado, serviciosIds, fecha));
+    }
+
+    //=========================================
+    //Empleados disponibles para una reserva
+    //=========================================
+    @GetMapping("/empleados-disponibles")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
+    public ResponseEntity<List<ObtenerDisponibilidadReservaDTO>>
+        obtenerEmpleadosDisponibles(@RequestParam List<Long> serviciosIds, @RequestParam LocalDate fecha) {
+
+            return ResponseEntity.ok(agendaService.obtenerEmpleadosDisponibles(serviciosIds, fecha));
     }
 
     //===============================

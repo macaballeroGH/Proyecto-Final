@@ -1,249 +1,839 @@
+/* ==========================================================
+   BEAUTYMANAGER - ADMINISTRADORA
+   ESTADÍSTICAS
+   ========================================================== */
+
+/* ==========================================================
+   BASE GENERAL
+   ========================================================== */
+
 .estadisticas-container {
+    --est-superficie: #fff9fc;
+    --est-superficie-clara: #fffdfd;
+    --est-superficie-suave: #fff3f7;
+    --est-sombra: 0 5px 20px rgba(79, 42, 64, 0.045);
+    --est-sombra-hover: 0 10px 26px rgba(79, 42, 64, 0.075);
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
     width: 100%;
+    min-width: 0;
     min-height: 100%;
+
+    padding: 28px;
+
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+}
+
+.estadisticas-container,
+.estadisticas-container *,
+.estadisticas-container *::before,
+.estadisticas-container *::after {
     box-sizing: border-box;
 }
 
-.estadisticas-header {
+.estadisticas-container button,
+.estadisticas-container input,
+.estadisticas-container select {
+    font: inherit;
+}
+
+.estadisticas-container button {
+    cursor: pointer;
+}
+
+.estadisticas-container button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.estadisticas-container button:focus-visible,
+.estadisticas-container input:focus-visible,
+.estadisticas-container select:focus-visible {
+    outline: 2px solid var(--bm-interactivo);
+    outline-offset: 2px;
+}
+
+/* ==========================================================
+   ENCABEZADO PRINCIPAL
+   ========================================================== */
+
+.estadisticas-container > .estadisticas-header {
+    display: flex;
+    flex-direction: column;
+    gap: 23px;
+
     width: 100%;
-    box-sizing: border-box;
-    background: #7A3F4D;
-    border-radius: 12px;
-    padding: 28px 30px;
-    margin-bottom: 22px;
+    min-width: 0;
 }
 
-.estadisticas-header h1 {
+/*
+   El HTML contiene un section y un header
+   con la misma clase estadisticas-header.
+*/
+
+.estadisticas-container > .estadisticas-header > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 43px;
+}
+
+.estadisticas-container > .estadisticas-header > header h1 {
     margin: 0;
-    color: #E3C98A;
-    font-size: 28px;
-    font-weight: 600;
+
+    color: var(--bm-titulo);
+
+    font-size: 2.1rem;
+    font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.035em;
 }
 
-.estadisticas-header p {
-    margin: 8px 0 0;
-    color: #C9A45C;
-    font-size: 14px;
-    line-height: 1.5;
-}
+/* ==========================================================
+   PANEL DE FILTROS
+   ========================================================== */
 
 .filtros-estadisticas {
     width: 100%;
-    box-sizing: border-box;
-    background: #6D3442;
-    border-radius: 10px;
-    padding: 18px 22px;
-    margin-bottom: 26px;
-}
+    min-width: 0;
 
-.filtros-header {
-    margin-bottom: 14px;
-    display: none;
-}
+    padding: 21px 23px;
 
-.filtros-header h2 {
-    margin: 0;
-    color: #E3C98A;
-    font-size: 15px;
-    font-weight: 600;
+    background: var(--est-superficie);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--est-sombra);
 }
 
 .filtros-contenido {
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
-    flex-wrap: wrap;
+    display: grid;
+
+    grid-template-columns:
+        minmax(145px, 1fr)
+        minmax(155px, 1fr)
+        minmax(155px, 1fr)
+        minmax(215px, 1.3fr)
+        auto;
+
+    align-items: end;
+    gap: 15px;
+
+    width: 100%;
+    min-width: 0;
 }
+
+/* ==========================================================
+   CAMPOS DE FILTROS
+   ========================================================== */
 
 .campo-filtro {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+
+    min-width: 0;
 }
 
 .campo-filtro label {
-    color: #E3C98A;
-    font-size: 12px;
-    font-weight: 500;
+    display: block;
+    min-height: 18px;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 0.81rem;
+    font-weight: 600;
+    line-height: 1.4;
 }
 
-.campo-filtro select,
-.campo-filtro input {
-    width: 160px;
-    height: 38px;
-    box-sizing: border-box;
-    padding: 0 11px;
-    border: 1px solid rgba(227, 201, 138, 0.35);
-    border-radius: 6px;
-    background: #F8F3F1;
-    color: #34232A;
-    font-family: inherit;
-    font-size: 13px;
+.campo-filtro input,
+.campo-filtro select {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+
+    padding: 10px 12px;
+
+    background: #ffffff;
+    color: var(--bm-texto-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    font-size: 0.84rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.campo-filtro select {
+    cursor: pointer;
+}
+
+.campo-filtro input:focus,
+.campo-filtro select:focus {
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    background: #ffffff;
+    border-color: var(--bm-interactivo);
+
+    box-shadow: 0 0 0 3px rgba(212, 92, 140, 0.12);
 }
 
-.campo-filtro select:focus,
-.campo-filtro input:focus {
-    border-color: #C9A45C;
-    box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.14);
+.campo-filtro input[type="date"] {
+    color-scheme: light;
 }
 
-.campo-filtro input:disabled {
-    background: #E7DEDB;
-    color: #8C7B80;
-    cursor: not-allowed;
-}
+/* ==========================================================
+   CHECKBOX COMPARAR PERÍODOS
+   ========================================================== */
 
 .comparar-filtro {
     display: flex;
-    align-items: center;
-    height: 38px;
+    align-items: flex-end;
+
+    min-width: 0;
 }
 
 .checkbox-contenedor {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #E3C98A;
-    font-size: 12px;
+    gap: 11px;
+
+    width: 100%;
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    background: var(--est-superficie-suave);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
     cursor: pointer;
-    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
 }
 
-.checkbox-contenedor input {
-    width: 15px;
-    height: 15px;
+.checkbox-contenedor:hover {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+.checkbox-contenedor input[type="checkbox"] {
+    flex-shrink: 0;
+
+    width: 17px;
+    height: 17px;
     margin: 0;
-    accent-color: #C77C8A;
+
+    accent-color: var(--bm-boton-principal);
     cursor: pointer;
 }
+
+.checkbox-contenedor span {
+    color: var(--bm-texto-principal);
+
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   BOTÓN APLICAR FILTROS
+   ========================================================== */
 
 .btn-aplicar {
-    height: 38px;
-    padding: 0 19px;
-    border: none;
-    border-radius: 6px;
-    background: #C77C8A;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 125px;
+    min-height: 44px;
+
+    padding: 10px 16px;
+
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    font-size: 0.84rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    line-height: 1.35;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.btn-aplicar:hover {
-    background: #A65364;
+.btn-aplicar:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+
+    box-shadow: 0 5px 14px rgba(189, 68, 117, 0.14);
 }
 
-.btn-aplicar:active {
-    transform: translateY(1px);
+/* ==========================================================
+   ESTADOS DE CARGA, ERROR Y SIN DATOS
+   ========================================================== */
+
+.estado-estadisticas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    width: 100%;
+    min-height: 230px;
+
+    padding: 35px 25px;
+
+    background: var(--est-superficie);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--est-sombra);
+
+    text-align: center;
 }
+
+.estado-estadisticas::before {
+    content: "";
+
+    display: block;
+
+    width: 46px;
+    height: 46px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 14px;
+}
+
+.estado-estadisticas p {
+    max-width: 420px;
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.estado-error {
+    border-color: #edc7cf;
+    background: #fff8f9;
+}
+
+.estado-error::before {
+    background: #ffe6eb;
+    border-color: #edc7cf;
+}
+
+.estado-error p {
+    color: #ab4055;
+}
+
+/* ==========================================================
+   INDICADORES PRINCIPALES
+   ========================================================== */
 
 .indicadores-estadisticas {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 26px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+
+    width: 100%;
+    min-width: 0;
 }
 
 .indicador-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+
     min-width: 0;
-    box-sizing: border-box;
-    background: #F1E4E0;
-    border: 1px solid #E2D1CC;
-    border-radius: 10px;
-    padding: 19px 20px;
+    min-height: 132px;
+
+    padding: 23px;
+
+    background: var(--est-superficie);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--est-sombra);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/*
+   Detalles de color para distinguir los
+   cuatro indicadores sin saturar las tarjetas.
+*/
+
+.indicador-card::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 4px;
+}
+
+.indicador-card:nth-child(1)::before {
+    background: #bd4475;
+}
+
+.indicador-card:nth-child(2)::before {
+    background: #8d71b0;
+}
+
+.indicador-card:nth-child(3)::before {
+    background: #68a481;
+}
+
+.indicador-card:nth-child(4)::before {
+    background: #709bc2;
+}
+
+.indicador-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #e9b4c9;
+    box-shadow: var(--est-sombra-hover);
 }
 
 .indicador-titulo {
-    display: block;
-    margin-bottom: 10px;
-    color: #6D3442;
-    font-size: 12px;
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.83rem;
     font-weight: 600;
+    line-height: 1.45;
 }
 
 .indicador-valor {
     display: block;
-    color: #34232A;
-    font-size: 24px;
+
+    max-width: 100%;
+
+    color: var(--bm-texto-principal);
+
+    font-size: clamp(1.45rem, 1.9vw, 1.9rem);
     font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.025em;
+
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
 }
 
+/* ==========================================================
+   COMPARACIÓN CON PERÍODOS ANTERIORES
+   ========================================================== */
+
 .indicador-comparacion {
-    display: inline-block;
-    margin-top: 7px;
-    color: #A65364;
-    font-size: 11px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 27px;
+    padding: 5px 10px;
+
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.3;
 }
+
+/* ==========================================================
+   DISTRIBUCIÓN DE GRÁFICOS
+   ========================================================== */
 
 .graficos-estadisticas {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    gap: 18px;
+
+    width: 100%;
+    min-width: 0;
+
+    align-items: stretch;
 }
+
+/* ==========================================================
+   TARJETAS DE GRÁFICOS
+   ========================================================== */
 
 .grafico-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
     min-width: 0;
-    box-sizing: border-box;
-    background: #FAF8F7;
-    border: 1px solid #E8E1DE;
-    border-radius: 12px;
-    padding: 22px;
+    min-height: 400px;
+
+    padding: 23px;
+
+    background: var(--est-superficie-clara);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--est-sombra);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.grafico-card:hover {
+    border-color: #e9b4c9;
+    box-shadow: var(--est-sombra-hover);
+}
+
+/*
+   Pequeña línea decorativa que identifica
+   visualmente cada gráfico.
+*/
+
+.grafico-card::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 23px;
+
+    width: 51px;
+    height: 3px;
+
+    border-radius: 0 0 5px 5px;
+
+    background: var(--bm-interactivo);
+}
+
+.grafico-ingresos::before {
+    background: #bd4475;
+}
+
+.grafico-turnos::before {
+    background: #8d71b0;
+}
+
+.grafico-ranking:nth-child(3)::before {
+    background: #68a481;
+}
+
+.grafico-ranking:nth-child(4)::before {
+    background: #709bc2;
+}
+
+/* ==========================================================
+   ENCABEZADO DE CADA GRÁFICO
+   ========================================================== */
+
 .grafico-header {
-    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    flex: 0 0 auto;
+    min-width: 0;
 }
 
 .grafico-header h2 {
     margin: 0;
-    color: #34232A;
-    font-size: 17px;
-    font-weight: 600;
-}
 
-.grafico-header span {
-    display: block;
-    margin-top: 5px;
-    color: #8A777D;
-    font-size: 12px;
+    color: var(--bm-texto-principal);
+
+    font-size: 1.04rem;
+    font-weight: 700;
     line-height: 1.4;
 }
 
+.grafico-header span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.79rem;
+    line-height: 1.5;
+}
+
+/* ==========================================================
+   CONTENEDOR DE CHART.JS
+   ========================================================== */
+
 .grafico-contenedor {
     position: relative;
+
+    flex: 1 1 auto;
+
     width: 100%;
+    min-width: 0;
+    min-height: 0;
     height: 300px;
+
+    overflow: hidden;
+}
+
+.grafico-contenedor canvas {
+    display: block;
+
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ==========================================================
+   GRÁFICOS DE INGRESOS Y TURNOS
+   ========================================================== */
+
+.grafico-ingresos .grafico-contenedor,
+.grafico-turnos .grafico-contenedor {
+    height: 300px;
+    min-height: 300px;
+}
+
+/* ==========================================================
+   GRÁFICOS CIRCULARES
+   ========================================================== */
+
+.grafico-ranking {
+    min-height: 440px;
 }
 
 .grafico-dona {
-    height: 320px;
-}
-
-.estado-estadisticas {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 220px;
-    box-sizing: border-box;
-    background: #FAF8F7;
-    border: 1px solid #E8E1DE;
-    border-radius: 12px;
-    padding: 30px;
+
+    height: 340px;
+    min-height: 340px;
+
+    padding: 5px 0;
 }
 
-.estado-estadisticas p {
-    margin: 0;
-    color: #6D3442;
-    font-size: 14px;
+.grafico-dona canvas {
+    max-width: 100%;
 }
 
-.estado-error p {
-    color: #A65364;
+/* ==========================================================
+   VENTANAS DE ESCRITORIO MEDIANAS
+   ========================================================== */
+
+@media (max-width: 1450px) {
+
+    .filtros-contenido {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .comparar-filtro {
+        grid-column: span 2;
+    }
+
+    .btn-aplicar {
+        width: 100%;
+    }
+
+    .indicador-card {
+        padding: 20px;
+    }
+
+    .indicador-valor {
+        font-size: 1.55rem;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO ANGOSTAS
+   ========================================================== */
+
+@media (max-width: 1100px) {
+
+    .estadisticas-container {
+        padding: 23px;
+        gap: 21px;
+    }
+
+    .indicadores-estadisticas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .indicador-card {
+        min-height: 115px;
+    }
+
+    .graficos-estadisticas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .grafico-card {
+        min-height: 380px;
+    }
+
+    .grafico-ranking {
+        min-height: 420px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS MÁS ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 800px) {
+
+    .estadisticas-container {
+        padding: 18px;
+        gap: 18px;
+    }
+
+    .estadisticas-container > .estadisticas-header {
+        gap: 18px;
+    }
+
+    .estadisticas-container > .estadisticas-header > header h1 {
+        font-size: 1.85rem;
+    }
+
+    .filtros-estadisticas {
+        padding: 18px;
+    }
+
+    .filtros-contenido {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .comparar-filtro {
+        grid-column: span 1;
+    }
+
+    .btn-aplicar {
+        align-self: end;
+    }
+
+    .indicadores-estadisticas {
+        gap: 12px;
+    }
+
+    .indicador-card {
+        padding: 18px;
+    }
+
+    .indicador-valor {
+        font-size: 1.45rem;
+    }
+
+    .grafico-card {
+        padding: 19px;
+        gap: 18px;
+    }
+
+    .grafico-card::before {
+        left: 19px;
+    }
+
+    .grafico-contenedor {
+        height: 280px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO MUY ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 540px) {
+
+    .estadisticas-container {
+        padding: 14px;
+    }
+
+    .filtros-contenido {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .comparar-filtro {
+        grid-column: auto;
+    }
+
+    .btn-aplicar {
+        width: 100%;
+    }
+
+    .indicadores-estadisticas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .indicador-card {
+        min-height: 105px;
+    }
+
+    .grafico-card {
+        min-height: 360px;
+        padding: 16px;
+    }
+
+    .grafico-ingresos .grafico-contenedor,
+    .grafico-turnos .grafico-contenedor {
+        height: 260px;
+        min-height: 260px;
+    }
+
+    .grafico-dona {
+        height: 320px;
+        min-height: 320px;
+    }
+}
+
+/* ==========================================================
+   ACCESIBILIDAD
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .estadisticas-container *,
+    .estadisticas-container *::before,
+    .estadisticas-container *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
 }

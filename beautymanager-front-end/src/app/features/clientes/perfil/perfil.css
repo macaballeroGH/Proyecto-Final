@@ -1,0 +1,2102 @@
+/* ==========================================================
+   BEAUTYMANAGER
+   CLIENTE - MI PERFIL
+   Colores definidos en src/styles.css
+   ========================================================== */
+
+/* ==========================================================
+   CONFIGURACIÓN GENERAL
+   ========================================================== */
+
+:host {
+    display: block;
+    min-width: 0;
+}
+
+.perfil-cliente-container {
+    width: 100%;
+    max-width: 1600px;
+    min-width: 0;
+    min-height: 100%;
+
+    margin: 0 auto;
+    padding: 30px 34px 55px;
+
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+
+    box-sizing: border-box;
+}
+
+.perfil-cliente-container,
+.perfil-cliente-container * {
+    box-sizing: border-box;
+}
+
+.perfil-cliente-container h1,
+.perfil-cliente-container h2,
+.perfil-cliente-container h3,
+.perfil-cliente-container p {
+    margin: 0;
+}
+
+.perfil-cliente-container button,
+.perfil-cliente-container a {
+    font: inherit;
+}
+
+.perfil-cliente-container button:focus-visible,
+.perfil-cliente-container a:focus-visible {
+    outline: 3px solid var(--bm-interactivo);
+    outline-offset: 3px;
+}
+
+.perfil-cliente-container mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.perfil-cliente-container button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================
+   ENCABEZADO - BIENVENIDA
+   ========================================================== */
+
+.perfil-bienvenida {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    min-height: 184px;
+    margin-bottom: 28px;
+    padding: 37px 40px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+}
+
+.bienvenida-contenido {
+    width: 100%;
+    min-width: 0;
+}
+
+.bienvenida-etiqueta {
+    display: block;
+    margin-bottom: 13px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.bienvenida-contenido h1 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(29px, 3vw, 39px);
+    font-weight: 700;
+    line-height: 1.3;
+
+    overflow-wrap: anywhere;
+}
+
+.bienvenida-contenido p {
+    max-width: 650px;
+
+    color: var(--bm-texto-secundario);
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+/* ==========================================================
+   BOTÓN ACTUALIZAR
+   ========================================================== */
+
+.perfil-bienvenida .btn-actualizar {
+    position: relative;
+    z-index: 1;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    flex-shrink: 0;
+    min-width: 125px;
+    min-height: 43px;
+    padding: 10px 17px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.perfil-bienvenida .btn-actualizar mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.perfil-bienvenida .btn-actualizar:hover {
+    background: var(--bm-fondo);
+    border-color: var(--bm-interactivo);
+
+    transform: translateY(-1px);
+}
+
+/* ==========================================================
+   INFORMACIÓN PRINCIPAL
+   ========================================================== */
+
+.perfil-principal {
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 340px)
+        minmax(0, 1fr);
+
+    align-items: stretch;
+    gap: 22px;
+
+    margin-bottom: 39px;
+}
+
+/* ==========================================================
+   TARJETAS DE ANGULAR MATERIAL
+   ========================================================== */
+
+.perfil-cliente-container .foto-card,
+.perfil-cliente-container .datos-card,
+.perfil-cliente-container .estadistica-card,
+.perfil-cliente-container .proximo-turno-card {
+    min-width: 0;
+    margin: 0;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 19px;
+
+    color: var(--bm-texto-principal);
+
+    box-shadow:
+        0 7px 26px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 7%,
+            transparent
+        );
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - TARJETA
+   ========================================================== */
+
+.perfil-cliente-container .foto-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 31px 23px;
+
+    text-align: center;
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - CONTENEDOR
+   ========================================================== */
+
+.foto-contenedor {
+    position: relative;
+
+    width: 158px;
+    height: 158px;
+    margin-bottom: 24px;
+
+    flex-shrink: 0;
+}
+
+.foto-contenedor::before {
+    content: "";
+
+    position: absolute;
+    inset: -9px;
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+.foto-perfil {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    background: var(--bm-fondo-secundario);
+    border: 4px solid var(--bm-fondo);
+    border-radius: 50%;
+
+    box-shadow:
+        0 6px 20px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 12%,
+            transparent
+        );
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - ICONO DECORATIVO
+   ========================================================== */
+
+.foto-decoracion {
+    position: absolute;
+    right: 2px;
+    bottom: 3px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    background: var(--bm-boton-principal);
+    border: 3px solid var(--bm-tarjeta);
+    border-radius: 50%;
+
+    color: var(--bm-tarjeta);
+
+    box-shadow:
+        0 3px 10px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 13%,
+            transparent
+        );
+}
+
+.foto-decoracion mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - INFORMACIÓN
+   ========================================================== */
+
+.foto-informacion {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 23px;
+}
+
+.foto-informacion h2 {
+    margin-bottom: 8px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+}
+
+.foto-informacion p {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - ACCIONES
+   ========================================================== */
+
+.foto-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+
+    width: 100%;
+    margin-top: auto;
+}
+
+.foto-acciones button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    width: 100%;
+    min-height: 43px;
+    padding: 11px 16px;
+
+    border: 1px solid;
+    border-radius: 10px;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.foto-acciones button mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+}
+
+/* Cambiar fotografía */
+
+.foto-acciones .btn-cambiar-foto {
+    background: var(--bm-boton-principal);
+    border-color: var(--bm-boton-principal);
+
+    color: var(--bm-tarjeta);
+}
+
+.foto-acciones .btn-cambiar-foto:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+
+    transform: translateY(-1px);
+}
+
+/* Eliminar fotografía */
+
+.foto-acciones .btn-eliminar-foto {
+    background: var(--bm-fondo);
+    border-color: var(--bm-borde);
+
+    color: var(--bm-boton-principal);
+}
+
+.foto-acciones .btn-eliminar-foto:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+/* ==========================================================
+   FOTOGRAFÍA - ERROR
+   ========================================================== */
+
+.foto-card .mensaje-error {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px 14px;
+
+    background: color-mix(
+        in srgb,
+        var(--bm-interactivo) 10%,
+        var(--bm-tarjeta)
+    );
+
+    border: 1px solid var(--bm-interactivo);
+    border-radius: 10px;
+
+    color: var(--bm-boton-principal);
+    font-size: 11px;
+    line-height: 1.75;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   DATOS PERSONALES - TARJETA
+   ========================================================== */
+
+.perfil-cliente-container .datos-card {
+    display: flex;
+    flex-direction: column;
+
+    padding: 27px 29px;
+}
+
+/* ==========================================================
+   DATOS PERSONALES - ENCABEZADO
+   ========================================================== */
+
+.card-encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 25px;
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.card-encabezado > div:first-child {
+    min-width: 0;
+}
+
+.card-subtitulo {
+    display: block;
+    margin-bottom: 9px;
+
+    color: var(--bm-boton-principal);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.card-encabezado h2 {
+    margin-bottom: 9px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.card-encabezado p {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.card-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 52px;
+    height: 52px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-borde);
+    border-radius: 14px;
+
+    color: var(--bm-boton-principal);
+}
+
+.card-icono mat-icon {
+    width: 27px;
+    height: 27px;
+    font-size: 27px;
+}
+
+/* ==========================================================
+   DATOS PERSONALES - CUADRÍCULA
+   ========================================================== */
+
+.datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+
+    flex: 1;
+}
+
+.dato-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+
+    min-width: 0;
+    min-height: 94px;
+    padding: 17px 19px;
+
+    background: var(--bm-fondo);
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+}
+
+.dato-label {
+    color: var(--bm-texto-secundario);
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.dato-item strong {
+    display: block;
+    max-width: 100%;
+
+    color: var(--bm-texto-principal);
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+.dato-email {
+    color: var(--bm-boton-principal) !important;
+}
+
+/* ==========================================================
+   ESTADO DE CUENTA
+   ========================================================== */
+
+.estado-cuenta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    max-width: 100%;
+    padding: 8px 12px;
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 100px;
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-transform: capitalize;
+}
+
+.estado-punto {
+    display: inline-block;
+    flex-shrink: 0;
+
+    width: 8px;
+    height: 8px;
+
+    background: currentColor;
+    border-radius: 50%;
+}
+
+/* Activa */
+
+.estado-cuenta.estado-activo {
+    background: color-mix(
+        in srgb,
+        var(--bm-titulo) 12%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--bm-titulo) 35%,
+        var(--bm-borde)
+    );
+
+    color: var(--bm-titulo);
+}
+
+/* Inactiva */
+
+.estado-cuenta.estado-inactivo {
+    background: color-mix(
+        in srgb,
+        var(--bm-boton-principal) 10%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: var(--bm-interactivo);
+    color: var(--bm-boton-principal);
+}
+
+/* ==========================================================
+   ESTADOS DE CARGA Y ERROR
+   ========================================================== */
+
+.datos-card .estado-carga,
+.datos-card .estado-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    flex: 1;
+    min-height: 190px;
+    padding: 25px;
+
+    background: var(--bm-fondo);
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.datos-card .estado-carga p,
+.datos-card .estado-error p {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.datos-card .estado-carga::before {
+    content: "";
+
+    width: 34px;
+    height: 34px;
+
+    border: 3px solid var(--bm-borde);
+    border-top-color: var(--bm-boton-principal);
+    border-radius: 50%;
+
+    animation: perfil-girar 0.9s linear infinite;
+}
+
+@keyframes perfil-girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.datos-card .estado-error {
+    background: color-mix(
+        in srgb,
+        var(--bm-interactivo) 9%,
+        var(--bm-tarjeta)
+    );
+}
+
+.datos-card .estado-error p {
+    color: var(--bm-boton-principal);
+}
+
+.datos-card .estado-error button {
+    min-height: 39px;
+    padding: 9px 16px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    color: var(--bm-boton-principal);
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+.datos-card .estado-error button:hover {
+    background: var(--bm-fondo-secundario);
+}
+
+/* ==========================================================
+   ENCABEZADOS DE SECCIONES
+   ========================================================== */
+
+.seccion-encabezado {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+
+    margin-bottom: 22px;
+}
+
+.seccion-encabezado > div {
+    min-width: 0;
+}
+
+.seccion-etiqueta {
+    display: block;
+    margin-bottom: 9px;
+
+    color: var(--bm-boton-principal);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.seccion-encabezado h2 {
+    margin-bottom: 9px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.seccion-encabezado p {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+/* ==========================================================
+   RESUMEN DE ACTIVIDAD
+   ========================================================== */
+
+.perfil-estadisticas {
+    margin-bottom: 39px;
+}
+
+.estadisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 19px;
+}
+
+/* ==========================================================
+   TARJETAS DE ESTADÍSTICAS
+   ========================================================== */
+
+.perfil-cliente-container .estadistica-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    min-height: 202px;
+    padding: 23px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.estadistica-card:hover {
+    transform: translateY(-3px);
+
+    border-color: var(--bm-interactivo) !important;
+
+    box-shadow:
+        0 11px 28px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 10%,
+            transparent
+        ) !important;
+}
+
+/* ==========================================================
+   ESTADÍSTICAS - ICONOS
+   ========================================================== */
+
+.estadistica-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-borde);
+    border-radius: 13px;
+
+    color: var(--bm-boton-principal);
+}
+
+.estadistica-icono mat-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 25px;
+}
+
+/* Variaciones sutiles usando la paleta global */
+
+.icono-turnos {
+    background: var(--bm-fondo-secundario);
+}
+
+.icono-proximos {
+    background: color-mix(
+        in srgb,
+        var(--bm-titulo) 10%,
+        var(--bm-tarjeta)
+    );
+
+    color: var(--bm-titulo);
+}
+
+.icono-tratamientos {
+    background: var(--bm-fondo);
+}
+
+.icono-billetera {
+    background: color-mix(
+        in srgb,
+        var(--bm-boton-principal) 13%,
+        var(--bm-tarjeta)
+    );
+}
+
+/* ==========================================================
+   ESTADÍSTICAS - TEXTOS
+   ========================================================== */
+
+.estadistica-label {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.estadistica-valor {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 2.6vw, 36px);
+    font-weight: 700;
+    line-height: 1.25;
+
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.estadistica-card p {
+    margin-top: auto;
+
+    color: var(--bm-texto-tenue);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - SECCIÓN
+   ========================================================== */
+
+.proximo-turno-seccion {
+    min-width: 0;
+}
+
+/* ==========================================================
+   ENLACE A AGENDA
+   ========================================================== */
+
+.enlace-agenda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 41px;
+    padding: 10px 16px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 12px;
+    font-weight: 750;
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.enlace-agenda mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.enlace-agenda:hover {
+    background: var(--bm-fondo);
+    border-color: var(--bm-interactivo);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - TARJETA PRINCIPAL
+   ========================================================== */
+
+.perfil-cliente-container .proximo-turno-card {
+    display: flex;
+    flex-direction: column;
+
+    padding: 0;
+    overflow: hidden;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - CONTENIDO
+   ========================================================== */
+
+.proximo-turno-contenido {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 26px;
+
+    align-items: stretch;
+
+    padding: 27px;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - FECHA
+   ========================================================== */
+
+.turno-fecha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 185px;
+    padding: 22px 15px;
+
+    background: linear-gradient(
+        140deg,
+        var(--bm-fondo-secundario),
+        var(--bm-fondo)
+    );
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    text-align: center;
+}
+
+.fecha-dia {
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 61px;
+    font-weight: 700;
+    line-height: 1;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.fecha-mes {
+    color: var(--bm-boton-principal);
+
+    font-size: 13px;
+    font-weight: 800;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.fecha-hora {
+    margin-top: 8px;
+    padding: 8px 14px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 100px;
+
+    color: var(--bm-texto-principal);
+    font-size: 12px;
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - INFORMACIÓN
+   ========================================================== */
+
+.turno-informacion {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+    padding: 8px 0;
+}
+
+.turno-superior {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+.turno-etiqueta {
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - ESTADO
+   ========================================================== */
+
+.turno-estado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 29px;
+    padding: 7px 12px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-borde);
+    border-radius: 100px;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.3;
+    text-transform: capitalize;
+}
+
+/* Pendiente */
+
+.turno-estado.estado-pendiente {
+    background: color-mix(
+        in srgb,
+        var(--bm-titulo) 12%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--bm-titulo) 40%,
+        var(--bm-borde)
+    );
+
+    color: var(--bm-titulo);
+}
+
+/* Confirmado */
+
+.turno-estado.estado-confirmado {
+    background: color-mix(
+        in srgb,
+        var(--bm-texto-principal) 7%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--bm-texto-principal) 25%,
+        var(--bm-borde)
+    );
+
+    color: var(--bm-texto-principal);
+}
+
+/* Reprogramado */
+
+.turno-estado.estado-reprogramado {
+    background: color-mix(
+        in srgb,
+        var(--bm-boton-principal) 12%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: var(--bm-interactivo);
+    color: var(--bm-boton-principal);
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - SERVICIOS
+   ========================================================== */
+
+.turno-informacion > h3 {
+    margin-bottom: 18px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - DETALLES
+   ========================================================== */
+
+.turno-detalles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.turno-detalle-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 0;
+
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.turno-detalle-item mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+
+    color: var(--bm-boton-principal);
+}
+
+.turno-detalle-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - PIE
+   ========================================================== */
+
+.proximo-turno-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 17px;
+
+    padding: 19px 27px;
+
+    background: var(--bm-fondo-secundario);
+    border-top: 1px solid var(--bm-borde);
+}
+
+.proximo-turno-pie > span {
+    flex: 1 1 220px;
+    min-width: 0;
+
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ==========================================================
+   BOTÓN VER TURNOS
+   ========================================================== */
+
+.btn-ver-turnos,
+.btn-reservar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 43px;
+    padding: 11px 19px;
+
+    background: var(--bm-boton-principal);
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 10px;
+
+    color: var(--bm-tarjeta);
+
+    font-size: 12px;
+    font-weight: 750;
+    text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-ver-turnos mat-icon,
+.btn-reservar mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.btn-ver-turnos:hover,
+.btn-reservar:hover {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+
+    transform: translateY(-1px);
+}
+
+/* ==========================================================
+   PRÓXIMO TURNO - VACÍO / CARGA / ERROR
+   ========================================================== */
+
+.proximo-turno-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    min-height: 290px;
+    padding: 40px 28px;
+
+    background: linear-gradient(
+        140deg,
+        var(--bm-tarjeta),
+        var(--bm-fondo-secundario)
+    );
+
+    text-align: center;
+}
+
+.proximo-turno-vacio > mat-icon {
+    width: 49px;
+    height: 49px;
+    font-size: 49px;
+
+    color: var(--bm-boton-principal);
+}
+
+.proximo-turno-vacio h3 {
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.proximo-turno-vacio p {
+    max-width: 440px;
+
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.85;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   ESTADO VACÍO - ICONO
+   ========================================================== */
+
+.vacio-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 78px;
+    height: 78px;
+    margin-bottom: 6px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 50%;
+
+    color: var(--bm-boton-principal);
+}
+
+.vacio-icono mat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 38px;
+}
+
+.proximo-turno-vacio .btn-reservar {
+    margin-top: 5px;
+}
+
+/* ==========================================================
+   REINTENTAR CARGA DE TURNOS
+   ========================================================== */
+
+.proximo-turno-vacio button {
+    min-height: 40px;
+    padding: 10px 16px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    color: var(--bm-boton-principal);
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+.proximo-turno-vacio button:hover {
+    background: var(--bm-fondo);
+}
+
+
+/* ==========================================================
+   PERFIL CLIENTE - EDITAR INFORMACIÓN
+   ========================================================== */
+
+/* BOTÓN EDITAR */
+
+.datos-card .btn-editar-datos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    flex-shrink: 0;
+
+    min-height: 39px;
+    padding: 10px 15px;
+
+    background: var(--bm-fondo);
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.datos-card .btn-editar-datos mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.datos-card .btn-editar-datos:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+.datos-card .card-encabezado {
+    flex-wrap: wrap;
+}
+
+/* MENSAJES */
+
+.perfil-mensaje-exito,
+.perfil-aviso-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 18px;
+    padding: 13px 16px;
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.perfil-mensaje-exito {
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-principal);
+}
+
+.perfil-mensaje-exito mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+
+    color: var(--bm-titulo);
+}
+
+.perfil-aviso-error {
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    background: color-mix(
+        in srgb,
+        var(--bm-interactivo) 10%,
+        var(--bm-tarjeta)
+    );
+
+    color: var(--bm-boton-principal);
+}
+
+.perfil-aviso-error button {
+    min-height: 34px;
+    padding: 7px 12px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    color: var(--bm-boton-principal);
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+/* FONDO DEL MODAL */
+
+.edicion-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: color-mix(
+        in srgb,
+        var(--bm-texto-principal) 60%,
+        transparent
+    );
+
+    backdrop-filter: blur(4px);
+}
+
+/* VENTANA */
+
+.edicion-modal {
+    display: flex;
+    flex-direction: column;
+
+    width: min(100%, 490px);
+    max-height: calc(100dvh - 48px);
+    min-width: 0;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+
+    color: var(--bm-texto-principal);
+
+    box-shadow:
+        0 20px 55px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 20%,
+            transparent
+        );
+
+    overflow: hidden;
+}
+
+/* ENCABEZADO DEL MODAL */
+
+.edicion-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 23px 26px;
+
+    background: var(--bm-fondo-secundario);
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.edicion-modal-header h2 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.edicion-cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 36px;
+    height: 36px;
+
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    color: var(--bm-texto-principal);
+    cursor: pointer;
+}
+
+.edicion-cerrar:hover:not(:disabled) {
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
+}
+
+/* FORMULARIO */
+
+.edicion-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+
+    min-height: 0;
+    padding: 25px 26px;
+
+    overflow-y: auto;
+}
+
+.edicion-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.edicion-campo label {
+    color: var(--bm-texto-principal);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.edicion-campo input {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 13px;
+
+    background: var(--bm-fondo);
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    color: var(--bm-texto-principal);
+    font: inherit;
+    font-size: 13px;
+
+    outline: none;
+
+    transition: border-color 0.2s ease;
+}
+
+.edicion-campo input:focus {
+    border-color: var(--bm-boton-principal);
+
+    box-shadow:
+        0 0 0 3px color-mix(
+            in srgb,
+            var(--bm-interactivo) 12%,
+            transparent
+        );
+}
+
+.edicion-campo input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ERROR DEL FORMULARIO */
+
+.edicion-error {
+    margin: 0;
+    padding: 13px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-interactivo);
+    border-radius: 9px;
+
+    color: var(--bm-boton-principal);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ACCIONES */
+
+.edicion-modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 11px;
+
+    margin-top: 6px;
+    padding-top: 20px;
+
+    border-top: 1px solid var(--bm-borde);
+}
+
+.btn-cancelar-edicion,
+.btn-guardar-edicion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 11px 17px;
+
+    border: 1px solid;
+    border-radius: 10px;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.btn-cancelar-edicion {
+    background: var(--bm-fondo);
+    border-color: var(--bm-borde);
+
+    color: var(--bm-boton-principal);
+}
+
+.btn-cancelar-edicion:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+}
+
+.btn-guardar-edicion {
+    background: var(--bm-boton-principal);
+    border-color: var(--bm-boton-principal);
+
+    color: var(--bm-tarjeta);
+}
+
+.btn-guardar-edicion:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+.btn-guardar-edicion mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.edicion-modal button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* VENTANAS DE ESCRITORIO REDUCIDAS */
+
+@media (max-width: 650px) {
+
+    .datos-card .btn-editar-datos {
+        width: 100%;
+    }
+
+    .edicion-overlay {
+        padding: 15px;
+    }
+
+    .edicion-modal {
+        max-height: calc(100dvh - 30px);
+    }
+
+    .edicion-modal-header {
+        padding: 20px;
+    }
+
+    .edicion-formulario {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 420px) {
+
+    .edicion-modal-acciones {
+        flex-direction: column;
+    }
+
+    .btn-cancelar-edicion,
+    .btn-guardar-edicion {
+        width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   PANTALLAS DE ESCRITORIO INTERMEDIAS
+   ========================================================== */
+
+@media (max-width: 1200px) {
+
+    .perfil-cliente-container {
+        padding: 25px 26px 45px;
+    }
+
+    .perfil-bienvenida {
+        padding: 32px;
+    }
+
+    .perfil-principal {
+        grid-template-columns:
+            minmax(250px, 300px)
+            minmax(0, 1fr);
+    }
+
+    .perfil-cliente-container .datos-card {
+        padding: 23px;
+    }
+
+    .datos-grid {
+        gap: 12px;
+    }
+
+    .dato-item {
+        padding: 15px;
+    }
+
+    .estadisticas-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .perfil-cliente-container .estadistica-card {
+        min-height: 180px;
+    }
+
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO REDUCIDAS
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .perfil-principal {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .perfil-cliente-container .foto-card {
+        display: grid;
+        grid-template-columns: 135px minmax(0, 1fr);
+        align-items: center;
+        gap: 18px 23px;
+
+        padding: 25px;
+
+        text-align: left;
+    }
+
+    .foto-contenedor {
+        grid-row: 1 / 3;
+
+        width: 125px;
+        height: 125px;
+        margin: 0;
+    }
+
+    .foto-informacion {
+        margin: 0;
+    }
+
+    .foto-acciones {
+        flex-direction: row;
+        flex-wrap: wrap;
+        grid-column: 2;
+
+        margin: 0;
+    }
+
+    .foto-acciones button {
+        width: auto;
+        flex: 1 1 130px;
+    }
+
+    .foto-card .mensaje-error {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+
+    .proximo-turno-contenido {
+        grid-template-columns: 155px minmax(0, 1fr);
+        gap: 22px;
+    }
+
+}
+
+/* ==========================================================
+   ESCRITORIO EN MEDIA VENTANA
+   ========================================================== */
+
+@media (max-width: 650px) {
+
+    .perfil-cliente-container {
+        padding: 19px 15px 35px;
+    }
+
+    .perfil-bienvenida {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 19px;
+
+        min-height: 0;
+        padding: 27px 23px;
+
+        border-radius: 17px;
+    }
+
+    .bienvenida-contenido h1 {
+        font-size: 29px;
+    }
+
+    .bienvenida-contenido p {
+        font-size: 12px;
+    }
+
+    .perfil-principal {
+        gap: 17px;
+        margin-bottom: 30px;
+    }
+
+    .perfil-cliente-container .foto-card {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        gap: 17px;
+
+        padding: 25px 19px;
+        text-align: center;
+    }
+
+    .foto-contenedor {
+        grid-row: auto;
+
+        width: 145px;
+        height: 145px;
+    }
+
+    .foto-informacion {
+        width: 100%;
+    }
+
+    .foto-informacion h2 {
+        font-size: 22px;
+    }
+
+    .foto-acciones {
+        grid-column: auto;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .foto-acciones button {
+        flex: none;
+        width: 100%;
+    }
+
+    .foto-card .mensaje-error {
+        grid-column: auto;
+    }
+
+    .perfil-cliente-container .datos-card {
+        padding: 20px;
+    }
+
+    .card-encabezado h2 {
+        font-size: 24px;
+    }
+
+    .datos-grid {
+        gap: 11px;
+    }
+
+    .dato-item {
+        min-height: 85px;
+        padding: 14px;
+    }
+
+    .seccion-encabezado h2 {
+        font-size: 24px;
+    }
+
+    .perfil-estadisticas {
+        margin-bottom: 31px;
+    }
+
+    .estadisticas-grid {
+        gap: 12px;
+    }
+
+    .perfil-cliente-container .estadistica-card {
+        min-height: 171px;
+        padding: 18px;
+    }
+
+    .estadistica-valor {
+        font-size: 29px;
+    }
+
+    .proximo-turno-contenido {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 19px;
+
+        padding: 20px;
+    }
+
+    .turno-fecha {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+
+        min-height: 100px;
+        padding: 18px;
+    }
+
+    .fecha-dia {
+        font-size: 46px;
+    }
+
+    .fecha-hora {
+        margin-top: 0;
+        margin-left: auto;
+    }
+
+    .turno-informacion {
+        padding: 0;
+    }
+
+    .turno-informacion > h3 {
+        font-size: 22px;
+    }
+
+    .proximo-turno-pie {
+        padding: 18px 20px;
+    }
+
+}
+
+/* ==========================================================
+   VENTANAS MUY ANGOSTAS
+   ========================================================== */
+
+@media (max-width: 420px) {
+
+    .perfil-cliente-container {
+        padding: 14px 10px 28px;
+    }
+
+    .perfil-bienvenida {
+        padding: 22px 18px;
+    }
+
+    .bienvenida-contenido h1 {
+        font-size: 26px;
+    }
+
+    .perfil-cliente-container .datos-card {
+        padding: 16px;
+    }
+
+    .card-encabezado {
+        gap: 10px;
+    }
+
+    .card-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+    .datos-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dato-item {
+        min-height: 75px;
+    }
+
+    .estadisticas-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .perfil-cliente-container .estadistica-card {
+        min-height: 150px;
+    }
+
+    .estadistica-valor {
+        font-size: 34px;
+    }
+
+    .seccion-encabezado {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .enlace-agenda {
+        width: 100%;
+    }
+
+    .turno-fecha {
+        justify-content: center;
+    }
+
+    .fecha-hora {
+        margin-left: 0;
+    }
+
+    .proximo-turno-pie {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .proximo-turno-pie > span {
+        flex: none;
+    }
+
+    .btn-ver-turnos,
+    .proximo-turno-vacio .btn-reservar {
+        width: 100%;
+    }
+
+}
+
+/* ==========================================================
+   ACCESIBILIDAD - MOVIMIENTO REDUCIDO
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .perfil-cliente-container *,
+    .perfil-cliente-container *::before,
+    .perfil-cliente-container *::after {
+        animation-duration: 0.01ms;
+        transition-duration: 0.01ms;
+        scroll-behavior: auto;
+    }
+
+}

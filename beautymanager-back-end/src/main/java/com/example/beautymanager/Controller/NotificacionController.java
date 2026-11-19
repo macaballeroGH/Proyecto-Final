@@ -2,7 +2,6 @@ package com.example.beautymanager.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,8 +23,11 @@ import com.example.beautymanager.Servicio.NotificacionService;
 @RequestMapping("/notificacion")
 public class NotificacionController {
 
-    @Autowired
-    private NotificacionService notificacionService;
+    private final NotificacionService notificacionService;
+
+    public NotificacionController(NotificacionService notificacionService){
+        this.notificacionService = notificacionService;
+    }
 
     //=======================
     //Crear notificacion

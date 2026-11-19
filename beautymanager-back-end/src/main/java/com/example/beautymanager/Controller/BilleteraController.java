@@ -2,7 +2,6 @@ package com.example.beautymanager.Controller;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +19,11 @@ import com.example.beautymanager.Servicio.BilleteraService;
 @RequestMapping("/billetera")
 public class BilleteraController {
 
-    @Autowired
-    private BilleteraService billeteraService;
+    private final BilleteraService billeteraService;
+
+    public BilleteraController(BilleteraService billeteraService){
+        this.billeteraService = billeteraService;
+    }
 
     //=======================
     //Consultar saldo

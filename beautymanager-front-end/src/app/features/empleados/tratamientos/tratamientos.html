@@ -1,1 +1,888 @@
-<p>tratamientos works!</p>
+<div class="tratamientos-empleado-container">
+
+    <!-- ======================================== -->
+    <!-- ENCABEZADO                               -->
+    <!-- ======================================== -->
+
+    <header class="tratamientos-header">
+
+        <div class="header-informacion">
+
+            <h1>Mis tratamientos</h1>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- TARJETAS DE RESUMEN                      -->
+    <!-- ======================================== -->
+
+    <section class="tratamientos-resumen">
+
+        <!-- TOTAL -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono total">
+                <mat-icon>medical_services</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>Tratamientos realizados</span>
+
+                <strong>{{ totalTratamientos }}</strong>
+
+            </div>
+
+        </article>
+
+
+        <!-- FINALIZADOS CON ÉXITO -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono exitoso">
+                <mat-icon>check_circle</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>Finalizados con éxito</span>
+
+                <strong>{{ tratamientosExitosos }}</strong>
+
+            </div>
+
+        </article>
+
+
+        <!-- CON OBSERVACIONES -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono observaciones">
+                <mat-icon>fact_check</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>Con observaciones</span>
+
+                <strong>{{ tratamientosConObservaciones }}</strong>
+
+            </div>
+
+        </article>
+
+
+        <!-- CLIENTAS NO CONFORMES -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-icono no-conforme">
+                <mat-icon>sentiment_dissatisfied</mat-icon>
+            </div>
+
+            <div class="resumen-informacion">
+
+                <span>Clientas no conformes</span>
+
+                <strong>{{ clientesNoConformes }}</strong>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- BÚSQUEDA Y CONTROLES                     -->
+    <!-- ======================================== -->
+
+    <section class="tratamientos-controles">
+
+        <div class="tratamientos-busqueda">
+
+            <mat-icon>search</mat-icon>
+
+            <input
+                type="search"
+                name="textoBusqueda"
+                aria-label="Buscar tratamientos"
+                placeholder="Buscar por clienta o servicio..."
+                [(ngModel)]="textoBusqueda"
+                (ngModelChange)="aplicarFiltros()"
+            >
+
+        </div>
+
+        <div class="controles-acciones">
+
+            <button
+                type="button"
+                class="btn-filtros"
+                [class.activo]="mostrarFiltros"
+                [attr.aria-expanded]="mostrarFiltros"
+                (click)="alternarFiltros()"
+            >
+
+                <mat-icon>tune</mat-icon>
+
+                <span>Filtros</span>
+
+            </button>
+
+            @if (
+                textoBusqueda ||
+                filtroResultado ||
+                fechaDesde ||
+                fechaHasta
+            ) {
+
+                <button
+                    type="button"
+                    class="btn-limpiar"
+                    (click)="limpiarFiltros()"
+                >
+
+                    <mat-icon>filter_alt_off</mat-icon>
+
+                    <span>Limpiar</span>
+
+                </button>
+
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- FILTROS AVANZADOS                        -->
+    <!-- ======================================== -->
+
+    @if (mostrarFiltros) {
+
+        <section class="tratamientos-filtros">
+
+            <!-- RESULTADO -->
+
+            <div class="filtro-campo">
+
+                <label for="filtroResultado">
+                    Resultado del tratamiento
+                </label>
+
+                <select
+                    id="filtroResultado"
+                    name="filtroResultado"
+                    [(ngModel)]="filtroResultado"
+                    (ngModelChange)="aplicarFiltros()"
+                >
+
+                    <option value="">
+                        Todos los resultados
+                    </option>
+
+                    <option
+                        [value]="ResultadoTratamiento.FINALIZADO_CON_EXITO"
+                    >
+                        Finalizado con éxito
+                    </option>
+
+                    <option
+                        [value]="ResultadoTratamiento.FINALIZADO_CON_OBSERVACIONES"
+                    >
+                        Con observaciones
+                    </option>
+
+                    <option
+                        [value]="ResultadoTratamiento.CLIENTE_NO_CONFORME"
+                    >
+                        Clienta no conforme
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- FECHA DESDE -->
+
+            <div class="filtro-campo">
+
+                <label for="fechaDesde">
+                    Desde
+                </label>
+
+                <input
+                    id="fechaDesde"
+                    type="date"
+                    name="fechaDesde"
+                    [(ngModel)]="fechaDesde"
+                    [max]="fechaHasta || null"
+                    (ngModelChange)="aplicarFiltros()"
+                >
+
+            </div>
+
+
+            <!-- FECHA HASTA -->
+
+            <div class="filtro-campo">
+
+                <label for="fechaHasta">
+                    Hasta
+                </label>
+
+                <input
+                    id="fechaHasta"
+                    type="date"
+                    name="fechaHasta"
+                    [(ngModel)]="fechaHasta"
+                    [min]="fechaDesde || null"
+                    (ngModelChange)="aplicarFiltros()"
+                >
+
+            </div>
+
+        </section>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- ESTADOS DE CARGA                         -->
+    <!-- ======================================== -->
+
+    @if (cargandoTratamientos) {
+
+        <div
+            class="tratamientos-mensaje cargando"
+            role="status"
+        >
+
+            <mat-icon>hourglass_empty</mat-icon>
+
+            <span>Cargando tratamientos...</span>
+
+        </div>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- ERROR DE CARGA                           -->
+    <!-- ======================================== -->
+
+    @if (errorCarga) {
+
+        <div
+            class="tratamientos-mensaje error"
+            role="alert"
+        >
+
+            <mat-icon>error_outline</mat-icon>
+
+            <span>{{ errorCarga }}</span>
+
+            <button
+                type="button"
+                (click)="cargarTratamientos()"
+                [disabled]="cargandoTratamientos"
+            >
+                Reintentar
+            </button>
+
+        </div>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- CONTENIDO PRINCIPAL                      -->
+    <!-- ======================================== -->
+
+    @if (!errorCarga && tratamientosFiltrados.length > 0) {
+
+        <section class="tratamientos-contenido">
+
+            <!-- ================================= -->
+            <!-- LISTADO DE TRATAMIENTOS           -->
+            <!-- ================================= -->
+
+            <div class="tratamientos-listado">
+
+                <div class="listado-encabezado">
+
+                    <div>
+
+                        <h2>Historial de atenciones</h2>
+
+                        <p>
+                            {{ tratamientosFiltrados.length }}
+                            tratamientos encontrados
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="tratamientos-lista">
+
+                    @for (
+                        tratamiento of tratamientosFiltrados;
+                        track tratamiento.idHistorial
+                    ) {
+
+                        <button
+                            type="button"
+                            class="tratamiento-card"
+                            [class.seleccionado]="
+                                tratamientoSeleccionado?.idHistorial ===
+                                tratamiento.idHistorial
+                            "
+                            [attr.aria-expanded]="
+                                tratamientoSeleccionado?.idHistorial ===
+                                tratamiento.idHistorial
+                            "
+                            (click)="abrirDetalle(tratamiento)"
+                        >
+
+                            <!-- CLIENTA Y RESULTADO -->
+
+                            <div class="tratamiento-card-header">
+
+                                <div class="tratamiento-cliente">
+
+                                    <mat-icon>person</mat-icon>
+
+                                    <strong>
+                                        {{ obtenerNombreCliente(tratamiento) }}
+                                    </strong>
+
+                                </div>
+
+                                <span
+                                    class="tratamiento-resultado"
+                                    [ngClass]="
+                                        obtenerClaseResultado(
+                                            tratamiento.resultadoTratamiento
+                                        )
+                                    "
+                                >
+                                    {{
+                                        obtenerTextoResultado(
+                                            tratamiento.resultadoTratamiento
+                                        )
+                                    }}
+                                </span>
+
+                            </div>
+
+
+                            <!-- FECHA -->
+
+                            <div class="tratamiento-card-fecha">
+
+                                <mat-icon>calendar_today</mat-icon>
+
+                                <span>
+                                    {{ formatearFechaHora(tratamiento.fecha) }}
+                                </span>
+
+                            </div>
+
+
+                            <!-- SERVICIOS REALIZADOS -->
+
+                            <div class="tratamiento-card-servicios">
+
+                                <mat-icon>medical_services</mat-icon>
+
+                                <span>
+                                    {{ obtenerServiciosRealizados(tratamiento) }}
+                                </span>
+
+                            </div>
+
+
+                            <!-- INFORMACIÓN ADICIONAL -->
+
+                            <div class="tratamiento-card-footer">
+
+                                <div class="tratamiento-metadata">
+
+                                    <span>
+                                        <mat-icon>schedule</mat-icon>
+
+                                        {{ tratamiento.duracionReal ?? 0 }}
+                                        minutos
+                                    </span>
+
+                                    <span>
+                                        <mat-icon>format_list_bulleted</mat-icon>
+
+                                        {{
+                                            obtenerCantidadServicios(tratamiento)
+                                        }}
+                                        servicios
+                                    </span>
+
+                                </div>
+
+
+                                <div class="tratamiento-indicadores">
+
+                                    @if (tieneCambiosServicios(tratamiento)) {
+
+                                        <span class="indicador-cambios">
+                                            <mat-icon>swap_horiz</mat-icon>
+                                            Con cambios
+                                        </span>
+
+                                    }
+
+                                    <mat-icon class="icono-ver-detalle">
+                                        chevron_right
+                                    </mat-icon>
+
+                                </div>
+
+                            </div>
+
+                        </button>
+
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================= -->
+            <!-- DETALLE DEL TRATAMIENTO           -->
+            <!-- ================================= -->
+
+            @if (tratamientoSeleccionado; as seleccionado) {
+
+                <aside class="tratamiento-detalle">
+
+                    <!-- ENCABEZADO -->
+
+                    <div class="detalle-header">
+
+                        <div class="detalle-titulo">
+
+                            <span class="detalle-etiqueta">
+                                Detalle del tratamiento
+                            </span>
+
+                            <h2>
+                                {{ obtenerNombreCliente(seleccionado) }}
+                            </h2>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-cerrar-detalle"
+                            (click)="cerrarDetalle()"
+                            aria-label="Cerrar detalle"
+                        >
+
+                            <mat-icon>close</mat-icon>
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- RESULTADO -->
+
+                    <div class="detalle-resultado">
+
+                        <span
+                            class="tratamiento-resultado"
+                            [ngClass]="
+                                obtenerClaseResultado(
+                                    seleccionado.resultadoTratamiento
+                                )
+                            "
+                        >
+
+                            {{
+                                obtenerTextoResultado(
+                                    seleccionado.resultadoTratamiento
+                                )
+                            }}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- INFORMACIÓN GENERAL -->
+
+                    <section class="detalle-seccion">
+
+                        <h3>
+                            <mat-icon>info</mat-icon>
+                            Información general
+                        </h3>
+
+                        <div class="detalle-datos">
+
+                            <div class="detalle-dato">
+
+                                <span>Fecha de atención</span>
+
+                                <strong>
+                                    {{
+                                        formatearFechaHora(
+                                            seleccionado.fechaHoraTurno
+                                        )
+                                    }}
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-dato">
+
+                                <span>Fecha de registro</span>
+
+                                <strong>
+                                    {{
+                                        formatearFechaHora(
+                                            seleccionado.fecha
+                                        )
+                                    }}
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-dato">
+
+                                <span>Duración real</span>
+
+                                <strong>
+                                    {{ seleccionado.duracionReal ?? 0 }}
+                                    minutos
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-dato">
+
+                                <span>Número de turno</span>
+
+                                <strong>
+                                    #{{ seleccionado.idTurno }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- ================================= -->
+                    <!-- SERVICIOS REALIZADOS              -->
+                    <!-- ================================= -->
+
+                    <section class="detalle-seccion">
+
+                        <h3>
+                            <mat-icon>medical_services</mat-icon>
+                            Servicios realizados
+                        </h3>
+
+                        @if (
+                            seleccionado.serviciosRealizados &&
+                            seleccionado.serviciosRealizados.length > 0
+                        ) {
+
+                            <div class="detalle-servicios">
+
+                                @for (
+                                    servicio of seleccionado.serviciosRealizados;
+                                    track servicio.idHistorialServicio
+                                ) {
+
+                                    <article class="detalle-servicio">
+
+                                        <div class="servicio-encabezado">
+
+                                            <strong>
+                                                {{
+                                                    servicio.nombreServicioRealizado
+                                                }}
+                                            </strong>
+
+                                            @if (
+                                                servicio.idTurnoServicioReservado === null
+                                            ) {
+
+                                                <span class="servicio-etiqueta adicional">
+                                                    Adicional
+                                                </span>
+
+                                            } @else if (
+                                                servicio.idServicioReservado !==
+                                                servicio.idServicioRealizado
+                                            ) {
+
+                                                <span class="servicio-etiqueta reemplazado">
+                                                    Reemplazado
+                                                </span>
+
+                                            } @else {
+
+                                                <span class="servicio-etiqueta original">
+                                                    Sin cambios
+                                                </span>
+
+                                            }
+
+                                        </div>
+
+
+                                        <!-- SERVICIO ORIGINAL -->
+
+                                        @if (
+                                            servicio.nombreServicioReservado
+                                        ) {
+
+                                            <div class="servicio-original">
+
+                                                <span>
+                                                    Servicio reservado:
+                                                </span>
+
+                                                <strong>
+                                                    {{
+                                                        servicio.nombreServicioReservado
+                                                    }}
+                                                </strong>
+
+                                            </div>
+
+                                        } @else {
+
+                                            <p class="servicio-adicional">
+                                                Servicio agregado durante la atención.
+                                            </p>
+
+                                        }
+
+
+                                        <!-- MOTIVO DEL CAMBIO -->
+
+                                        @if (servicio.motivoCambio) {
+
+                                            <div class="servicio-motivo">
+
+                                                <span>
+                                                    Motivo del cambio:
+                                                </span>
+
+                                                <p>
+                                                    {{ servicio.motivoCambio }}
+                                                </p>
+
+                                            </div>
+
+                                        }
+
+
+                                        <!-- FECHA DEL CAMBIO -->
+
+                                        @if (servicio.fechaCambio) {
+
+                                            <div class="servicio-fecha">
+
+                                                <mat-icon>schedule</mat-icon>
+
+                                                <span>
+                                                    {{
+                                                        formatearFechaHora(
+                                                            servicio.fechaCambio
+                                                        )
+                                                    }}
+                                                </span>
+
+                                            </div>
+
+                                        }
+
+                                    </article>
+
+                                }
+
+                            </div>
+
+                        } @else {
+
+                            <div class="detalle-sin-datos">
+
+                                <mat-icon>info_outline</mat-icon>
+
+                                <p>
+                                    Este historial no tiene un detalle
+                                    de servicios realizados.
+                                </p>
+
+                                @if (
+                                    seleccionado.servicios &&
+                                    seleccionado.servicios.length > 0
+                                ) {
+
+                                    <span>
+                                        Servicios originalmente reservados:
+                                        {{ seleccionado.servicios.join(', ') }}
+                                    </span>
+
+                                }
+
+                            </div>
+
+                        }
+
+                    </section>
+
+
+                    <!-- ================================= -->
+                    <!-- PRODUCTOS UTILIZADOS              -->
+                    <!-- ================================= -->
+
+                    <section class="detalle-seccion">
+
+                        <h3>
+                            <mat-icon>inventory_2</mat-icon>
+                            Productos utilizados
+                        </h3>
+
+                        <div class="detalle-texto">
+
+                            @if (seleccionado.productosUtilizados) {
+
+                                <p>
+                                    {{ seleccionado.productosUtilizados }}
+                                </p>
+
+                            } @else {
+
+                                <p class="texto-vacio">
+                                    No se registraron productos utilizados.
+                                </p>
+
+                            }
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- ================================= -->
+                    <!-- OBSERVACIONES                     -->
+                    <!-- ================================= -->
+
+                    <section class="detalle-seccion">
+
+                        <h3>
+                            <mat-icon>notes</mat-icon>
+                            Observaciones
+                        </h3>
+
+                        <div class="detalle-texto">
+
+                            @if (seleccionado.observacion) {
+
+                                <p>
+                                    {{ seleccionado.observacion }}
+                                </p>
+
+                            } @else {
+
+                                <p class="texto-vacio">
+                                    Sin observaciones registradas.
+                                </p>
+
+                            }
+
+                        </div>
+
+                    </section>
+
+                </aside>
+
+            }
+
+        </section>
+
+    }
+
+
+    <!-- ======================================== -->
+    <!-- SIN TRATAMIENTOS                         -->
+    <!-- ======================================== -->
+
+    @if (
+        !cargandoTratamientos &&
+        !errorCarga &&
+        tratamientosFiltrados.length === 0
+    ) {
+
+        <section class="tratamientos-vacio">
+
+            <div class="vacio-icono">
+
+                <mat-icon>medical_services</mat-icon>
+
+            </div>
+
+            @if (tratamientos.length === 0) {
+
+                <h2>Todavía no registraste tratamientos</h2>
+
+                <p>
+                    Cuando finalices un turno y registres
+                    la atención realizada, aparecerá
+                    automáticamente en esta sección.
+                </p>
+
+            } @else {
+
+                <h2>No encontramos tratamientos</h2>
+
+                <p>
+                    No hay tratamientos que coincidan
+                    con los filtros seleccionados.
+                </p>
+
+                <button
+                    type="button"
+                    class="btn-restablecer"
+                    (click)="limpiarFiltros()"
+                >
+
+                    <mat-icon>filter_alt_off</mat-icon>
+
+                    Limpiar filtros
+
+                </button>
+
+            }
+
+        </section>
+
+    }
+
+</div>

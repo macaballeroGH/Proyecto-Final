@@ -20,6 +20,7 @@ public class ObtenerEmpleadoDTO {
     private String apellido;
     private String email;
     private String telefono;
+    private String fotoPerfil;
     private EstadoUsuarioEnums estadoUsuario;
 
     //Empleado

@@ -15,13 +15,13 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import com.example.beautymanager.Configuracion.JwtProperties;
 import com.example.beautymanager.Modelo.Enums.RolesEnums;
+import com.example.beautymanager.Repositorio.TokenRevocadoRepository;
 import com.example.beautymanager.Servicio.JWTUtilityService;
 import com.example.beautymanager.exception.BusinessException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -33,21 +33,28 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class JWTUtilityServiceImpl implements JWTUtilityService {
 
     //=======================
     //Configuracion JWT
     //=======================
-    private static final Duration TOKEN_DURATION = Duration.ofHours(4);
+    private final JwtProperties jwtProperties;
 
-    private static final String ISSUER = "BeautyManager";
-
-    private static final String AUDIENCE = "BeautyManager-frontend";
+    private final TokenRevocadoRepository tokenRevocadoRepository;
 
     private static final String CLAIM_ROL = "rol";
 
     private static final ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
+
+    public JWTUtilityServiceImpl(JwtProperties jwtProperties, TokenRevocadoRepository tokenRevocadoRepository) {
+
+    this.jwtProperties = jwtProperties;
+
+    this.tokenRevocadoRepository = tokenRevocadoRepository;
+}
 
     //=========================
     //Archivos de claves RSA
@@ -126,7 +133,7 @@ public class JWTUtilityServiceImpl implements JWTUtilityService {
 
         Instant now = Instant.now();
 
-        Instant expiration = now.plus(TOKEN_DURATION);
+        Instant expiration = now.plus(Duration.ofHours(jwtProperties.getExpirationHours()));
 
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 
@@ -137,10 +144,10 @@ public class JWTUtilityServiceImpl implements JWTUtilityService {
                 .claim("rol",rol.name())
                 
                 //Emisor
-                .issuer(ISSUER)
+                .issuer(jwtProperties.getIssuer())
                 
                 //Destino
-                .audience(AUDIENCE)
+                .audience(jwtProperties.getAudience())
                 
                 //Fecha emision
                 .issueTime(Date.from(now))
@@ -207,7 +214,7 @@ public class JWTUtilityServiceImpl implements JWTUtilityService {
         //=====================
         //Validar Issuer
         //=====================
-        if(!ISSUER.equals(claims.getIssuer())){
+        if(!jwtProperties.getIssuer().equals(claims.getIssuer())){
 
             throw new BusinessException("Issuer inválido");
         }
@@ -215,10 +222,103 @@ public class JWTUtilityServiceImpl implements JWTUtilityService {
         //=====================
         //Validar Audience
         //=====================
-        if(claims.getAudience() == null || !claims.getAudience().contains(AUDIENCE)){
+        if(claims.getAudience() == null || !claims.getAudience().contains(jwtProperties.getAudience())){
 
             throw new BusinessException("Audience inválido");
         }
+
+
+        //========================================
+        //VALIDAR IDENTIFICADOR DEL TOKEN
+        //========================================
+
+        if (
+            claims.getJWTID() == null ||
+            claims.getJWTID().isBlank()
+        ) {
+            throw new BusinessException(
+                "Identificador JWT inválido"
+            );
+        }
+
+        //========================================
+        //VALIDAR IDENTIFICADOR DEL USUARIO
+        //========================================
+
+        String subject = claims.getSubject();
+
+        if (subject == null || subject.isBlank()) {
+            throw new BusinessException(
+                "El token no contiene un usuario válido"
+            );
+        }
+
+        Long idUsuario;
+
+        try {
+            idUsuario = Long.valueOf(subject);
+        } catch (NumberFormatException e) {
+            throw new BusinessException(
+                "El identificador del usuario es inválido"
+            );
+        }
+
+        if (idUsuario <= 0) {
+            throw new BusinessException(
+                "El identificador del usuario es inválido"
+            );
+        }
+
+        //========================================
+        //VALIDAR ROL DEL USUARIO
+        //========================================
+
+        String rol = claims.getStringClaim(CLAIM_ROL);
+
+        if (rol == null || rol.isBlank()) {
+            throw new BusinessException(
+                "El token no contiene un rol válido"
+            );
+        }
+
+        try {
+            RolesEnums.valueOf(rol);
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(
+                "El rol del token es inválido"
+            );
+        }
+
+        //========================================
+        //VALIDAR FECHA DE EMISIÓN
+        //========================================
+
+        Date fechaLimite = Date.from(
+            Instant.now().plusSeconds(60)
+        );
+
+        if (
+            claims.getIssueTime() == null ||
+            claims.getIssueTime().after(fechaLimite)
+        ) {
+            throw new BusinessException(
+                "La fecha de emisión del token es inválida"
+            );
+        }
+
+        //========================================
+        //VALIDAR FECHA DE INICIO SI EXISTE
+        //========================================
+
+        if (
+            claims.getNotBeforeTime() != null &&
+            claims.getNotBeforeTime().after(fechaLimite)
+        ) {
+            throw new BusinessException(
+                "El token todavía no es válido"
+            );
+        }
+
 
         return claims;
     }
@@ -258,11 +358,45 @@ public class JWTUtilityServiceImpl implements JWTUtilityService {
 
         try {
 
-            parseJWT(token);
+            //================================
+            //VALIDAR FIRMA Y CLAIMS
+            //================================
 
-            return true;
+            JWTClaimsSet claims = parseJWT(token);
+
+            //================================
+            //VERIFICAR REVOCACIÓN
+            //================================
+
+            return !isTokenRevocado(
+                claims.getJWTID()
+            );
+
         } catch (Exception e) {
+
             return false;
         }
     }
+
+    //=======================
+//Obtener ID del JWT
+//=======================
+@Override
+public String getJwtId(String token) throws Exception {
+
+    return parseJWT(token).getJWTID();
+}
+
+//=======================
+//Comprobar revocación
+//=======================
+@Override
+public boolean isTokenRevocado(String jwtId) {
+
+    if (jwtId == null || jwtId.isBlank()) {
+        return false;
+    }
+
+    return tokenRevocadoRepository.existsByJwtId(jwtId);
+}
 }

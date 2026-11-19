@@ -60,6 +60,10 @@ public class TurnoEntity {
     @JoinColumn(name = "id_empleado", nullable = false)
     private EmpleadoEntity empleado;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reserva")
+    private ReservaEntity reserva;
+
     @OneToMany(mappedBy = "turno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TurnoServicioEntity> servicios = new ArrayList<>();
 

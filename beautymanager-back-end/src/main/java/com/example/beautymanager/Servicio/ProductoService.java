@@ -2,6 +2,8 @@ package com.example.beautymanager.Servicio;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.beautymanager.Modelo.DTO.ActualizarProductoDTO;
 import com.example.beautymanager.Modelo.DTO.CrearProductoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerProductoDTO;
@@ -24,4 +26,8 @@ public interface ProductoService {
     void descontarStock(Long idProducto, Integer cantidad);
 
     void aumentarStock(Long idProducto, Integer cantidad);
+
+    void actualizarFotoProducto(Long idProducto, MultipartFile foto);
+
+    void eliminarFotoProducto(Long idProducto);
 }

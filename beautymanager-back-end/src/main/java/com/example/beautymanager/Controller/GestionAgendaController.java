@@ -2,9 +2,9 @@ package com.example.beautymanager.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,17 +12,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.beautymanager.Modelo.DTO.ActualizarTurnoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
+import com.example.beautymanager.Modelo.DTO.ReprogramarTurnoDTO;
 import com.example.beautymanager.Servicio.GestionAgendaService;
+import com.example.beautymanager.Servicio.TurnoService;
 
 @RestController
 @RequestMapping("/admin/agenda")
 @PreAuthorize("hasRole('ADMIN')")
 public class GestionAgendaController {
 
-    @Autowired
-    private GestionAgendaService gestionAgendaService;
+    private final GestionAgendaService gestionAgendaService;
+
+    private final TurnoService turnoService;
+
+    public GestionAgendaController(GestionAgendaService gestionAgendaService, TurnoService turnoService){
+
+        this.gestionAgendaService = gestionAgendaService;
+
+        this.turnoService = turnoService;
+    }
 
     //=======================
     //Listar todos los turnos
@@ -84,8 +93,21 @@ public class GestionAgendaController {
     //Reprogramar turno
     //=======================
     @PutMapping("/reprogramar/{idTurno}")
-    public ResponseEntity<ObtenerTurnoDTO> reprogramarTurno(@PathVariable Long idTurno, @RequestBody ActualizarTurnoDTO actualizarTurno){
-        return ResponseEntity.ok(gestionAgendaService.reprogramarTurno(idTurno, actualizarTurno));
+    public ResponseEntity<ObtenerTurnoDTO> reprogramarTurno(
+            @PathVariable Long idTurno,
+            @RequestBody ReprogramarTurnoDTO datos,
+            Authentication auth) {
+
+        Long idUsuario = (Long) auth.getPrincipal();
+
+        ObtenerTurnoDTO response =
+            turnoService.reprogramarTurno(
+                idTurno,
+                idUsuario,
+                datos
+            );
+
+        return ResponseEntity.ok(response);
     }
 
     //=======================

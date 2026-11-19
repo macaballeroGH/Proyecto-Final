@@ -2,12 +2,10 @@ package com.example.beautymanager.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,39 +16,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautymanager.Modelo.DTO.CrearTurnoDTO;
+import com.example.beautymanager.Modelo.DTO.ObtenerReprogramacionTurnoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
+import com.example.beautymanager.Modelo.DTO.ReprogramarTurnoDTO;
 import com.example.beautymanager.Modelo.DTO.ResponseDTO;
-import com.example.beautymanager.Modelo.Entidad.UsuarioEntity;
 import com.example.beautymanager.Repositorio.UsuarioRepository;
 import com.example.beautymanager.Servicio.TurnoService;
-import com.example.beautymanager.exception.BusinessException;
 
 @RestController
 @RequestMapping("/turno")
 public class TurnoController {
 
-    @Autowired
-    private TurnoService turnoService;
+    private final TurnoService turnoService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public TurnoController(TurnoService turnoService, UsuarioRepository usuarioRepository){
 
-    //=======================
-    //Crear turno
-    //=======================
-    @PostMapping("/reservar")
-    @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<ObtenerTurnoDTO> reservarTurno(@RequestBody CrearTurnoDTO crearTurno){
-
-        Long idUsuario = (Long) SecurityContextHolder
-
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-
-        ObtenerTurnoDTO response = turnoService.crearTurno(crearTurno, idUsuario);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        this.turnoService = turnoService;
     }
 
     //=======================
@@ -179,6 +160,77 @@ public class TurnoController {
         return ResponseEntity.ok(response);
     }
 
+
+    //========================================
+    //Reprogramar turno (EMPLEADO)
+    //========================================
+    @PutMapping("/reprogramar/{idTurno}")
+    @PreAuthorize("hasRole('EMPLEADO')")
+    public ResponseEntity<ObtenerTurnoDTO> reprogramarTurno(
+            @PathVariable Long idTurno,
+            @RequestBody ReprogramarTurnoDTO datos,
+            Authentication auth) {
+
+        Long idUsuario = (Long) auth.getPrincipal();
+
+        ObtenerTurnoDTO response = turnoService.reprogramarTurno(
+            idTurno,
+            idUsuario,
+            datos
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    //========================================
+    //Aceptar propuesta de reprogramación
+    //========================================
+    @PutMapping("/reprogramacion/{idReprogramacion}/aceptar")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ObtenerTurnoDTO> aceptarReprogramacion(
+            @PathVariable Long idReprogramacion,
+            Authentication auth) {
+
+        Long idUsuario = (Long) auth.getPrincipal();
+
+        ObtenerTurnoDTO response =
+            turnoService.aceptarReprogramacion(
+                idReprogramacion,
+                idUsuario
+            );
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    //========================================
+    //Rechazar propuesta de reprogramación
+    //========================================
+    @PutMapping("/reprogramacion/{idReprogramacion}/rechazar")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ResponseDTO> rechazarReprogramacion(
+            @PathVariable Long idReprogramacion,
+            Authentication auth) {
+
+        Long idUsuario = (Long) auth.getPrincipal();
+
+        turnoService.rechazarReprogramacion(
+            idReprogramacion,
+            idUsuario
+        );
+
+        ResponseDTO response = new ResponseDTO();
+
+        response.setSuccess(true);
+        response.setMensaje("Propuesta rechazada correctamente");
+        response.setNumOfErrors(0);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
     //=======================
     //Turnos por cliente
     //=======================
@@ -191,6 +243,26 @@ public class TurnoController {
         return ResponseEntity.ok(turnoService.obtenerTurnosPorCliente(idUsuario));
     }
 
+
+    //========================================
+    //Reprogramaciones pendientes de CLIENTE
+    //========================================
+    @GetMapping("/cliente/reprogramaciones-pendientes")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<List<ObtenerReprogramacionTurnoDTO>>
+        obtenerReprogramacionesPendientesCliente(Authentication auth) {
+
+        Long idUsuario = (Long) auth.getPrincipal();
+
+        List<ObtenerReprogramacionTurnoDTO> response =
+            turnoService.obtenerReprogramacionesPendientesCliente(
+                idUsuario
+            );
+
+        return ResponseEntity.ok(response);
+    }
+
+
     //=======================
     //Turnos por empleado
     //=======================
@@ -200,12 +272,9 @@ public class TurnoController {
 
         Long idUsuario = (Long) auth.getPrincipal();
 
-        UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
-
-        Long idEmpleado = usuario.getEmpleado().getId();
-
-        return ResponseEntity.ok(turnoService.obtenerTurnosPorEmpleado(idEmpleado));
+        return ResponseEntity.ok(
+            turnoService.obtenerTurnosPorEmpleado(idUsuario)
+        );
     }
 
     //==============================
@@ -217,4 +286,45 @@ public class TurnoController {
 
         return ResponseEntity.ok(turnoService.obtenerTodosLosTurnos());
     }
+
+
+    //========================================
+    //Confirmar turno (ADMIN)
+    //========================================
+    @PutMapping("/admin/confirmar/{idTurno}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDTO> confirmarTurnoAdmin(
+            @PathVariable Long idTurno) {
+
+        turnoService.confirmarTurnoAdmin(idTurno);
+
+        ResponseDTO response = new ResponseDTO();
+
+        response.setSuccess(true);
+        response.setMensaje("Turno confirmado correctamente");
+        response.setNumOfErrors(0);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    //========================================
+    //Rechazar turno (ADMIN)
+    //========================================
+    @PutMapping("/admin/rechazar/{idTurno}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDTO> rechazarTurnoAdmin(
+            @PathVariable Long idTurno) {
+
+        turnoService.rechazarTurnoAdmin(idTurno);
+
+        ResponseDTO response = new ResponseDTO();
+
+        response.setSuccess(true);
+        response.setMensaje("Turno rechazado correctamente");
+        response.setNumOfErrors(0);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

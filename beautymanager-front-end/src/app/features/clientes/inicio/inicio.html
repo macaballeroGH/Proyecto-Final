@@ -1,1 +1,704 @@
-<p>inicio works!</p>
+<div class="inicio-container">
+
+    <!--========================================
+        ENCABEZADO PRINCIPAL
+    ========================================-->
+    <header class="inicio-header">
+
+        <div class="inicio-header-contenido">
+
+            <h1>
+                Tu espacio de belleza
+                <span>y bienestar</span>
+            </h1>
+
+            <div class="inicio-header-detalles">
+
+                <span>
+                    <mat-icon>favorite_border</mat-icon>
+                    Cuidado personal
+                </span>
+
+                <span>
+                    <mat-icon>spa</mat-icon>
+                    Belleza y bienestar
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!--========================================
+        CONSEJO DEL DÍA
+    ========================================-->
+    <section class="seccion-consejo">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    UN PEQUEÑO CONSEJO PARA VOS
+                </span>
+
+                <h2>
+                    <mat-icon>lightbulb_outline</mat-icon>
+                    Consejo del día
+                </h2>
+
+            </div>
+
+            <span class="etiqueta-diaria">
+                <mat-icon>today</mat-icon>
+                Se renueva cada día
+            </span>
+
+        </div>
+
+        <div class="consejo-tarjeta">
+
+            <div class="consejo-icono">
+
+                <mat-icon>
+                    {{ consejoDelDia().icono }}
+                </mat-icon>
+
+            </div>
+
+            <div class="consejo-informacion">
+
+                <span class="consejo-categoria">
+                    {{ consejoDelDia().categoria }}
+                </span>
+
+                <h3>
+                    {{ consejoDelDia().titulo }}
+                </h3>
+
+                <p>
+                    {{ consejoDelDia().descripcion }}
+                </p>
+
+            </div>
+
+            <div class="consejo-decoracion">
+                <mat-icon>auto_awesome</mat-icon>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!--========================================
+        ARTÍCULOS DE BELLEZA
+    ========================================-->
+    <section class="seccion-articulos">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    DESCUBRÍ Y APRENDÉ
+                </span>
+
+                <h2>
+                    <mat-icon>menu_book</mat-icon>
+                    Nuestro rincón de belleza
+                </h2>
+
+                <p>
+                    Consejos, ideas y conocimientos
+                    para acompañarte en tu cuidado personal.
+                </p>
+
+            </div>
+
+            <span class="seccion-contador">
+                {{ articulosFiltrados().length }} artículos
+            </span>
+
+        </div>
+
+
+        <!--========================================
+            FILTROS DE ARTÍCULOS
+        ========================================-->
+        <div class="articulos-filtros">
+
+            @for(
+                categoria of categorias;
+                track categoria
+            ) {
+
+                <button
+                    type="button"
+                    class="filtro-categoria"
+                    [class.filtro-activo]="categoriaSeleccionada() === categoria"
+                    [attr.aria-pressed]="categoriaSeleccionada() === categoria"
+                    (click)="seleccionarCategoria(categoria)">
+
+                    {{ categoria }}
+
+                </button>
+
+            }
+
+        </div>
+
+
+        <!--========================================
+            TARJETAS DE ARTÍCULOS
+        ========================================-->
+        @if(articulosFiltrados().length > 0) {
+
+            <div class="articulos-grid">
+
+                @for(
+                    articulo of articulosFiltrados();
+                    track articulo.id
+                ) {
+
+                    <article class="articulo-tarjeta">
+
+                        <div class="articulo-imagen">
+
+                            <img [src]="articulo.imagen" [alt]="articulo.textoAlternativo" loading="lazy" decoding="async">
+
+                        </div>
+
+
+                        <div class="articulo-informacion">
+
+                            <span class="articulo-categoria">
+                                {{ articulo.categoria }}
+                            </span>
+
+                            <span class="articulo-lectura">
+
+                                <mat-icon>schedule</mat-icon>
+
+                                {{ articulo.tiempoLectura }} de lectura
+
+                            </span>
+
+                            <h3>
+                                {{ articulo.titulo }}
+                            </h3>
+
+                            <p>
+                                {{ articulo.descripcion }}
+                            </p>
+
+                            <button
+                                type="button"
+                                class="boton-leer-articulo"
+                                (click)="abrirArticulo(articulo)">
+
+                                Leer artículo
+
+                                <mat-icon>arrow_forward</mat-icon>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                }
+
+            </div>
+
+        }
+        @else {
+
+            <div class="articulos-vacio">
+
+                <mat-icon>menu_book</mat-icon>
+
+                <h3>No hay artículos en esta categoría</h3>
+
+                <p>
+                    Podés explorar otras categorías
+                    para encontrar nuevos contenidos.
+                </p>
+
+            </div>
+
+        }
+
+    </section>
+
+    <!--========================================
+        RUTINAS DE AUTOCUIDADO
+    ========================================-->
+    <section class="seccion-rutinas">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    UN MOMENTO PARA VOS
+                </span>
+
+                <h2>
+                    <mat-icon>favorite_border</mat-icon>
+                    Tu momento de autocuidado
+                </h2>
+
+                <p>
+                    Elegí una rutina y disfrutá de
+                    pequeños hábitos a tu propio ritmo.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="rutinas-contenedor">
+
+            <!--========================================
+                SELECTOR DE RUTINA
+            ========================================-->
+            <div class="rutinas-selector">
+
+                @for(
+                    rutina of rutinas;
+                    track rutina.id
+                ) {
+
+                    <button
+                        type="button"
+                        class="rutina-opcion"
+                        [class.rutina-activa]="rutinaSeleccionada() === rutina.id"
+                        [attr.aria-pressed]="rutinaSeleccionada() === rutina.id"
+                        (click)="seleccionarRutina(rutina.id)">
+
+                        <mat-icon>
+                            {{ rutina.icono }}
+                        </mat-icon>
+
+                        <span>
+                            {{ rutina.nombre }}
+                        </span>
+
+                    </button>
+
+                }
+
+            </div>
+
+
+            <!--========================================
+                RUTINA ACTUAL
+            ========================================-->
+            <div class="rutina-detalle">
+
+                <div class="rutina-encabezado">
+
+                    <div class="rutina-encabezado-info">
+
+                        <span class="rutina-etiqueta">
+                            MI RUTINA
+                        </span>
+
+                        <h3>
+                            {{ rutinaActual().nombre }}
+                        </h3>
+
+                        <p>
+                            {{ rutinaActual().descripcion }}
+                        </p>
+
+                    </div>
+
+                    <div class="rutina-icono">
+
+                        <mat-icon>
+                            {{ rutinaActual().icono }}
+                        </mat-icon>
+
+                    </div>
+
+                </div>
+
+
+                <!--========================================
+                    PROGRESO
+                ========================================-->
+                <div class="rutina-progreso">
+
+                    <div class="rutina-progreso-texto">
+
+                        <span>
+                            Tu progreso
+                        </span>
+
+                        <strong>
+                            {{ cantidadPasosCompletados() }}
+                            / {{ rutinaActual().pasos.length }}
+                            pasos
+                        </strong>
+
+                    </div>
+
+                    <div
+                        class="rutina-barra"
+                        role="progressbar"
+                        [attr.aria-valuenow]="porcentajeRutina()"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-label="Progreso de rutina">
+
+                        <div
+                            class="rutina-barra-progreso"
+                            [style.width.%]="porcentajeRutina()">
+                        </div>
+
+                    </div>
+
+                    <span class="rutina-porcentaje">
+
+                        {{ porcentajeRutina() }}% completado
+
+                    </span>
+
+                </div>
+
+
+                <!--========================================
+                    PASOS
+                ========================================-->
+                <div class="rutina-pasos">
+
+                    @for(
+                        paso of rutinaActual().pasos;
+                        track paso.id
+                    ) {
+
+                        <button
+                            type="button"
+                            class="rutina-paso"
+                            [class.paso-completado]="pasoCompletado(paso.id)"
+                            [attr.aria-pressed]="pasoCompletado(paso.id)"
+                            (click)="alternarPaso(paso.id)">
+
+                            @if(pasoCompletado(paso.id)) {
+
+                                <mat-icon>
+                                    check_circle
+                                </mat-icon>
+
+                            }
+                            @else {
+
+                                <mat-icon>
+                                    radio_button_unchecked
+                                </mat-icon>
+
+                            }
+
+                            <span>
+                                {{ paso.descripcion }}
+                            </span>
+
+                        </button>
+
+                    }
+
+                </div>
+
+
+                <!--========================================
+                    FINALIZACIÓN
+                ========================================-->
+                @if(porcentajeRutina() === 100) {
+
+                    <div class="rutina-completada">
+
+                        <mat-icon>celebration</mat-icon>
+
+                        <div>
+
+                            <strong>
+                                ¡Rutina completada!
+                            </strong>
+
+                            <p>
+                                Disfrutaste de un momento
+                                dedicado a vos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                }
+
+
+                <!--REINICIAR-->
+                @if(cantidadPasosCompletados() > 0) {
+
+                    <button
+                        type="button"
+                        class="boton-reiniciar-rutina"
+                        (click)="reiniciarRutina()">
+
+                        <mat-icon>restart_alt</mat-icon>
+
+                        Reiniciar rutina
+
+                    </button>
+
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!--========================================
+        INSPIRACIÓN
+    ========================================-->
+    <section class="seccion-inspiracion">
+
+    <div class="seccion-encabezado">
+
+        <div>
+
+            <span class="seccion-subtitulo">
+                UN POCO DE INSPIRACIÓN
+            </span>
+
+            <h2>
+                <mat-icon>auto_awesome</mat-icon>
+                Inspiración BeautyManager
+            </h2>
+
+            <p>
+                Descubrí estilos de maquillaje,
+                manicura, cabello y bienestar
+                para inspirarte.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!--========================================
+        GALERÍA DE INSPIRACIONES
+    ========================================-->
+    <div class="inspiracion-grid">
+
+        @for(
+            inspiracion of inspiraciones;
+            track inspiracion.id
+        ) {
+
+            <article class="inspiracion-tarjeta">
+
+                <!--FOTOGRAFÍA-->
+                <div
+                    class="inspiracion-visual"
+                    [class]="'inspiracion-visual inspiracion-' + inspiracion.estilo">
+
+                    <img
+                        [src]="inspiracion.imagen"
+                        [alt]="inspiracion.textoAlternativo"
+                        loading="lazy">
+
+                </div>
+
+
+                <!--INFORMACIÓN-->
+                <div class="inspiracion-informacion">
+
+                    <h3>
+                        {{ inspiracion.titulo }}
+                    </h3>
+
+                    <p>
+                        {{ inspiracion.descripcion }}
+                    </p>
+
+                    <a
+                        class="inspiracion-fuente"
+                        [href]="inspiracion.enlaceFoto"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        <span>
+                            Foto: {{ inspiracion.fotografo }}
+                        </span>
+
+                        <mat-icon>open_in_new</mat-icon>
+
+                    </a>
+
+                </div>
+
+            </article>
+
+        }
+
+    </div>
+
+</section>
+
+
+    <!--========================================
+        CIERRE DE LA REVISTA
+    ========================================-->
+    <footer class="inicio-footer">
+
+        <mat-icon>favorite</mat-icon>
+
+        <p>
+            La belleza también está en dedicarte
+            tiempo y cuidarte a tu manera.
+        </p>
+
+        <span>BeautyManager</span>
+
+    </footer>
+
+
+    <!--========================================
+        MODAL: LEER ARTÍCULO
+    ========================================-->
+    @if(articuloSeleccionado(); as articulo) {
+
+        <div class="articulo-overlay">
+
+            <section
+                class="articulo-modal"
+                role="dialog"
+                aria-modal="true"
+                [attr.aria-labelledby]="'titulo-articulo-' + articulo.id">
+
+                <!--ENCABEZADO DEL MODAL-->
+                <header class="articulo-modal-header">
+
+                    <span class="articulo-modal-categoria">
+
+                        <mat-icon>
+                            {{ articulo.icono }}
+                        </mat-icon>
+
+                        {{ articulo.categoria }}
+
+                    </span>
+
+                    <button
+                        type="button"
+                        class="articulo-modal-cerrar"
+                        aria-label="Cerrar artículo"
+                        (click)="cerrarArticulo()">
+
+                        <mat-icon>close</mat-icon>
+
+                    </button>
+
+                </header>
+
+
+                <!--CONTENIDO DEL ARTÍCULO-->
+                <div class="articulo-modal-contenido">
+
+                    <div class="articulo-modal-foto">
+
+                        <img [src]="articulo.imagen" [alt]="articulo.textoAlternativo">
+
+                    </div>
+
+                    <h2 [id]="'titulo-articulo-' + articulo.id">
+                        {{ articulo.titulo }}
+                    </h2>
+
+                    <span class="articulo-modal-lectura">
+
+                        <mat-icon>schedule</mat-icon>
+
+                        {{ articulo.tiempoLectura }} de lectura
+
+                    </span>
+
+                    <div class="articulo-modal-parrafos">
+
+                        @for(
+                            parrafo of articulo.contenido;
+                            track $index
+                        ) {
+
+                            <p>{{ parrafo }}</p>
+
+                        }
+
+                    </div>
+
+
+                    <!--FUENTE-->
+                    @if(articulo.fuenteUrl && articulo.fuenteNombre) {
+
+                        <div class="articulo-modal-fuente">
+
+                            <mat-icon>menu_book</mat-icon>
+
+                            <div>
+
+                                <span>
+                                    Fuente de consulta
+                                </span>
+
+                                <a
+                                    [href]="articulo.fuenteUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+
+                                    {{ articulo.fuenteNombre }}
+
+                                    <mat-icon>open_in_new</mat-icon>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    }
+
+                </div>
+
+
+                <!--ACCIONES-->
+                <footer class="articulo-modal-acciones">
+
+                    <button
+                        type="button"
+                        class="boton-cerrar-articulo"
+                        (click)="cerrarArticulo()">
+
+                        <mat-icon>check</mat-icon>
+
+                        Terminar de leer
+
+                    </button>
+
+                </footer>
+
+            </section>
+
+        </div>
+
+    }
+
+</div>

@@ -5,17 +5,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarMovimientoFinanzasDTO;
+import com.example.beautymanager.Modelo.DTO.CrearGastoDTO;
 import com.example.beautymanager.Modelo.DTO.CrearMovimientoFinanzasDTO;
+import com.example.beautymanager.Modelo.DTO.FiltroGastosDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerMovimientoFinanzasDTO;
 import com.example.beautymanager.Modelo.Entidad.MovimientoFinanzasEntity;
 import com.example.beautymanager.Modelo.Enums.EstadoMovimientoEnums;
 import com.example.beautymanager.Modelo.Enums.TipoMovimientoEnums;
+import com.example.beautymanager.Modelo.Enums.TipoGastoEnums;
 
 public interface MovimientoFinanzasService {
 
     ObtenerMovimientoFinanzasDTO toMap(MovimientoFinanzasEntity movimiento);
 
     ObtenerMovimientoFinanzasDTO crearMovimiento(CrearMovimientoFinanzasDTO crearMovimiento);
+
+    ObtenerMovimientoFinanzasDTO crearGasto(CrearGastoDTO crearGasto, Long idUsuario);
+
+    List<ObtenerMovimientoFinanzasDTO> listarGastos(FiltroGastosDTO filtros);
 
     ObtenerMovimientoFinanzasDTO actualizarMovimiento(Long id, ActualizarMovimientoFinanzasDTO actualizarMovimiento);
 
@@ -33,7 +40,7 @@ public interface MovimientoFinanzasService {
 
     List<ObtenerMovimientoFinanzasDTO> buscarPorUsuario(Long idUsuario);
 
-    List<ObtenerMovimientoFinanzasDTO> buscarPorTipoGasto(Long idTipoGasto);
+    List<ObtenerMovimientoFinanzasDTO> buscarPorTipoGasto(TipoGastoEnums tipoGasto);
 
     List<ObtenerMovimientoFinanzasDTO> buscarPorCompra(Long idCompra);
 

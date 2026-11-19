@@ -9,4 +9,6 @@ public interface RecordatorioService {
     void procesarRecordatorios();
 
     void reprogramarRecordatoriosFuturos();
+
+    void reprogramarRecordatoriosDeTurno(TurnoEntity turno);
 }

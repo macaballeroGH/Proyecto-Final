@@ -23,8 +23,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -42,6 +42,9 @@ public class CompraEntity {
 
     @Column(name = "total")
     private BigDecimal total;
+
+    @Column(name = "clave_idempotencia", length = 36, unique = true)
+    private String claveIdempotencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false)

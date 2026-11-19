@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { HistorialTratamientoService } from '../../../core/services/historial-tratamiento';
@@ -7,12 +8,13 @@ import { HistorialCliente } from '../../../core/models/historial-cliente';
 import { ClienteService } from '../../../core/services/cliente';
 import { ObtenerCliente } from '../../../core/models/obtener-cliente';
 import { EspecialidadEmpleado } from '../../../core/enums/especialidadEmpleado';
+import { ResultadoTratamiento } from '../../../core/enums/resultadoTratamiento';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-historial-clientes',
   standalone: true,
-  imports: [FormsModule, MatIconModule],
+  imports: [FormsModule, MatIconModule, CommonModule],
   templateUrl: './historial-clientes.html',
   styleUrl: './historial-clientes.css',
 })
@@ -31,6 +33,8 @@ export class HistorialClientes implements OnInit {
   textoBusqueda = '';
 
   especialidadFiltro: EspecialidadEmpleado | '' = '';
+
+  fotosConError = new Set<number>();
 
   fechaDesdeFiltro = '';
 
@@ -58,7 +62,7 @@ export class HistorialClientes implements OnInit {
 
   tratamientosClienteSeleccionado: ObtenerHistorialTratamiento[] = [];
 
-  constructor(private historialTratamientoService: HistorialTratamientoService, private clienteService: ClienteService) {}
+  constructor(private historialTratamientoService: HistorialTratamientoService, private clienteService: ClienteService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarHistorial();
@@ -77,11 +81,17 @@ export class HistorialClientes implements OnInit {
 
       next: ({ clientes, tratamientos }) => {
 
+        console.table(clientes.map(cliente => ({ idCliente: cliente.idCliente, fotoPerfil: cliente.fotoPerfil })));
+
+        this.fotosConError.clear();
+
         this.construirListaClientes(clientes, tratamientos);
 
         this.cargandoLista = false;
 
         this.actualizarVista();
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
@@ -91,6 +101,9 @@ export class HistorialClientes implements OnInit {
         this.cargandoLista = false;
 
         this.error = 'No se pudo cargar el historial de clientes.';
+
+        this.cdr.detectChanges();
+
       }
     });
   }
@@ -116,6 +129,7 @@ export class HistorialClientes implements OnInit {
         idCliente: cliente.idCliente,
         nombreCliente: cliente.nombre,
         apellidoCliente: cliente.apellido,
+        fotoPerfil: cliente.fotoPerfil ?? null,
         tratamientos: this.ordenarTratamientos(tratamientosCliente),
         pagos: []
       };
@@ -393,6 +407,26 @@ export class HistorialClientes implements OnInit {
     this.modalActivo = 'historial';
   }
 
+  
+  obtenerFotoPerfilUrl(fotoPerfil: string | null): string {
+
+    if (!fotoPerfil?.trim()) {
+      return '';
+    }
+
+    const ruta = fotoPerfil.trim();
+
+    if (/^https?:\/\//i.test(ruta)) {
+      return ruta;
+    }
+
+    return `http://localhost:8080/${ruta.replace(/^\/+/, '')}`;
+  }
+
+  registrarErrorFoto(idCliente: number): void {
+    this.fotosConError.add(idCliente);
+  }
+
   cerrarModal(): void {
 
     this.modalActivo = null;
@@ -435,12 +469,72 @@ export class HistorialClientes implements OnInit {
 
   obtenerServicios(tratamiento: ObtenerHistorialTratamiento): string {
 
-    if (!tratamiento.servicios || tratamiento.servicios.length === 0){
-      return 'Sin servicios registrados';
+    const serviciosRealizados =
+        tratamiento.serviciosRealizados ?? [];
+
+    if (serviciosRealizados.length > 0) {
+
+        return serviciosRealizados
+            .map(servicio => servicio.nombreServicioRealizado)
+            .join(', ');
     }
 
-    return tratamiento.servicios.join(', ');
+    //====================================
+    //HISTORIALES SIN DETALLE DE SERVICIOS
+    //====================================
+
+    if (tratamiento.servicios?.length > 0) {
+
+        return 'Sin detalle de servicios realizados. ' +
+            'Servicios reservados: ' +
+            tratamiento.servicios.join(', ');
+    }
+
+    return 'Sin servicios registrados';
   }
+
+  //========================================
+  //OBTENER RESULTADO DEL TRATAMIENTO
+  //========================================
+
+  obtenerResultadoTratamiento(
+    resultado: ResultadoTratamiento | null
+  ): string {
+
+    switch (resultado) {
+
+        case ResultadoTratamiento.FINALIZADO_CON_EXITO:
+            return 'Finalizado con éxito';
+
+        case ResultadoTratamiento.FINALIZADO_CON_OBSERVACIONES:
+            return 'Finalizado con observaciones';
+
+        case ResultadoTratamiento.CLIENTE_NO_CONFORME:
+            return 'Clienta no conforme';
+
+        default:
+            return 'Sin resultado registrado';
+    }
+  }
+
+  //========================================
+//DETECTAR CAMBIOS EN LOS SERVICIOS
+//========================================
+
+tieneCambiosServicios(
+    tratamiento: ObtenerHistorialTratamiento
+): boolean {
+
+    return (tratamiento.serviciosRealizados ?? [])
+        .some(servicio => {
+
+            return (
+                servicio.idTurnoServicioReservado === null ||
+                servicio.idServicioReservado !==
+                    servicio.idServicioRealizado
+            );
+        });
+}
 
   obtenerEspecialidadTexto(especialidad: EspecialidadEmpleado): string {
     return especialidad.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, letra => letra.toUpperCase());

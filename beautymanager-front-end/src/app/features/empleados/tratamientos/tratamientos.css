@@ -1,0 +1,1614 @@
+/* ==========================================================
+   BEAUTYMANAGER - MIS TRATAMIENTOS
+   ROL: EMPLEADO
+   ========================================================== */
+
+/* ==========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================== */
+
+.tratamientos-empleado-container {
+    --tratamiento-exitoso: #357d55;
+    --tratamiento-observaciones: #aa791c;
+    --tratamiento-no-conforme: #b84d59;
+
+    width: 100%;
+    max-width: 1500px;
+    min-width: 0;
+    min-height: 100%;
+
+    margin: 0 auto;
+    padding: 30px 35px 55px;
+
+    color: var(--bm-texto-principal);
+}
+
+.tratamientos-empleado-container,
+.tratamientos-empleado-container *,
+.tratamientos-empleado-container *::before,
+.tratamientos-empleado-container *::after {
+    box-sizing: border-box;
+}
+
+.tratamientos-empleado-container button,
+.tratamientos-empleado-container input,
+.tratamientos-empleado-container select {
+    font-family: inherit;
+}
+
+.tratamientos-empleado-container button {
+    cursor: pointer;
+}
+
+.tratamientos-empleado-container button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.tratamientos-empleado-container mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+.tratamientos-empleado-container button:focus-visible,
+.tratamientos-empleado-container input:focus-visible,
+.tratamientos-empleado-container select:focus-visible {
+    outline: 2px solid var(--bm-boton-principal);
+    outline-offset: 3px;
+}
+
+/* ==========================================================
+   ENCABEZADO PRINCIPAL
+   ========================================================== */
+
+.tratamientos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 108px;
+
+    margin-bottom: 26px;
+    padding: 26px 33px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+}
+
+.tratamientos-header .header-informacion {
+    min-width: 0;
+}
+
+.tratamientos-header h1 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+}
+
+/* ==========================================================
+   TARJETAS DE RESUMEN
+   ========================================================== */
+
+.tratamientos-resumen {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+
+    margin-bottom: 27px;
+}
+
+.tratamientos-resumen .resumen-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    min-width: 0;
+    min-height: 110px;
+
+    padding: 20px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 18px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 4%,
+            transparent
+        );
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.tratamientos-resumen .resumen-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 23px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 7%,
+            transparent
+        );
+}
+
+/* ICONOS */
+
+.tratamientos-resumen .resumen-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 47px;
+    height: 47px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    color: var(--bm-boton-principal);
+}
+
+.tratamientos-resumen .resumen-icono mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+}
+
+.resumen-icono.exitoso {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-exitoso) 11%,
+        var(--bm-tarjeta)
+    ) !important;
+
+    color: var(--tratamiento-exitoso) !important;
+}
+
+.resumen-icono.observaciones {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-observaciones) 12%,
+        var(--bm-tarjeta)
+    ) !important;
+
+    color: var(--tratamiento-observaciones) !important;
+}
+
+.resumen-icono.no-conforme {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-no-conforme) 10%,
+        var(--bm-tarjeta)
+    ) !important;
+
+    color: var(--tratamiento-no-conforme) !important;
+}
+
+/* INFORMACIÓN */
+
+.resumen-informacion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 0;
+}
+
+.resumen-informacion span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.resumen-informacion strong {
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   BÚSQUEDA Y CONTROLES
+   ========================================================== */
+
+.tratamientos-controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 13px;
+
+    margin-bottom: 16px;
+}
+
+.tratamientos-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    flex: 1;
+    min-width: 220px;
+    min-height: 45px;
+
+    padding: 0 15px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+
+    transition: border-color 0.2s ease;
+}
+
+.tratamientos-busqueda:focus-within {
+    border-color: var(--bm-boton-principal);
+}
+
+.tratamientos-busqueda > mat-icon {
+    width: 21px;
+    height: 21px;
+
+    color: var(--bm-texto-tenue);
+    font-size: 21px;
+}
+
+.tratamientos-busqueda input {
+    flex: 1;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+}
+
+.tratamientos-busqueda input::placeholder {
+    color: var(--bm-texto-tenue);
+}
+
+.tratamientos-busqueda input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+/* BOTONES */
+
+.controles-acciones {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-filtros,
+.btn-limpiar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 45px;
+    padding: 11px 16px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.btn-filtros mat-icon,
+.btn-limpiar mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.btn-filtros:hover,
+.btn-limpiar:hover,
+.btn-filtros.activo {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+/* ==========================================================
+   FILTROS AVANZADOS
+   ========================================================== */
+
+.tratamientos-filtros {
+    display: grid;
+    grid-template-columns: minmax(210px, 1.4fr)
+                           repeat(2, minmax(150px, 1fr));
+    align-items: end;
+    gap: 17px;
+
+    margin-bottom: 19px;
+    padding: 22px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 13px;
+}
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    min-width: 0;
+}
+
+.filtro-campo label {
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.filtro-campo select,
+.filtro-campo input {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+
+    padding: 10px 12px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+
+    outline: none;
+    color-scheme: light;
+
+    transition: border-color 0.2s ease;
+}
+
+.filtro-campo select {
+    cursor: pointer;
+}
+
+.filtro-campo input:focus,
+.filtro-campo select:focus {
+    border-color: var(--bm-boton-principal);
+}
+
+/* ==========================================================
+   MENSAJES DE CARGA Y ERROR
+   ========================================================== */
+
+.tratamientos-mensaje {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 19px;
+    padding: 17px 19px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.tratamientos-mensaje > mat-icon {
+    width: 23px;
+    height: 23px;
+
+    color: var(--bm-boton-principal);
+    font-size: 23px;
+}
+
+.tratamientos-mensaje > span {
+    flex: 1;
+    min-width: 0;
+}
+
+.tratamientos-mensaje.error {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-no-conforme) 8%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--tratamiento-no-conforme) 25%,
+        var(--bm-borde)
+    );
+}
+
+.tratamientos-mensaje.error > mat-icon {
+    color: var(--tratamiento-no-conforme);
+}
+
+.tratamientos-mensaje button {
+    padding: 9px 14px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tratamientos-mensaje button:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+}
+
+/* ==========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================== */
+
+.tratamientos-contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+
+    min-width: 0;
+}
+
+/* CUANDO EXISTE UN TRATAMIENTO SELECCIONADO */
+
+@media (min-width: 1280px) {
+
+    .tratamientos-contenido:has(> .tratamiento-detalle) {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(360px, 0.95fr);
+    }
+
+}
+
+/* ==========================================================
+   LISTADO DE TRATAMIENTOS
+   ========================================================== */
+
+.tratamientos-listado {
+    min-width: 0;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 4%,
+            transparent
+        );
+}
+
+.listado-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 22px 25px;
+
+    background: var(--bm-fondo-secundario);
+
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.listado-encabezado h2 {
+    margin: 0 0 8px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.listado-encabezado p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* LISTA */
+
+.tratamientos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 19px;
+}
+
+/* ==========================================================
+   TARJETAS DE TRATAMIENTOS
+   ========================================================== */
+
+.tratamiento-card {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 19px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    color: var(--bm-texto-principal);
+    text-align: left;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.tratamiento-card:hover {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+.tratamiento-card.seleccionado {
+    background: color-mix(
+        in srgb,
+        var(--bm-interactivo) 12%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: var(--bm-boton-principal);
+
+    box-shadow:
+        inset 3px 0 0 var(--bm-boton-principal);
+}
+
+/* ==========================================================
+   TARJETAS - CLIENTA Y RESULTADO
+   ========================================================== */
+
+.tratamiento-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 11px;
+}
+
+.tratamiento-cliente {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    min-width: 0;
+}
+
+.tratamiento-cliente mat-icon {
+    width: 21px;
+    height: 21px;
+
+    color: var(--bm-boton-principal);
+    font-size: 21px;
+}
+
+.tratamiento-cliente strong {
+    min-width: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   RESULTADOS DE LOS TRATAMIENTOS
+   ========================================================== */
+
+.tratamiento-resultado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 100%;
+    min-height: 29px;
+    padding: 6px 11px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* FINALIZADO CON ÉXITO */
+
+.tratamiento-resultado.exitoso {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-exitoso) 10%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--tratamiento-exitoso) 28%,
+        var(--bm-borde)
+    );
+
+    color: var(--tratamiento-exitoso);
+}
+
+/* CON OBSERVACIONES */
+
+.tratamiento-resultado.observaciones {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-observaciones) 12%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--tratamiento-observaciones) 28%,
+        var(--bm-borde)
+    );
+
+    color: var(--tratamiento-observaciones);
+}
+
+/* CLIENTA NO CONFORME */
+
+.tratamiento-resultado.no-conforme {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-no-conforme) 10%,
+        var(--bm-tarjeta)
+    );
+
+    border-color: color-mix(
+        in srgb,
+        var(--tratamiento-no-conforme) 28%,
+        var(--bm-borde)
+    );
+
+    color: var(--tratamiento-no-conforme);
+}
+
+/* SIN RESULTADO */
+
+.tratamiento-resultado.sin-resultado {
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-secundario);
+}
+
+/* ==========================================================
+   TARJETAS - FECHA Y SERVICIOS
+   ========================================================== */
+
+.tratamiento-card-fecha,
+.tratamiento-card-servicios {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+
+    min-width: 0;
+}
+
+.tratamiento-card-fecha mat-icon,
+.tratamiento-card-servicios mat-icon {
+    width: 18px;
+    height: 18px;
+
+    color: var(--bm-interactivo);
+    font-size: 18px;
+}
+
+.tratamiento-card-fecha span,
+.tratamiento-card-servicios span {
+    min-width: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   TARJETAS - PIE
+   ========================================================== */
+
+.tratamiento-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid var(--bm-borde);
+}
+
+.tratamiento-metadata {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 17px;
+}
+
+.tratamiento-metadata > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 10px;
+    font-weight: 550;
+}
+
+.tratamiento-metadata mat-icon {
+    width: 16px;
+    height: 16px;
+
+    color: var(--bm-texto-tenue);
+    font-size: 16px;
+}
+
+/* INDICADORES */
+
+.tratamiento-indicadores {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-left: auto;
+}
+
+.indicador-cambios {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 9px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 7px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.indicador-cambios mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+}
+
+.icono-ver-detalle {
+    width: 21px;
+    height: 21px;
+
+    color: var(--bm-boton-principal);
+    font-size: 21px;
+
+    transition: transform 0.2s ease;
+}
+
+.tratamiento-card:hover .icono-ver-detalle,
+.tratamiento-card.seleccionado .icono-ver-detalle {
+    transform: translateX(3px);
+}
+
+/* ==========================================================
+   PANEL DE DETALLE DEL TRATAMIENTO
+   ========================================================== */
+
+.tratamiento-detalle {
+    min-width: 0;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 5%,
+            transparent
+        );
+}
+
+/* ==========================================================
+   DETALLE - ENCABEZADO
+   ========================================================== */
+
+.tratamiento-detalle .detalle-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 24px 25px;
+
+    background: var(--bm-fondo-secundario);
+
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.detalle-titulo {
+    flex: 1;
+    min-width: 0;
+}
+
+.detalle-etiqueta {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.detalle-titulo h2 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* CERRAR DETALLE */
+
+.btn-cerrar-detalle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 37px;
+    height: 37px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    color: var(--bm-texto-secundario);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.btn-cerrar-detalle mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+}
+
+.btn-cerrar-detalle:hover {
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
+}
+
+/* RESULTADO */
+
+.detalle-resultado {
+    padding: 18px 25px 0;
+}
+
+/* ==========================================================
+   DETALLE - SECCIONES
+   ========================================================== */
+
+.detalle-seccion {
+    margin: 0 25px;
+    padding: 23px 0;
+
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.detalle-seccion:last-child {
+    border-bottom: none;
+}
+
+.detalle-seccion h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 0 18px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.detalle-seccion h3 mat-icon {
+    width: 21px;
+    height: 21px;
+
+    color: var(--bm-boton-principal);
+    font-size: 21px;
+}
+
+/* ==========================================================
+   DETALLE - INFORMACIÓN GENERAL
+   ========================================================== */
+
+.detalle-datos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.detalle-dato {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 0;
+    min-height: 75px;
+
+    padding: 14px 15px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+}
+
+.detalle-dato > span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.detalle-dato > strong {
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   DETALLE - SERVICIOS REALIZADOS
+   ========================================================== */
+
+.detalle-servicios {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detalle-servicio {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    min-width: 0;
+    padding: 17px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+}
+
+/* ENCABEZADO DEL SERVICIO */
+
+.servicio-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.servicio-encabezado > strong {
+    min-width: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ETIQUETAS DE SERVICIOS */
+
+.servicio-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 10px;
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.servicio-etiqueta.original {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-exitoso) 10%,
+        var(--bm-tarjeta)
+    );
+
+    color: var(--tratamiento-exitoso);
+}
+
+.servicio-etiqueta.adicional {
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+}
+
+.servicio-etiqueta.reemplazado {
+    background: color-mix(
+        in srgb,
+        var(--tratamiento-observaciones) 12%,
+        var(--bm-tarjeta)
+    );
+
+    color: var(--tratamiento-observaciones);
+}
+
+/* SERVICIO ORIGINAL */
+
+.servicio-original {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.servicio-original > span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+}
+
+.servicio-original > strong {
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* SERVICIO ADICIONAL */
+
+.servicio-adicional {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* MOTIVO DEL CAMBIO */
+
+.servicio-motivo {
+    padding: 13px 15px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+}
+
+.servicio-motivo > span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.servicio-motivo p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* FECHA DEL CAMBIO */
+
+.servicio-fecha {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: var(--bm-texto-tenue);
+}
+
+.servicio-fecha mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.servicio-fecha span {
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* ==========================================================
+   DETALLE - PRODUCTOS Y OBSERVACIONES
+   ========================================================== */
+
+.detalle-texto {
+    padding: 16px 18px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+}
+
+.detalle-texto p {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 12px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.detalle-texto .texto-vacio {
+    color: var(--bm-texto-tenue);
+    font-style: italic;
+}
+
+/* ==========================================================
+   DETALLE SIN INFORMACIÓN
+   ========================================================== */
+
+.detalle-sin-datos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 18px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+}
+
+.detalle-sin-datos mat-icon {
+    width: 23px;
+    height: 23px;
+
+    color: var(--bm-boton-principal);
+    font-size: 23px;
+}
+
+.detalle-sin-datos p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.detalle-sin-datos > span {
+    color: var(--bm-texto-principal);
+
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   ESTADO VACÍO
+   ========================================================== */
+
+.tratamientos-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+
+    min-height: 320px;
+
+    padding: 42px 25px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 17px;
+
+    text-align: center;
+}
+
+.vacio-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 62px;
+    height: 62px;
+
+    margin-bottom: 6px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    color: var(--bm-boton-principal);
+}
+
+.vacio-icono mat-icon {
+    width: 33px;
+    height: 33px;
+    font-size: 33px;
+}
+
+.tratamientos-vacio h2 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.tratamientos-vacio p {
+    max-width: 480px;
+
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.btn-restablecer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    margin-top: 8px;
+    min-height: 41px;
+    padding: 11px 17px;
+
+    background: var(--bm-boton-principal);
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 10px;
+
+    color: var(--bm-tarjeta);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.btn-restablecer mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.btn-restablecer:hover {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+/* ==========================================================
+   RESPONSIVE - ESCRITORIO MEDIANO
+   ========================================================== */
+
+@media (max-width: 1280px) {
+
+    .tratamientos-empleado-container {
+        padding: 27px 28px 48px;
+    }
+
+    .tratamientos-resumen {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tratamientos-contenido {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - ESCRITORIO COMPACTO
+   ========================================================== */
+
+@media (max-width: 850px) {
+
+    .tratamientos-empleado-container {
+        padding: 23px 21px 42px;
+    }
+
+    .tratamientos-header {
+        min-height: 95px;
+        padding: 24px;
+    }
+
+    .tratamientos-filtros {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tratamientos-filtros .filtro-campo:first-child {
+        grid-column: 1 / -1;
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - VENTANA ESTRECHA
+   ========================================================== */
+
+@media (max-width: 650px) {
+
+    .tratamientos-empleado-container {
+        padding: 19px 16px 36px;
+    }
+
+    .tratamientos-header {
+        min-height: 85px;
+        padding: 22px;
+        border-radius: 15px;
+    }
+
+    .tratamientos-header h1 {
+        font-size: 29px;
+    }
+
+    .tratamientos-resumen {
+        gap: 11px;
+    }
+
+    .tratamientos-resumen .resumen-card {
+        padding: 16px;
+        gap: 11px;
+    }
+
+    .tratamientos-resumen .resumen-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+    .resumen-informacion strong {
+        font-size: 28px;
+    }
+
+    .tratamientos-controles {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tratamientos-busqueda {
+        flex: none;
+        width: 100%;
+    }
+
+    .controles-acciones {
+        width: 100%;
+    }
+
+    .controles-acciones button {
+        flex: 1;
+    }
+
+    .tratamientos-filtros {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .tratamientos-filtros .filtro-campo:first-child {
+        grid-column: auto;
+    }
+
+    .listado-encabezado {
+        padding: 20px;
+    }
+
+    .tratamientos-lista {
+        padding: 13px;
+    }
+
+    .tratamiento-card {
+        padding: 15px;
+    }
+
+    .tratamiento-detalle .detalle-header {
+        padding: 21px;
+    }
+
+    .detalle-resultado {
+        padding: 17px 21px 0;
+    }
+
+    .detalle-seccion {
+        margin: 0 21px;
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - VENTANA MUY ESTRECHA
+   ========================================================== */
+
+@media (max-width: 460px) {
+
+    .tratamientos-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .tratamientos-resumen .resumen-card {
+        min-height: 93px;
+    }
+
+    .tratamiento-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tratamiento-card-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tratamiento-indicadores {
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 0;
+    }
+
+    .detalle-datos {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-titulo h2 {
+        font-size: 21px;
+    }
+
+}
+
+/* ==========================================================
+   ACCESIBILIDAD - MOVIMIENTO REDUCIDO
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tratamientos-empleado-container *,
+    .tratamientos-empleado-container *::before,
+    .tratamientos-empleado-container *::after {
+        animation-duration: 0.01ms;
+        animation-iteration-count: 1;
+        transition-duration: 0.01ms;
+        scroll-behavior: auto;
+    }
+
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -8,6 +8,8 @@ import { ActualizarConfiguracionRecordatorio } from '../../../core/models/actual
 import { ObtenerConfiguracionRecordatorio } from '../../../core/models/obtener-configuracion-recordatorio';
 import { EstadoRecordatorio } from '../../../core/enums/estadoRecordatorio';
 
+import { finalize } from 'rxjs';
+
 @Component({
   selector: 'app-recordatorios',
   standalone: true,
@@ -15,7 +17,7 @@ import { EstadoRecordatorio } from '../../../core/enums/estadoRecordatorio';
   templateUrl: './recordatorios.html',
   styleUrl: './recordatorios.css',
 })
-export class Recordatorios {
+export class Recordatorios implements OnInit {
 
   existeConfiguracion = false;
 
@@ -39,7 +41,15 @@ export class Recordatorios {
 
   mensajeWhatsapp = '';
 
-  constructor(private configuracionRecordatorio: ConfiguracionRecordatorio) {}
+  emailPrueba = '';
+
+  probandoEmail = false;
+
+  mensajePruebaEmail = '';
+
+  errorPruebaEmail = '';
+
+  constructor(private configuracionRecordatorio: ConfiguracionRecordatorio, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarConfiguracion();
@@ -68,11 +78,15 @@ export class Recordatorios {
         this.segundoRecordatorioHoras = configuracion.segundoRecordatorioHoras;
 
         this.cargando = false;
+
+        this.cdr.detectChanges();
       },
 
       error: (error: HttpErrorResponse) => {
 
         this.cargando = false;
+
+        this.cdr.detectChanges();
 
         if(this.esConfiguracionInexistente(error)){
 
@@ -114,6 +128,13 @@ export class Recordatorios {
     this.limpiarMensajes();
 
     if (!this.validarHorarios()) {
+
+      this.cdr.detectChanges();
+
+      return;
+    }
+
+    if (this.guardando) {
       return;
     }
 
@@ -125,45 +146,87 @@ export class Recordatorios {
 
     const datosConfiguracion = {estadoEmail, estadoWhatsapp: EstadoRecordatorio.INACTIVO, estadoNotificacionInterna, primerRecordatorioHoras: this.primerRecordatorioHoras!, segundoRecordatorioHoras: this.segundoRecordatorioHoras!};
 
-    if (this.existeConfiguracion) {
+    const peticion = this.existeConfiguracion ? this.configuracionRecordatorio.actualizarConfiguracion({...datosConfiguracion} as ActualizarConfiguracionRecordatorio) : this.configuracionRecordatorio.crearConfiguracion({...datosConfiguracion} as CrearConfiguracionRecordatorio);
 
-      const datosActualizar: ActualizarConfiguracionRecordatorio = {...datosConfiguracion};
+    peticion.pipe(
+      finalize(() => {
 
-      this.configuracionRecordatorio.actualizarConfiguracion(datosActualizar).subscribe({
+        this.guardando = false;
 
-        next: (configuracion: ObtenerConfiguracionRecordatorio) => {
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
 
-          this.finalizarGuardado(configuracion);
-        },
+      next: (configuracion: ObtenerConfiguracionRecordatorio) => {
 
-        error: () => {
+        this.finalizarGuardado(configuracion);
 
-          this.guardando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
 
-          this.mensajeError = 'No se pudo actualizar la configuración de recordatorios.';
-        }
-      });
+        console.error('Error al guardar la configuración:', error);
 
-    } else {
+        this.mensajeError = 'No se pudo guardar la configuración de recordatorios.';
 
-      const datosCrear: CrearConfiguracionRecordatorio = {...datosConfiguracion};
-
-      this.configuracionRecordatorio.crearConfiguracion(datosCrear).subscribe({
-
-        next: (configuracion: ObtenerConfiguracionRecordatorio) => {
-
-          this.finalizarGuardado(configuracion);
-        },
-
-        error: () => {
-
-          this.guardando = false;
-
-          this.mensajeError = 'No se pudo crear la configuración de recordatorios.';
-        }
-      });
-    }
+        this.cdr.detectChanges();
+      }
+    });
   }
+
+  
+  probarEnvioEmail(): void {
+
+    this.mensajePruebaEmail = '';
+
+    this.errorPruebaEmail = '';
+
+    const email = this.emailPrueba.trim();
+
+    if (!email) {
+
+      this.errorPruebaEmail = 'Ingresá una dirección de correo.';
+
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.errorPruebaEmail = 'Ingresá una dirección de correo válida.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.probandoEmail) {
+      return;
+    }
+
+    this.probandoEmail = true;
+
+    this.configuracionRecordatorio.probarEmail(email).pipe(
+      finalize(() => {
+
+        this.probandoEmail = false;
+
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (respuesta: string) => {
+
+        this.mensajePruebaEmail = respuesta || 'Solicitud de prueba completada.';
+
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+
+        console.error('Error al probar el correo:', error);
+
+        this.errorPruebaEmail = typeof error.error === 'string' ? error.error : 'No se pudo enviar el correo de prueba. Revisá la configuración del servidor de correo.';
+
+        this.cdr.detectChanges();
+      }
+    });
+  } 
 
   private validarHorarios(): boolean {
 
@@ -233,5 +296,9 @@ export class Recordatorios {
     this.mensajeExito = '';
 
     this.mensajeError = '';
+
+    this.mensajePruebaEmail = '';
+
+    this.errorPruebaEmail = '';
   }
 }

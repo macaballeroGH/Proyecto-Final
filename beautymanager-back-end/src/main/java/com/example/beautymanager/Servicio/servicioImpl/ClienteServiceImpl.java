@@ -2,21 +2,31 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarClienteDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerClienteDTO;
 import com.example.beautymanager.Modelo.Entidad.ClienteEntity;
+import com.example.beautymanager.Modelo.Enums.CarpetaArchivoEnums;
 import com.example.beautymanager.Repositorio.ClienteRepository;
+import com.example.beautymanager.Servicio.ArchivoService;
 import com.example.beautymanager.Servicio.ClienteService;
 import com.example.beautymanager.exception.BusinessException;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+
+    private final ArchivoService archivoService;
+
+
+    public ClienteServiceImpl(ClienteRepository clienteRepository, ArchivoService archivoService){
+
+        this.clienteRepository = clienteRepository;
+
+        this.archivoService = archivoService;
+    }
 
     //=======================
     // Actualizar cliente
@@ -116,6 +126,19 @@ public class ClienteServiceImpl implements ClienteService {
         obtenerClienteDTO.setApellido(cliente.getUsuario().getApellido());
         obtenerClienteDTO.setEmail(cliente.getUsuario().getEmail());
         obtenerClienteDTO.setTelefono(cliente.getUsuario().getTelefono());
+
+        String fotoPerfil = cliente.getUsuario().getFotoPerfil();
+
+        String rutaFoto = fotoPerfil == null || fotoPerfil.isBlank() ? null : archivoService.obtenerRutaArchivo(fotoPerfil, CarpetaArchivoEnums.PERFILES);
+
+        System.out.println(
+            "[FOTO CLIENTE] idCliente: " + cliente.getId()
+            + " | idUsuario: " + cliente.getUsuario().getId()
+            + " | fotoGuardada: " + fotoPerfil
+            + " | rutaFoto: " + rutaFoto
+        );
+
+        obtenerClienteDTO.setFotoPerfil(rutaFoto);
 
         //===================
         //Cliente

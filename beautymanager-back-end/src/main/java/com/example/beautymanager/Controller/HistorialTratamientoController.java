@@ -3,7 +3,6 @@ package com.example.beautymanager.Controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,8 +25,11 @@ import com.example.beautymanager.Servicio.HistorialTratamientoService;
 @RequestMapping("/historial-tratamiento")
 public class HistorialTratamientoController {
 
-    @Autowired
-    private HistorialTratamientoService historialTratamientoService;
+    private final HistorialTratamientoService historialTratamientoService;
+
+    public HistorialTratamientoController(HistorialTratamientoService historialTratamientoService){
+        this.historialTratamientoService = historialTratamientoService;
+    }
 
     //=======================
     //Registrar tratamiento
@@ -49,7 +51,7 @@ public class HistorialTratamientoController {
     //Buscar por id
     //=======================
     @GetMapping("/id/{idHistorial}")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ObtenerHistorialTratamientoDTO> buscarPorId(@PathVariable Long idHistorial){
         return ResponseEntity.ok(historialTratamientoService.buscarPorId(idHistorial));
     }
@@ -84,16 +86,34 @@ public class HistorialTratamientoController {
     //Listar por empleado
     //=======================
     @GetMapping("/empleado/{idEmpleado}")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> listarPorEmpleado(@PathVariable Long idEmpleado){
         return ResponseEntity.ok(historialTratamientoService.listarPorEmpleado(idEmpleado));
     }
+
+    //======================================
+    //Mis tratamientos como empleada
+    //====================================
+
+    @GetMapping("/mis-tratamientos-empleado")
+    @PreAuthorize("hasRole('EMPLEADO')")
+    public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> listarMisTratamientosEmpleado() {
+
+        Long idUsuario = (Long) SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getPrincipal();
+
+        return ResponseEntity.ok(
+        historialTratamientoService.listarMisTratamientosEmpleado(idUsuario)
+    );
+}
 
     //=======================
     //Listar por fecha
     //=======================
     @GetMapping("/fecha")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> listarPorFecha(@RequestParam LocalDateTime fecha){
         return ResponseEntity.ok(historialTratamientoService.listarPorFecha(fecha));
     }
@@ -102,7 +122,7 @@ public class HistorialTratamientoController {
     //Listar por rango fechas
     //===========================
     @GetMapping("/rango-fechas")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> listarPorRangoFechas(@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin){
         return ResponseEntity.ok(historialTratamientoService.listarPorRangoFechas(fechaInicio, fechaFin));
     }
@@ -111,7 +131,7 @@ public class HistorialTratamientoController {
     //Listar por turno
     //=======================
     @GetMapping("/turno/{idTurno}")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> listarPorTurno(@PathVariable Long idTurno){
         return ResponseEntity.ok(historialTratamientoService.listarPorTurno(idTurno));
     }
@@ -120,7 +140,7 @@ public class HistorialTratamientoController {
     //Buscar por texto
     //=======================
     @GetMapping("/texto/{texto}")
-    @PreAuthorize("hasAnyRole('EMPLEADO', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> buscarPorTexto(@PathVariable String texto){
         return ResponseEntity.ok(historialTratamientoService.buscarPorTexto(texto));
     }
@@ -132,7 +152,21 @@ public class HistorialTratamientoController {
     @PreAuthorize("hasRole('EMPLEADO')")
     public ResponseEntity<List<ObtenerHistorialTratamientoDTO>> verHistorialCliente(@PathVariable Long idCliente){
 
-        return ResponseEntity.ok(historialTratamientoService.verHistorialCliente(idCliente));
+        Long idUsuario = (Long) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        //====================================
+        //CONSULTAR HISTORIAL AUTORIZADO
+        //====================================
+
+        return ResponseEntity.ok(
+            historialTratamientoService.verHistorialCliente(
+                idUsuario,
+                idCliente
+            )
+        );
     }
 
     //=================================

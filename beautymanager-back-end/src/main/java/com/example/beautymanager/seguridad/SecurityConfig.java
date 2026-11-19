@@ -10,8 +10,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.example.beautymanager.Repositorio.EmpleadoRepository;
+import com.example.beautymanager.Repositorio.UsuarioRepository;
 import com.example.beautymanager.Servicio.JWTUtilityService;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
@@ -21,8 +25,8 @@ public class SecurityConfig {
 
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
 
-    public SecurityConfig(JWTUtilityService jwtUtilityService){
-        this.jwtAuthorizationFilter = new JWTAuthorizationFilter(jwtUtilityService);
+    public SecurityConfig(JWTUtilityService jwtUtilityService, UsuarioRepository usuarioRepository, EmpleadoRepository empleadoRepository){
+        this.jwtAuthorizationFilter = new JWTAuthorizationFilter(jwtUtilityService, usuarioRepository, empleadoRepository);
     }
 
     @Bean
@@ -33,6 +37,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authRequest ->
                     authRequest
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         
                         .requestMatchers("/auth/login").permitAll()

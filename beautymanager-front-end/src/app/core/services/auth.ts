@@ -34,4 +34,8 @@ export class Auth {
   restablecerPassword(solicitud: RestablecerPasswordRequest){
     return this.http.post<ResponseDTO>(`${this.apiUrl}/reset-password`, solicitud);
   }
+
+  logout() {
+    return this.http.post<ResponseDTO>(`${this.apiUrl}/logout`, {});
+  }
 }

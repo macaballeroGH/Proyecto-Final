@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.beautymanager.Modelo.DTO.ObtenerDisponibilidadReservaDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
 
 
@@ -16,6 +17,8 @@ public interface AgendaService {
     List<LocalDateTime> obtenerDisponibilidadPorEmpleado(Long idUsuario, List<Long> serviciosIds, LocalDate fecha);
 
     List <LocalDateTime> obtenerDisponibilidadGeneral(LocalDate fecha);
+
+    List<ObtenerDisponibilidadReservaDTO> obtenerEmpleadosDisponibles(List<Long> serviciosIds, LocalDate fecha);
 
     List<ObtenerTurnoDTO> obtenerAgenda(LocalDate inicio, LocalDate fin);
 

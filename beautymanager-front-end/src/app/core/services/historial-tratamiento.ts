@@ -34,6 +34,12 @@ export class HistorialTratamientoService {
     return this.http.get<ObtenerHistorialTratamiento[]>(`${this.apiUrl}/empleado/${idEmpleado}`);
   }
 
+  misTratamientosEmpleado(): Observable<ObtenerHistorialTratamiento[]> {
+    return this.http.get<ObtenerHistorialTratamiento[]>(
+        `${this.apiUrl}/mis-tratamientos-empleado`
+    );
+  }
+
   listarPorFecha(fecha: string): Observable<ObtenerHistorialTratamiento[]> {
 
     const params = new HttpParams().set('fecha', fecha);

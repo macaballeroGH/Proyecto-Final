@@ -2,7 +2,6 @@ package com.example.beautymanager.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +23,11 @@ import com.example.beautymanager.Servicio.CategoriaServicioService;
 @RequestMapping("/categoria-servicio")
 public class CategoriaServicioController {
 
-    @Autowired
-    private CategoriaServicioService categoriaServicioService;
+    private final CategoriaServicioService categoriaServicioService;
+
+    public CategoriaServicioController(CategoriaServicioService categoriaServicioService){
+        this.categoriaServicioService = categoriaServicioService;
+    }
     
     //=======================
     //Crear categoria

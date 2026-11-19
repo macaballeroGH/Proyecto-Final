@@ -35,6 +35,12 @@ export class HorarioEmpleadoService {
     return this.http.get<HorarioEmpleado[]>(`${this.apiUrl}/empleado/${idEmpleado}`);
   }
 
+
+  obtenerMisHorarios(): Observable<HorarioEmpleado[]> {
+    return this.http.get<HorarioEmpleado[]>(`${this.apiUrl}/mis-horarios`);
+  }
+
+
   obtenerPorEmpleadoYDia(idEmpelado: number, diaSemana: number): Observable<HorarioEmpleado[]> {
     return this.http.get<HorarioEmpleado[]>(`${this.apiUrl}/empleado-dia/${idEmpelado}/${diaSemana}`);
   }

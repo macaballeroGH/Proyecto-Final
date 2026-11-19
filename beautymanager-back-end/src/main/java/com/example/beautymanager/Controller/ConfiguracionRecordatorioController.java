@@ -1,6 +1,5 @@
 package com.example.beautymanager.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +21,16 @@ import com.example.beautymanager.Servicio.EmailService;
 @PreAuthorize("hasRole('ADMIN')")
 public class ConfiguracionRecordatorioController {
 
-    @Autowired
-    private ConfiguracionRecordatorioService configuracionRecordatorioService;
+    private final ConfiguracionRecordatorioService configuracionRecordatorioService;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
+
+    public ConfiguracionRecordatorioController(ConfiguracionRecordatorioService configuracionRecordatorioService, EmailService emailService){
+
+        this.configuracionRecordatorioService = configuracionRecordatorioService;
+
+        this.emailService = emailService;
+    }
 
     //=======================
     //Crear configuracion

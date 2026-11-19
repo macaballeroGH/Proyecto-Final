@@ -37,6 +37,8 @@ export class Empleados implements OnInit {
   especialidadFiltro: EspecialidadEmpleado | '' = '';
   estadoFiltro: EstadoEmpleado | '' = '';
 
+  fotosConError = new Set<number>();
+
   especialidadFiltroTemporal: EspecialidadEmpleado | '' = '';
   estadoFiltroTemporal: EstadoEmpleado | '' = '';
 
@@ -135,6 +137,8 @@ export class Empleados implements OnInit {
     this.empleadoService.listarTodos().subscribe({
 
       next: (empleados) => {
+
+        this.fotosConError.clear();
 
         this.empleadosOriginales = empleados;
 
@@ -280,6 +284,27 @@ export class Empleados implements OnInit {
 
     this.actualizarVista();
   }
+
+
+obtenerFotoPerfilUrl(fotoPerfil: string | null): string {
+
+    if (!fotoPerfil?.trim()) {
+        return '/img/default-profile.jpg';
+    }
+
+    const ruta = fotoPerfil.trim();
+
+    if (/^https?:\/\//i.test(ruta)) {
+        return ruta;
+    }
+
+    return `http://localhost:8080/${ruta.replace(/^\/+/, '')}`;
+}
+
+registrarErrorFoto(idEmpleado: number): void {
+    this.fotosConError.add(idEmpleado);
+}
+
 
   aplicarOrdenamiento(empleados: Empleado[]): Empleado[] {
 
@@ -533,18 +558,29 @@ export class Empleados implements OnInit {
     if(bloques.length <= 1){
       return;
     }
+
+    bloques.splice(indice, 1);
   }
 
   solicitarAlta(): void {
 
     if(this.formularioNuevoEmpleado.invalid){
 
-      this.formularioNuevoEmpleado.markAllAsTouched();
+    this.formularioNuevoEmpleado.markAllAsTouched();
 
-      return;
-    }
+    const camposInvalidos = Object.entries(this.formularioNuevoEmpleado.controls)
+      .filter(([nombre, control]) => control.invalid)
+      .map(([nombre, control]) => ({
+        campo: nombre,
+        errores: control.errors
+      }));
 
-    this.confirmacionActiva = 'alta';
+    console.table(camposInvalidos);
+
+    return;
+  }
+
+  this.confirmacionActiva = 'alta';
   }
 
   confirmarAlta(): void {

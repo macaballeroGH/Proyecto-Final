@@ -2,6 +2,7 @@ package com.example.beautymanager.Repositorio;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,4 +22,6 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Long> {
     List<CompraEntity> findByClienteAndFechaBetween(ClienteEntity cliente, LocalDateTime inicio, LocalDateTime fin);
 
     Long countByFechaBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    Optional<CompraEntity> findByClaveIdempotencia(String claveIdempotencia);
 }

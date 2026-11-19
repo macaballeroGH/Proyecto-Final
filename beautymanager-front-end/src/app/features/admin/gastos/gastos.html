@@ -1,1 +1,653 @@
-<h2>Gastos</h2>
+<div class="gastos-container"> 
+
+  <!-- Encabezado --> 
+  <header class="gastos-header"> 
+    <div class="gastos-titulo"> 
+      <div class="gastos-icono"> 
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div> 
+
+      <div> 
+        <h1>Gastos</h1> 
+        <p>Gestioná y controlá los gastos de tu negocio.</p> 
+      </div> 
+    </div> 
+
+    <button 
+      type="button" 
+      class="btn-registrar-gasto" 
+      (click)="abrirFormulario()"> 
+      <mat-icon>add</mat-icon>
+      Registrar gasto 
+    </button> 
+  </header> 
+
+  <!-- Mensajes --> 
+  @if (mensajeExito) { 
+    <div class="mensaje mensaje-exito" role="status"> 
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ mensajeExito }}</span> 
+      <button 
+        type="button" 
+        class="btn-cerrar-mensaje" 
+        aria-label="Cerrar mensaje" 
+        (click)="mensajeExito = ''"> 
+        <mat-icon>close</mat-icon>
+      </button> 
+    </div> 
+  } 
+
+  @if (error) { 
+    <div class="mensaje mensaje-error" role="alert"> 
+      <mat-icon>error</mat-icon>
+      <span>{{ error }}</span> 
+      <button 
+        type="button" 
+        class="btn-cerrar-mensaje" 
+        aria-label="Cerrar mensaje" 
+        (click)="error = ''"> 
+        <mat-icon>close</mat-icon>
+      </button> 
+    </div> 
+  } 
+
+  <!-- Resumen --> 
+  <section class="gastos-resumen"> 
+
+    <article class="tarjeta-resumen"> 
+      <div class="resumen-icono resumen-icono-rosa"> 
+        <mat-icon>payments</mat-icon>
+      </div> 
+
+      <div class="resumen-contenido"> 
+        <p>Total de gastos</p> 
+        <h2>{{ formatearImporte(totalPeriodo) }}</h2> 
+        <span>Según los gastos cargados</span> 
+      </div> 
+    </article> 
+
+    <article class="tarjeta-resumen"> 
+      <div class="resumen-icono resumen-icono-violeta"> 
+        <mat-icon>calendar_month</mat-icon>
+      </div> 
+
+      <div class="resumen-contenido"> 
+        <p>Gastos del mes</p> 
+        <h2>{{ formatearImporte(totalMesActual) }}</h2> 
+        <span>Mes actual</span> 
+      </div> 
+    </article> 
+
+    <article class="tarjeta-resumen"> 
+      <div class="resumen-icono resumen-icono-verde"> 
+        <mat-icon>price_check</mat-icon>
+      </div> 
+
+      <div class="resumen-contenido"> 
+        <p>Promedio diario</p> 
+        <h2>{{ formatearImporte(promedioDiario) }}</h2> 
+        <span>Promedio por día con gastos</span> 
+      </div> 
+    </article> 
+
+    <article class="tarjeta-resumen"> 
+      <div class="resumen-icono resumen-icono-azul"> 
+        <mat-icon>trending_up</mat-icon>
+      </div> 
+
+      <div class="resumen-contenido"> 
+        <p>Gasto mayor</p> 
+        <h2>{{ formatearImporte(gastoMayor) }}</h2> 
+        <span>Mayor importe registrado</span> 
+      </div> 
+    </article> 
+
+  </section> 
+
+  <!-- Filtros --> 
+  <section class="panel-gastos panel-filtros"> 
+    <div class="panel-titulo"> 
+      <h2>Filtros</h2> 
+    </div> 
+
+    <div class="filtros-grid"> 
+
+      <div class="campo"> 
+        <label for="fechaDesde">Fecha desde</label> 
+        <input 
+          id="fechaDesde" 
+          type="date" 
+          [(ngModel)]="fechaDesde" 
+          name="fechaDesde"> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="fechaHasta">Fecha hasta</label> 
+        <input 
+          id="fechaHasta" 
+          type="date" 
+          [(ngModel)]="fechaHasta" 
+          name="fechaHasta"> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="categoriaFiltro">Categoría de gasto</label> 
+        <select 
+          id="categoriaFiltro" 
+          [(ngModel)]="nombreGasto" 
+          name="categoriaFiltro"> 
+          <option [ngValue]="null">Todas</option> 
+
+          @for (tipo of tiposGasto; track tipo.idTipoGasto) { 
+            <option [ngValue]="tipo.idTipoGasto"> 
+              {{ tipo.nombreGasto }} 
+            </option> 
+          } 
+        </select> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="montoMinimo">Monto mínimo</label> 
+        <input 
+          id="montoMinimo" 
+          type="number" 
+          min="0" 
+          step="0.01" 
+          placeholder="$ 0,00" 
+          [(ngModel)]="montoMinimo" 
+          name="montoMinimo"> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="montoMaximo">Monto máximo</label> 
+        <input 
+          id="montoMaximo" 
+          type="number" 
+          min="0" 
+          step="0.01" 
+          placeholder="$ 0,00" 
+          [(ngModel)]="montoMaximo" 
+          name="montoMaximo"> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="ordenarPor">Ordenar por</label> 
+        <select 
+          id="ordenarPor" 
+          [(ngModel)]="ordenarPor" 
+          name="ordenarPor"> 
+          <option value="fecha">Fecha</option> 
+          <option value="monto">Monto</option> 
+        </select> 
+      </div> 
+
+      <div class="campo"> 
+        <label for="sentido">Sentido</label> 
+        <select 
+          id="sentido" 
+          [(ngModel)]="sentido" 
+          name="sentido"> 
+          <option value="desc">Descendente</option> 
+          <option value="asc">Ascendente</option> 
+        </select> 
+      </div> 
+
+    </div> 
+
+    <div class="filtros-acciones"> 
+      <button 
+        type="button" 
+        class="btn-secundario" 
+        (click)="limpiarFiltros()"> 
+        <mat-icon>filter_alt_off</mat-icon>
+        Limpiar filtros 
+      </button> 
+
+      <button 
+        type="button" 
+        class="btn-principal" 
+        [disabled]="cargando" 
+        (click)="buscarGastos()"> 
+        <mat-icon>search</mat-icon>
+        {{ cargando ? 'Buscando...' : 'Buscar' }} 
+      </button> 
+    </div> 
+  </section> 
+
+  <!-- Listado --> 
+  <section class="panel-gastos panel-listado"> 
+
+    <div class="listado-encabezado"> 
+      <div> 
+        <h2>Listado de gastos</h2> 
+        <p>Aquí podés ver, filtrar y gestionar todos los gastos registrados.</p> 
+      </div> 
+
+      <span class="total-registros"> 
+        Total de registros: {{ totalGastos }} 
+      </span> 
+    </div> 
+
+    @if (cargando) { 
+      <div class="estado-listado"> 
+        <mat-icon>progress_activity</mat-icon>
+        <p>Cargando gastos...</p> 
+      </div> 
+    } @else if (gastosPagina.length === 0) { 
+      <div class="estado-listado"> 
+        <mat-icon>receipt_long</mat-icon>
+        <h3>No hay gastos para mostrar</h3> 
+        <p>Probá modificar los filtros o registrá un nuevo gasto.</p> 
+      </div> 
+    } @else { 
+      <div class="tabla-contenedor"> 
+        <table class="tabla-gastos"> 
+          <thead> 
+            <tr> 
+              <th> 
+                <button 
+                  type="button" 
+                  class="btn-orden-tabla" 
+                  (click)="cambiarOrden('fecha')"> 
+                  Fecha 
+                  @if (ordenarPor === 'fecha') { 
+                    <mat-icon>{{ sentido === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  } 
+                </button> 
+              </th> 
+
+              <th>Descripción</th> 
+              <th>Categoría</th> 
+
+              <th> 
+                <button 
+                  type="button" 
+                  class="btn-orden-tabla" 
+                  (click)="cambiarOrden('monto')"> 
+                  Monto 
+                  @if (ordenarPor === 'monto') { 
+                    <mat-icon>{{ sentido === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  } 
+                </button> 
+              </th> 
+
+              <th>Método de pago</th> 
+              <th>Estado</th> 
+              <th>Usuario</th> 
+              <th>Acciones</th> 
+            </tr> 
+          </thead> 
+
+          <tbody> 
+            @for (gasto of gastosPagina; track gasto.idMovimiento) { 
+              <tr> 
+                <td> 
+                  <div class="fecha-gasto"> 
+                    <span>{{ formatearFecha(gasto.fechaGasto) }}</span> 
+                    <small>{{ formatearHora(gasto.fechaGasto) }}</small> 
+                  </div> 
+                </td> 
+
+                <td class="descripcion-gasto"> 
+                  {{ gasto.descripcion || 'Sin descripción' }} 
+                </td> 
+
+                <td> 
+                  <span class="etiqueta-categoria"> 
+                    {{ gasto.nombreGasto || 'Sin categoria' }} 
+                  </span> 
+                </td> 
+
+                <td class="importe-gasto"> 
+                  {{ formatearImporte(gasto.monto) }} 
+                </td> 
+
+                <td> 
+                  <span class="etiqueta-metodo"> 
+                    {{ etiquetaMetodoPago(gasto.metodoPago) }} 
+                  </span> 
+                </td> 
+
+                <td> 
+                  <span 
+                    class="etiqueta-estado" 
+                    [class.estado-pendiente]="gasto.estadoMovimiento === 'PENDIENTE'" 
+                    [class.estado-confirmado]="gasto.estadoMovimiento === 'CONFIRMADO'" 
+                    [class.estado-anulado]="gasto.estadoMovimiento === 'ANULADO'"> 
+                    {{ etiquetaEstado(gasto.estadoMovimiento) }} 
+                  </span> 
+                </td> 
+
+                <td class="usuario-gasto"> 
+                  {{ gasto.nombreUsuario }} {{ gasto.apellidoUsuario }} 
+                </td> 
+
+                <td> 
+                  <div class="acciones-gasto"> 
+                    <button 
+                      type="button" 
+                      class="btn-accion btn-ver" 
+                      title="Ver detalle" 
+                      aria-label="Ver detalle del gasto" 
+                      (click)="verDetalle(gasto)"> 
+                      <mat-icon>visibility</mat-icon>
+                    </button> 
+
+                    <button 
+                      type="button" 
+                      class="btn-accion btn-editar" 
+                      title="Editar gasto" 
+                      aria-label="Editar gasto" 
+                      (click)="abrirEdicion(gasto)"> 
+                      <mat-icon>edit</mat-icon>
+                    </button> 
+
+                    <button 
+                      type="button" 
+                      class="btn-accion btn-eliminar" 
+                      title="Eliminar gasto" 
+                      aria-label="Eliminar gasto" 
+                      (click)="solicitarEliminacion(gasto)"> 
+                      <mat-icon>delete</mat-icon>
+                    </button> 
+                  </div> 
+                </td> 
+              </tr> 
+            } 
+          </tbody> 
+        </table> 
+      </div> 
+
+      <!-- Paginación --> 
+      <footer class="paginacion-gastos"> 
+        <span class="paginacion-info"> 
+          Mostrando {{ gastosPagina.length }} de {{ totalGastos }} registros 
+        </span> 
+
+        <div class="paginacion-controles"> 
+          <button 
+            type="button" 
+            class="btn-pagina" 
+            aria-label="Página anterior" 
+            [disabled]="paginaActual === 1" 
+            (click)="cambiarPagina(paginaActual - 1)"> 
+            <mat-icon>chevron_left</mat-icon>
+          </button> 
+
+          @for (pagina of paginas; track pagina) { 
+            <button 
+              type="button" 
+              class="btn-pagina" 
+              [class.pagina-activa]="paginaActual === pagina" 
+              [attr.aria-current]="paginaActual === pagina ? 'page' : null" 
+              (click)="cambiarPagina(pagina)"> 
+              {{ pagina }} 
+            </button> 
+          } 
+
+          <button 
+            type="button" 
+            class="btn-pagina" 
+            aria-label="Página siguiente" 
+            [disabled]="paginaActual === totalPaginas" 
+            (click)="cambiarPagina(paginaActual + 1)"> 
+            <mat-icon>chevron_right</mat-icon>
+          </button> 
+        </div> 
+      </footer> 
+    } 
+
+  </section> 
+
+  <!-- Fondo de los paneles --> 
+  @if (formularioAbierto || gastoDetalle || gastoAEliminar) { 
+    <div 
+      class="fondo-modal" 
+      (click)="formularioAbierto ? cerrarFormulario() : gastoDetalle ? cerrarDetalle() : cancelarEliminacion()"> 
+    </div> 
+  } 
+
+  <!-- Formulario lateral --> 
+  @if (formularioAbierto) { 
+    <aside 
+      class="panel-formulario-gasto" 
+      role="dialog" 
+      aria-modal="true" 
+      [attr.aria-label]="modoEdicion ? 'Editar gasto' : 'Registrar gasto'"> 
+
+      <header class="formulario-encabezado"> 
+        <div> 
+          <h2>{{ modoEdicion ? 'Editar gasto' : 'Registrar gasto' }}</h2> 
+          <p> 
+            {{ modoEdicion 
+              ? 'Modificá la información del gasto.' 
+              : 'Completá la información para registrar un nuevo gasto.' }} 
+          </p> 
+        </div> 
+
+        <button 
+          type="button" 
+          class="btn-cerrar-panel" 
+          aria-label="Cerrar formulario" 
+          [disabled]="guardando" 
+          (click)="cerrarFormulario()"> 
+          <mat-icon>close</mat-icon>
+        </button> 
+      </header> 
+
+      <form class="formulario-gasto" (ngSubmit)="guardarGasto()"> 
+
+        <div class="campo"> 
+          <label for="fechaGasto">Fecha y hora del gasto <span>*</span></label> 
+          <input 
+            id="fechaGasto" 
+            type="datetime-local" 
+            [(ngModel)]="fechaGasto" 
+            name="fechaGasto" 
+            required> 
+        </div> 
+
+        <div class="campo"> 
+          <label for="nombreGastoFormulario">Categoría de gasto <span>*</span></label> 
+          <select 
+            id="nombreGastoFormulario" 
+            [(ngModel)]="nombreGastoFormulario" 
+            name="nombreGastoFormulario" 
+            required> 
+            <option [ngValue]="null" disabled>Seleccionar categoría</option> 
+
+            @for (tipo of tiposGasto; track tipo.idTipoGasto) { 
+              <option [ngValue]="tipo.nombreGasto"> 
+                {{ tipo.nombreGasto }} 
+              </option> 
+            } 
+          </select> 
+        </div> 
+
+        <div class="campo"> 
+          <label for="monto">Monto <span>*</span></label> 
+          <input 
+            id="monto" 
+            type="number" 
+            min="0.01" 
+            step="0.01" 
+            placeholder="$ 0,00" 
+            [(ngModel)]="monto" 
+            name="monto" 
+            required> 
+        </div> 
+
+        <div class="campo"> 
+          <label for="metodoPagoFormulario">Método de pago <span>*</span></label> 
+          <select 
+            id="metodoPagoFormulario" 
+            [(ngModel)]="metodoPagoFormulario" 
+            name="metodoPagoFormulario" 
+            required> 
+            @for (metodo of metodosPago; track metodo.valor) { 
+              <option [ngValue]="metodo.valor"> 
+                {{ metodo.etiqueta }} 
+              </option> 
+            } 
+          </select> 
+        </div> 
+
+        <div class="campo"> 
+          <label for="descripcion">Descripción <span>*</span></label> 
+          <textarea 
+            id="descripcion" 
+            [(ngModel)]="descripcion" 
+            name="descripcion" 
+            rows="4" 
+            maxlength="500" 
+            placeholder="Ej.: Compra de productos de belleza..." 
+            required> 
+          </textarea> 
+        </div> 
+
+        <footer class="formulario-acciones"> 
+          <button 
+            type="button" 
+            class="btn-secundario" 
+            [disabled]="guardando" 
+            (click)="cerrarFormulario()"> 
+            Cancelar 
+          </button> 
+
+          <button 
+            type="submit" 
+            class="btn-principal" 
+            [disabled]="guardando"> 
+            @if (guardando) { 
+              <mat-icon>progress_activity</mat-icon>
+              Guardando... 
+            } @else { 
+              {{ modoEdicion ? 'Guardar cambios' : 'Guardar' }} 
+            } 
+          </button> 
+        </footer> 
+
+      </form> 
+    </aside> 
+  } 
+
+  @if (gastoDetalle; as detalle) { 
+    <section 
+      class="modal-gasto modal-detalle-gasto" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="tituloDetalleGasto"> 
+
+      <header class="modal-encabezado"> 
+        <div> 
+          <h2 id="tituloDetalleGasto">Detalle del gasto</h2> 
+          <p>Información del movimiento seleccionado.</p> 
+        </div> 
+
+        <button 
+          type="button" 
+          class="btn-cerrar-panel" 
+          aria-label="Cerrar detalle" 
+          (click)="cerrarDetalle()"> 
+          <mat-icon>close</mat-icon>
+        </button> 
+      </header> 
+
+      <div class="detalle-gasto-contenido"> 
+        <div class="detalle-importe"> 
+          <span>Importe del gasto</span> 
+          <strong>{{ formatearImporte(detalle.monto) }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Descripción</span> 
+          <strong>{{ detalle.descripcion || 'Sin descripción' }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Fecha</span> 
+          <strong> 
+            {{ formatearFecha(detalle.fechaGasto) }} 
+            {{ formatearHora(detalle.fechaGasto) }} 
+          </strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Categoría</span> 
+          <strong>{{ detalle.nombreGasto || 'Sin categoria' }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Método de pago</span> 
+          <strong>{{ etiquetaMetodoPago(detalle.metodoPago) }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Estado</span> 
+          <strong>{{ etiquetaEstado(detalle.estadoMovimiento) }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Usuario</span> 
+          <strong>{{ detalle.nombreUsuario }} {{ detalle.apellidoUsuario }}</strong> 
+        </div> 
+
+        <div class="detalle-campo"> 
+          <span>Fecha de registro</span> 
+          <strong> 
+            {{ formatearFecha(detalle.fechaRegistro) }} 
+            {{ formatearHora(detalle.fechaRegistro) }} 
+          </strong> 
+        </div> 
+
+        @if (detalle.idCompra !== null) { 
+          <div class="detalle-campo"> 
+            <span>Compra asociada</span> 
+            <strong>#{{ detalle.idCompra }}</strong> 
+          </div> 
+        } 
+      </div> 
+
+      <footer class="modal-acciones"> 
+        <button type="button" class="btn-secundario" (click)="cerrarDetalle()"> 
+          Cerrar 
+        </button> 
+
+        <button type="button" class="btn-principal" (click)="cerrarDetalle(); abrirEdicion(detalle)"> 
+          Editar gasto 
+        </button> 
+      </footer> 
+    </section> 
+  } 
+
+  
+  @if (gastoAEliminar; as gasto) { 
+    <section class="modal-gasto modal-confirmacion" role="alertdialog" aria-modal="true" aria-labelledby="tituloEliminarGasto"> 
+
+      <div class="confirmacion-icono"> 
+        <mat-icon>delete</mat-icon>
+      </div> 
+
+      <h2 id="tituloEliminarGasto">¿Eliminar este gasto?</h2> 
+
+      <p> 
+        Vas a eliminar el gasto 
+        <strong>{{ gasto.descripcion }}</strong> 
+        por <strong>{{ formatearImporte(gasto.monto) }}</strong>. 
+        Esta acción no se puede deshacer desde esta pantalla. 
+      </p> 
+
+      <footer class="modal-acciones"> 
+
+        <button type="button" class="btn-secundario" (click)="cancelarEliminacion()"> 
+          Cancelar 
+        </button> 
+
+        <button type="button" class="btn-peligro" (click)="confirmarEliminacion()"> 
+          Confirmar eliminación 
+        </button> 
+      </footer> 
+    </section> 
+  } 
+
+</div>

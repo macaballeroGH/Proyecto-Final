@@ -1,42 +1,253 @@
-<mat-card>
-    <h2>Crear cuenta</h2>
+<section class="registro-page">
 
-    <mat-form-field appearance="outline">
-        <mat-label>Nombre</mat-label>
-        <input matInput [(ngModel)]="nombre">
-    </mat-form-field>
+    <mat-card class="registro-card">
 
-    <mat-form-field appearance="outline">
-        <mat-label>Apellido</mat-label>
-        <input matInput [(ngModel)]="apellido">
-    </mat-form-field>
+        <!-- ENCABEZADO -->
 
-    <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" [(ngModel)]="email">
-    </mat-form-field>
+        <div class="registro-encabezado">
 
-    <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" [(ngModel)]="password">
-    </mat-form-field>
+            <span class="registro-etiqueta">
+                BEAUTYMANAGER
+            </span>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Teléfono</mat-label>
-        <input matInput [(ngModel)]="telefono">
-    </mat-form-field>
+            <h1>Crear cuenta</h1>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Dirección</mat-label>
-        <input matInput [(ngModel)]="direccion">
-    </mat-form-field>
+            <p>
+                Completá tus datos para comenzar
+                a disfrutar de BeautyManager.
+            </p>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Fecha de nacimiento</mat-label>
-        <input matInput type="date" [(ngModel)]="fechaNacimiento">
-    </mat-form-field>
+        </div>
 
-    <button mat-raised-button (click)="registrar()">
-        Registrarse
-    </button>
-</mat-card>
+        <!-- FORMULARIO -->
+
+        <form
+            #formRegistro="ngForm"
+            (ngSubmit)="registrar(formRegistro)"
+            novalidate>
+
+            <div class="registro-campos">
+
+                <!-- NOMBRE -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Nombre</mat-label>
+
+                    <input
+                        matInput
+                        type="text"
+                        name="nombre"
+                        [(ngModel)]="nombre"
+                        #nombreControl="ngModel"
+                        autocomplete="given-name"
+                        pattern=".*\S.*"
+                        required>
+
+                    @if (
+                        nombreControl.hasError('required') ||
+                        nombreControl.hasError('pattern')
+                    ) {
+                        <mat-error>
+                            El nombre es obligatorio.
+                        </mat-error>
+                    }
+
+                </mat-form-field>
+
+                <!-- APELLIDO -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Apellido</mat-label>
+
+                    <input
+                        matInput
+                        type="text"
+                        name="apellido"
+                        [(ngModel)]="apellido"
+                        #apellidoControl="ngModel"
+                        autocomplete="family-name"
+                        pattern=".*\S.*"
+                        required>
+
+                    @if (
+                        apellidoControl.hasError('required') ||
+                        apellidoControl.hasError('pattern')
+                    ) {
+                        <mat-error>
+                            El apellido es obligatorio.
+                        </mat-error>
+                    }
+
+                </mat-form-field>
+
+                <!-- EMAIL -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Correo electrónico</mat-label>
+
+                    <input
+                        matInput
+                        type="email"
+                        name="email"
+                        [(ngModel)]="email"
+                        #emailControl="ngModel"
+                        autocomplete="email"
+                        email
+                        required>
+
+                    @if (emailControl.hasError('required')) {
+
+                        <mat-error>
+                            El correo electrónico es obligatorio.
+                        </mat-error>
+
+                    } @else if (emailControl.hasError('email')) {
+
+                        <mat-error>
+                            Ingresá un correo electrónico válido.
+                        </mat-error>
+
+                    }
+
+                </mat-form-field>
+
+                <!-- CONTRASEÑA -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Contraseña</mat-label>
+
+                    <input
+                        matInput
+                        type="password"
+                        name="password"
+                        [(ngModel)]="password"
+                        #passwordControl="ngModel"
+                        autocomplete="new-password"
+                        required>
+
+                    @if (passwordControl.hasError('required')) {
+
+                        <mat-error>
+                            La contraseña es obligatoria.
+                        </mat-error>
+
+                    }
+
+                </mat-form-field>
+
+                <!-- TELÉFONO -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Teléfono</mat-label>
+
+                    <input
+                        matInput
+                        type="tel"
+                        name="telefono"
+                        [(ngModel)]="telefono"
+                        autocomplete="tel">
+
+                </mat-form-field>
+
+                <!-- DIRECCIÓN -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo">
+
+                    <mat-label>Dirección</mat-label>
+
+                    <input
+                        matInput
+                        type="text"
+                        name="direccion"
+                        [(ngModel)]="direccion"
+                        autocomplete="street-address">
+
+                </mat-form-field>
+
+                <!-- FECHA DE NACIMIENTO -->
+
+                <mat-form-field
+                    appearance="outline"
+                    class="registro-campo registro-campo-completo">
+
+                    <mat-label>Fecha de nacimiento</mat-label>
+
+                    <input
+                        matInput
+                        type="date"
+                        name="fechaNacimiento"
+                        [(ngModel)]="fechaNacimiento"
+                        autocomplete="bday">
+
+                </mat-form-field>
+
+            </div>
+
+            <!-- ERROR GENERAL -->
+
+            @if (errorRegistro) {
+
+                <div
+                    class="registro-error-general"
+                    role="alert">
+
+                    {{ errorRegistro }}
+
+                </div>
+
+            }
+
+            <!-- BOTÓN DE REGISTRO -->
+
+            <div class="registro-acciones">
+
+                <button
+                    mat-raised-button
+                    class="registro-boton"
+                    type="submit"
+                    [disabled]="enviando">
+
+                    @if (enviando) {
+                        Creando cuenta...
+                    } @else {
+                        Registrarse
+                    }
+
+                </button>
+
+            </div>
+
+            <!-- ACCESO A LOGIN -->
+
+            <p class="registro-login">
+
+                ¿Ya tenés una cuenta?
+
+                <a routerLink="/login">
+                    Iniciá sesión
+                </a>
+
+            </p>
+
+        </form>
+
+    </mat-card>
+
+</section>

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -32,22 +31,26 @@ public class RecordatorioServiceImpl implements RecordatorioService {
 
     private static final Logger logger = LoggerFactory.getLogger(RecordatorioServiceImpl.class);
 
-    private static final int Max_Intentos = 3;
+    private static final int MAX_INTENTOS = 3;
 
-    @Autowired
-    private RecordatorioRepository recordatorioRepository;
+    private final RecordatorioRepository recordatorioRepository;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
 
-    @Autowired
-    private NotificacionService notificacionService;
+    private final NotificacionService notificacionService;
 
-    @Autowired
-    private ConfiguracionRecordatorioRepository configuracionRepository;
+    private final ConfiguracionRecordatorioRepository configuracionRepository;
+    
+    private final TurnoRepository turnoRepository;
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    public RecordatorioServiceImpl(RecordatorioRepository recordatorioRepository, EmailService emailService, NotificacionService notificacionService, ConfiguracionRecordatorioRepository configuracionRepository, TurnoRepository turnoRepository) {
+
+    this.recordatorioRepository = recordatorioRepository;
+    this.emailService = emailService;
+    this.notificacionService = notificacionService;
+    this.configuracionRepository = configuracionRepository;
+    this.turnoRepository = turnoRepository;
+}
 
     //=========================
     //Crear recordatorios
@@ -96,6 +99,93 @@ public class RecordatorioServiceImpl implements RecordatorioService {
         }
     }
 
+
+    //========================================
+    //Reprogramar recordatorios de un turno
+    //========================================
+    @Override
+    @Transactional
+    public void reprogramarRecordatoriosDeTurno(TurnoEntity turno) {
+
+        //====================================
+        //Validar turno
+        //====================================
+
+        if (turno == null || turno.getId() == null) {
+            throw new BusinessException(
+                "El turno es obligatorio"
+            );
+        }
+
+        if (turno.getFechaHoraInicio() == null) {
+            throw new BusinessException(
+                "El turno no tiene una fecha válida"
+            );
+        }
+
+        //====================================
+        //Validar estado
+        //====================================
+
+        EstadoTurnoEnums estado = turno.getEstadoTurno();
+
+        if (
+            estado != EstadoTurnoEnums.PENDIENTE &&
+            estado != EstadoTurnoEnums.CONFIRMADO
+        ) {
+            throw new BusinessException(
+                "No se pueden reprogramar recordatorios para este estado"
+            );
+        }
+
+        //====================================
+        //Validar nueva fecha
+        //====================================
+
+        if (!turno.getFechaHoraInicio().isAfter(LocalDateTime.now())) {
+            throw new BusinessException(
+                "La nueva fecha del turno debe ser futura"
+            );
+        }
+
+        //====================================
+        //Obtener recordatorios no enviados
+        //====================================
+
+        List<RecordatorioEntity> pendientes =
+            recordatorioRepository.findByTurnoIdAndEnviadoFalse(
+                turno.getId()
+            );
+
+        //====================================
+        //Eliminar los recordatorios anteriores
+        //====================================
+
+        if (!pendientes.isEmpty()) {
+
+            recordatorioRepository.deleteAll(pendientes);
+
+            logger.info(
+                "Se eliminaron {} recordatorios pendientes del turno {}",
+                pendientes.size(),
+                turno.getId()
+            );
+        }
+
+        //====================================
+        //Crear recordatorios con la nueva fecha
+        //====================================
+
+        crearRecordatorios(turno);
+
+        logger.info(
+            "Recordatorios actualizados para el turno {} con fecha {}",
+            turno.getId(),
+            turno.getFechaHoraInicio()
+        );
+    }
+
+
     private void crearPorConfiguracion(List<RecordatorioEntity> lista, TurnoEntity turno, LocalDateTime fecha, ConfiguracionRecordatorioEntity configuracion){
 
         if(configuracion.getEstadoEmail() == EstadoRecordatorioEnums.ACTIVO){
@@ -139,21 +229,52 @@ public class RecordatorioServiceImpl implements RecordatorioService {
             
             try {
 
-                if(r.getIntentos() != null && r.getIntentos() >= Max_Intentos) {
+                if(r.getIntentos() != null && r.getIntentos() >= MAX_INTENTOS) {
                     
                     logger.warn("Recordatorio ID {} supero el maximo de intentos", r.getId());
 
                     continue;
                 }
 
-                if(r.getTurno() != null && r.getTurno().getEstadoTurno() != null) {
-                    EstadoTurnoEnums estadoTurnoEnum = r.getTurno().getEstadoTurno();
-                    if(estadoTurnoEnum == EstadoTurnoEnums.CANCELADO) {
-                        logger.info("Recordatorio omitido porque el turno fue cancelado");
-                        r.setEnviado(true);
-                        continue;
-                    }
+                
+                //====================================
+                //Verificar que el turno siga vigente
+                //====================================
+
+                if (r.getTurno() == null) {
+                    logger.warn(
+                        "Recordatorio ID {} sin turno asociado",
+                        r.getId()
+                    );
+
+                    r.setEnviado(true);
+                    r.setErrorEnvio(
+                        "Turno asociado no encontrado"
+                    );
+
+                    continue;
                 }
+
+                EstadoTurnoEnums estadoTurno =
+                    r.getTurno().getEstadoTurno();
+
+                if (
+                    estadoTurno != EstadoTurnoEnums.PENDIENTE &&
+                    estadoTurno != EstadoTurnoEnums.CONFIRMADO
+                ) {
+
+                    logger.info(
+                        "Recordatorio ID {} omitido por estado {}",
+                        r.getId(),
+                        estadoTurno
+                    );
+
+                    r.setEnviado(true);
+                    r.setErrorEnvio(null);
+
+                    continue;
+                }
+
                 
                 switch (r.getTipo()) {
 
@@ -174,7 +295,13 @@ public class RecordatorioServiceImpl implements RecordatorioService {
 
                 r.setErrorEnvio(e.getMessage());
 
-                Integer intentosActuales = r.getIntentos() == null ? 0 : r.getIntentos();
+                Integer intentosRegistrados = r.getIntentos();
+
+                int intentosActuales = 0;
+
+                if(intentosRegistrados != null){
+                    intentosActuales = intentosRegistrados;
+                }
 
                 r.setIntentos(intentosActuales + 1);
             }
@@ -199,7 +326,7 @@ public class RecordatorioServiceImpl implements RecordatorioService {
 
         for(TurnoEntity turno : turnosFuturos){
 
-            if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
+            if (turno.getEstadoTurno() != EstadoTurnoEnums.PENDIENTE && turno.getEstadoTurno() != EstadoTurnoEnums.CONFIRMADO) {
                 continue;
             }
 

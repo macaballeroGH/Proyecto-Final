@@ -12,6 +12,7 @@ public class ObtenerProductoDTO {
     private Long idProducto;
     private String nombre;
     private String descripcion;
+    private String foto;
     private BigDecimal precio;
     private Integer stock;
     private EstadoProductoEnums estadoProducto;

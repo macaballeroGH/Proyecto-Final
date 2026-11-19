@@ -326,15 +326,25 @@
         </div>
     }
 
-    @if(turnoSeleccionado) {
+    @if (turnoSeleccionado) {
 
         <div class="turno-overlay" (click)="cerrarDetalle()">
 
             <div class="turno-detalle" (click)="$event.stopPropagation()">
 
-                <button type="button" class="btn-cerrar" (click)="cerrarDetalle()">
+                <!-- Cerrar detalle -->
+
+                <button
+                    type="button"
+                    class="btn-cerrar"
+                    (click)="cerrarDetalle()"
+                    [disabled]="enviandoPropuestaReprogramacion"
+                    aria-label="Cerrar detalle del turno"
+                >
                     <mat-icon>close</mat-icon>
                 </button>
+
+                <!-- Encabezado -->
 
                 <div class="detalle-header">
 
@@ -347,17 +357,31 @@
                         <h2>
                             {{ obtenerNombreCliente(turnoSeleccionado) }}
                         </h2>
+
                     </div>
+
                 </div>
+
+                <!-- Estado -->
 
                 <div class="detalle-estado">
 
-                    <span class="estado-indicador" [class]="obtenerClaseEstado(turnoSeleccionado)"></span>
+                    <span
+                        class="estado-indicador"
+                        [class]="obtenerClaseEstado(turnoSeleccionado)"
+                    ></span>
 
                     {{ obtenerEstado(turnoSeleccionado) }}
+
                 </div>
 
+                <!-- ================================= -->
+                <!-- INFORMACIÓN DEL TURNO -->
+                <!-- ================================= -->
+
                 <div class="detalle-informacion">
+
+                    <!-- Fecha -->
 
                     <div class="detalle-item">
 
@@ -370,8 +394,12 @@
                             <strong>
                                 {{ obtenerFechaCompleta(turnoSeleccionado) }}
                             </strong>
+
                         </div>
+
                     </div>
+
+                    <!-- Horario -->
 
                     <div class="detalle-item">
 
@@ -384,8 +412,12 @@
                             <strong>
                                 {{ obtenerHorario(turnoSeleccionado) }}
                             </strong>
+
                         </div>
+
                     </div>
+
+                    <!-- Empleada -->
 
                     <div class="detalle-item">
 
@@ -393,13 +425,17 @@
 
                         <div>
 
-                            <span>Empleado</span>
+                            <span>Empleada</span>
 
                             <strong>
                                 {{ obtenerNombreEmpleado(turnoSeleccionado) }}
                             </strong>
+
                         </div>
+
                     </div>
+
+                    <!-- Servicios -->
 
                     <div class="detalle-item">
 
@@ -412,8 +448,12 @@
                             <strong>
                                 {{ obtenerServicios(turnoSeleccionado) }}
                             </strong>
+
                         </div>
+
                     </div>
+
+                    <!-- Precio -->
 
                     <div class="detalle-item">
 
@@ -426,11 +466,342 @@
                             <strong>
                                 {{ obtenerPrecioTotal(turnoSeleccionado) }}
                             </strong>
+
                         </div>
+
                     </div>
+
                 </div>
+
+
+<!-- ================================= -->
+<!-- ACCIONES ADMINISTRATIVAS -->
+<!-- ================================= -->
+
+@if (puedeGestionarTurno(turnoSeleccionado)) {
+
+    <div class="detalle-acciones-admin">
+
+        @if (turnoSeleccionado.estadoTurno === EstadoTurno.PENDIENTE) {
+
+            <button
+                type="button"
+                class="btn-confirmar-admin"
+                [disabled]="procesandoAccionTurno"
+                (click)="ejecutarAccionTurnoAdmin('confirmar')"
+            >
+                <mat-icon>check_circle</mat-icon>
+                Confirmar turno
+            </button>
+
+            <button
+                type="button"
+                class="btn-rechazar-admin"
+                [disabled]="procesandoAccionTurno"
+                (click)="ejecutarAccionTurnoAdmin('rechazar')"
+            >
+                <mat-icon>cancel</mat-icon>
+                Rechazar turno
+            </button>
+
+        }
+
+        <button
+            type="button"
+            class="btn-cancelar-admin"
+            [disabled]="procesandoAccionTurno"
+            (click)="ejecutarAccionTurnoAdmin('cancelar')"
+        >
+            <mat-icon>event_busy</mat-icon>
+            Cancelar turno
+        </button>
+
+    </div>
+
+}
+
+@if (mensajeAccionTurno) {
+    <p class="accion-admin-exito" role="status">
+        {{ mensajeAccionTurno }}
+    </p>
+}
+
+@if (errorAccionTurno) {
+    <p class="accion-admin-error" role="alert">
+        {{ errorAccionTurno }}
+    </p>
+}
+
+
+                <!-- ================================= -->
+                <!-- MENSAJE DE REPROGRAMACIÓN -->
+                <!-- ================================= -->
+
+                @if (mensajeReprogramacion) {
+
+                    <div
+                        class="reprogramacion-mensaje reprogramacion-exito"
+                        role="status"
+                    >
+
+                        <mat-icon>check_circle</mat-icon>
+
+                        <span>
+                            {{ mensajeReprogramacion }}
+                        </span>
+
+                    </div>
+
+                }
+
+                <!-- ================================= -->
+                <!-- ACCIÓN DE REPROGRAMACIÓN -->
+                <!-- ================================= -->
+
+                @if (puedeReprogramarTurno(turnoSeleccionado)) {
+
+                    <section class="detalle-reprogramacion">
+
+                        @if (!mostrarFormularioReprogramacion) {
+
+                            <button
+                                type="button"
+                                class="btn-abrir-reprogramacion"
+                                (click)="abrirFormularioReprogramacion()"
+                            >
+
+                                <mat-icon>event_repeat</mat-icon>
+
+                                <span>
+                                    Proponer reprogramación
+                                </span>
+
+                                <mat-icon>chevron_right</mat-icon>
+
+                            </button>
+
+                        } @else {
+
+                            <!-- ================================= -->
+                            <!-- FORMULARIO DE REPROGRAMACIÓN -->
+                            <!-- ================================= -->
+
+                            <form
+                                class="reprogramacion-formulario"
+                                (ngSubmit)="proponerReprogramacion()"
+                            >
+
+                                <!-- Encabezado -->
+
+                                <div class="reprogramacion-header">
+
+                                    <div class="reprogramacion-titulo">
+
+                                        <mat-icon>event_repeat</mat-icon>
+
+                                        <div>
+
+                                            <h3>
+                                                Proponer nuevo horario
+                                            </h3>
+
+                                            <p>
+                                                La clienta deberá aceptar
+                                                el cambio.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="btn-cerrar-reprogramacion"
+                                        (click)="cerrarFormularioReprogramacion()"
+                                        [disabled]="enviandoPropuestaReprogramacion"
+                                        aria-label="Cerrar formulario de reprogramación"
+                                    >
+
+                                        <mat-icon>close</mat-icon>
+
+                                    </button>
+
+                                </div>
+
+                                <!-- Horario actual -->
+
+                                <div class="reprogramacion-horario-actual">
+
+                                    <div class="reprogramacion-horario-icono">
+
+                                        <mat-icon>schedule</mat-icon>
+
+                                    </div>
+
+                                    <div>
+
+                                        <span>
+                                            Horario actual
+                                        </span>
+
+                                        <strong>
+                                            {{ turnoSeleccionado.fechaHoraInicio | date:'dd/MM/yyyy' }}
+                                            ·
+                                            {{ obtenerHorario(turnoSeleccionado) }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Nueva fecha y hora -->
+
+                                <div class="reprogramacion-campos">
+
+                                    <div class="reprogramacion-campo">
+
+                                        <label for="fecha-reprogramacion">
+                                            Nueva fecha
+                                        </label>
+
+                                        <input
+                                            id="fecha-reprogramacion"
+                                            name="fechaReprogramacion"
+                                            type="date"
+                                            [(ngModel)]="fechaReprogramacion"
+                                            [disabled]="enviandoPropuestaReprogramacion"
+                                            required
+                                        >
+
+                                    </div>
+
+                                    <div class="reprogramacion-campo">
+
+                                        <label for="hora-reprogramacion">
+                                            Nueva hora
+                                        </label>
+
+                                        <input
+                                            id="hora-reprogramacion"
+                                            name="horaReprogramacion"
+                                            type="time"
+                                            [(ngModel)]="horaReprogramacion"
+                                            [disabled]="enviandoPropuestaReprogramacion"
+                                            step="900"
+                                            required
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Motivo -->
+
+                                <div class="reprogramacion-campo">
+
+                                    <label for="motivo-reprogramacion">
+                                        Motivo de la reprogramación
+                                    </label>
+
+                                    <textarea
+                                        id="motivo-reprogramacion"
+                                        name="motivoReprogramacion"
+                                        rows="4"
+                                        maxlength="500"
+                                        placeholder="Explicá por qué necesitás modificar el horario del turno..."
+                                        [(ngModel)]="motivoReprogramacion"
+                                        [disabled]="enviandoPropuestaReprogramacion"
+                                        required
+                                    ></textarea>
+
+                                    <span class="reprogramacion-contador">
+                                        {{ motivoReprogramacion.length }} / 500
+                                    </span>
+
+                                </div>
+
+                                <!-- Información -->
+
+                                <div class="reprogramacion-aviso">
+
+                                    <mat-icon>info_outline</mat-icon>
+
+                                    <p>
+                                        El horario actual se mantendrá
+                                        hasta que la clienta acepte
+                                        la propuesta de reprogramación.
+                                    </p>
+
+                                </div>
+
+                                <!-- Error -->
+
+                                @if (errorReprogramacion) {
+
+                                    <div
+                                        class="reprogramacion-mensaje reprogramacion-error"
+                                        role="alert"
+                                    >
+
+                                        <mat-icon>error_outline</mat-icon>
+
+                                        <span>
+                                            {{ errorReprogramacion }}
+                                        </span>
+
+                                    </div>
+
+                                }
+
+                                <!-- Acciones -->
+
+                                <div class="reprogramacion-acciones">
+
+                                    <button
+                                        type="button"
+                                        class="btn-cancelar-reprogramacion"
+                                        (click)="cerrarFormularioReprogramacion()"
+                                        [disabled]="enviandoPropuestaReprogramacion"
+                                    >
+
+                                        Cancelar
+
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        class="btn-enviar-reprogramacion"
+                                        [disabled]="!formularioReprogramacionValido()"
+                                    >
+
+                                        <mat-icon>
+                                            {{ enviandoPropuestaReprogramacion ? 'hourglass_top' : 'send' }}
+                                        </mat-icon>
+
+                                        <span>
+                                            {{
+                                                enviandoPropuestaReprogramacion
+                                                    ? 'Enviando propuesta...'
+                                                    : 'Enviar propuesta'
+                                            }}
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        }
+
+                    </section>
+
+                }
+
             </div>
+
         </div>
+
     }
 
     @if (mostrarFiltros) {
@@ -515,29 +886,31 @@
         </div>
     }
 
-    @if (mostrarFormularioNuevoTurno) {
+    
+@if (mostrarFormularioNuevoTurno) {
+
     <div class="modal-overlay" (click)="cerrarNuevoTurno()">
 
         <div class="nuevo-turno-panel" (click)="$event.stopPropagation()">
 
+            <!-- ENCABEZADO -->
             <div class="nuevo-turno-header">
 
                 <div>
-                    <h2>Nuevo turno</h2>
-                    <p>Crear un turno para un cliente</p>
+                    <h2>Nueva reserva</h2>
+                    <p>Seleccionar servicios, empleados y horarios</p>
                 </div>
 
                 <button
                     type="button"
                     class="btn-cerrar"
                     (click)="cerrarNuevoTurno()"
+                    [disabled]="creandoReserva"
                     aria-label="Cerrar">
 
                     <mat-icon>close</mat-icon>
                 </button>
-
             </div>
-
 
             <div class="nuevo-turno-body">
 
@@ -548,13 +921,16 @@
 
                     <div class="campo-formulario">
 
-                        <label for="cliente">Seleccionar cliente</label>
+                        <label for="cliente-reserva">
+                            Seleccionar cliente
+                        </label>
 
                         <select
-                            id="cliente"
-                            [(ngModel)]="nuevoTurno.idCliente">
+                            id="cliente-reserva"
+                            [(ngModel)]="nuevoTurno.idCliente"
+                            [disabled]="creandoReserva">
 
-                            <option [ngValue]="null">
+                            <option [ngValue]="0">
                                 Seleccionar cliente
                             </option>
 
@@ -563,164 +939,278 @@
                                 <option [ngValue]="cliente.idCliente">
                                     {{ cliente.nombre }} {{ cliente.apellido }}
                                 </option>
-
                             }
 
                         </select>
-
                     </div>
-
                 </section>
 
-
-                <!-- EMPLEADO -->
+                <!-- FECHA DE LA RESERVA -->
                 <section class="formulario-seccion">
 
-                    <h3>Empleado</h3>
+                    <h3>Fecha</h3>
 
                     <div class="campo-formulario">
 
-                        <label for="empleado">Seleccionar empleado</label>
+                        <label for="fecha-reserva">
+                            Seleccionar fecha
+                        </label>
 
-                        <select
-                            id="empleado"
-                            [(ngModel)]="nuevoTurno.idEmpleado">
-
-                            <option [ngValue]="null">
-                                Seleccionar empleado
-                            </option>
-
-                            @for (empleado of empleados; track empleado.idEmpleado) {
-
-                                <option [ngValue]="empleado.idEmpleado">
-                                    {{ empleado.nombre }} {{ empleado.apellido }}
-                                </option>
-
-                            }
-
-                        </select>
+                        <input
+                            id="fecha-reserva"
+                            type="date"
+                            [(ngModel)]="fechaNuevoTurno"
+                            (ngModelChange)="cambiarFechaReserva()"
+                            [disabled]="creandoReserva">
 
                     </div>
-
                 </section>
 
-
-                <!-- SERVICIOS -->
+                <!-- SERVICIOS Y EMPLEADOS -->
                 <section class="formulario-seccion">
 
-                    <h3>Servicios</h3>
+                    <div class="reserva-servicios-header">
 
-                    <div class="servicios-lista">
+                        <h3>Servicios y empleados</h3>
 
-                        @for (servicio of servicios; track servicio.id) {
+                        <button
+                            type="button"
+                            class="btn-agregar-servicio"
+                            (click)="agregarServicioReserva()"
+                            [disabled]="creandoReserva">
 
-                            <label class="servicio-opcion">
+                            <mat-icon>add</mat-icon>
 
-                                <input
-                                    type="checkbox"
-                                    [checked]="nuevoTurno.serviciosIds.includes(servicio.id)"
-                                    (change)="seleccionarServicio(servicio.id, $event)">
-
-                                <div class="servicio-info">
-
-                                    <span class="servicio-nombre">
-                                        {{ servicio.nombre }}
-                                    </span>
-
-                                    <span class="servicio-detalle">
-                                        {{ servicio.duracionMinutos }} min ·
-                                        ${{ servicio.precio }}
-                                    </span>
-
-                                </div>
-
-                            </label>
-
-                        }
-
+                            Agregar servicio
+                        </button>
                     </div>
 
-                </section>
+                    @for (asignacion of asignacionesReserva; track asignacion.idLocal; let i = $index) {
 
+                        <div class="reserva-asignacion">
 
-                <!-- FECHA Y HORARIO -->
-                <section class="formulario-seccion">
+                            <!-- ENCABEZADO DE ASIGNACION -->
+                            <div class="reserva-asignacion-header">
 
-                    <h3>Fecha y horario</h3>
+                                <strong>
+                                    Servicio {{ i + 1 }}
+                                </strong>
 
-                    <div class="fecha-horario">
+                                @if (asignacionesReserva.length > 1) {
 
-                        <div class="campo-formulario">
+                                    <button
+                                        type="button"
+                                        class="btn-quitar-servicio"
+                                        (click)="quitarServicioReserva(asignacion.idLocal)"
+                                        [disabled]="creandoReserva"
+                                        aria-label="Quitar servicio">
 
-                            <label for="fecha">Fecha</label>
-
-                            <input
-                                id="fecha"
-                                type="date"
-                                [(ngModel)]="fechaNuevoTurno"
-                                (change)="cargarHorariosDisponibles()">
-
-                        </div>
-
-                        <div class="campo-formulario">
-
-                            <label for="horario">Horario</label>
-
-                            <select
-                                id="horario"
-                                [(ngModel)]="horaNuevoTurno">
-
-                                <option [ngValue]="null">
-                                    Seleccionar horario
-                                </option>
-
-                                @for (hora of horariosDisponibles; track hora) {
-
-                                    <option [ngValue]="hora">
-                                        {{ hora }}
-                                    </option>
-
+                                        <mat-icon>delete_outline</mat-icon>
+                                    </button>
                                 }
 
-                            </select>
+                            </div>
+
+                            <!-- SELECCIONAR SERVICIO -->
+                            <div class="campo-formulario">
+
+                                <label>
+                                    Servicio
+                                </label>
+
+                                <select
+                                    [(ngModel)]="asignacion.idServicio"
+                                    (ngModelChange)="cambiarServicioReserva(asignacion)"
+                                    [disabled]="creandoReserva">
+
+                                    <option [ngValue]="0">
+                                        Seleccionar servicio
+                                    </option>
+
+                                    @for (servicio of servicios; track servicio.id) {
+
+                                        <option
+                                            [ngValue]="servicio.id"
+                                            [disabled]="servicioYaSeleccionado(servicio.id, asignacion.idLocal)">
+
+                                            {{ servicio.nombre }} -
+                                            {{ servicio.duracionMinutos }} min -
+                                            ${{ servicio.precio }}
+                                        </option>
+                                    }
+
+                                </select>
+                            </div>
+
+                            <!-- SELECCIONAR EMPLEADO -->
+                            <div class="campo-formulario">
+
+                                <label>
+                                    Empleado
+                                </label>
+
+                                <select
+                                    [(ngModel)]="asignacion.idEmpleado"
+                                    (ngModelChange)="cambiarEmpleadoReserva(asignacion)"
+                                    [disabled]="!asignacion.idServicio || !fechaNuevoTurno || asignacion.cargandoDisponibilidad || creandoReserva">
+
+                                    <option [ngValue]="0">
+                                        Seleccionar empleado
+                                    </option>
+
+                                    @for (empleado of asignacion.empleadosDisponibles; track empleado.idEmpleado) {
+
+                                        <option [ngValue]="empleado.idEmpleado">
+
+                                            {{ empleado.nombre }}
+                                            {{ empleado.apellido }} -
+                                            {{ empleado.especialidad }}
+
+                                        </option>
+                                    }
+
+                                </select>
+
+                                @if (asignacion.cargandoDisponibilidad) {
+
+                                    <p class="reserva-ayuda">
+                                        Buscando empleados disponibles...
+                                    </p>
+                                }
+
+                                @if (
+                                    !asignacion.cargandoDisponibilidad &&
+                                    !errorDisponibilidadReserva &&
+                                    asignacion.idServicio > 0 &&
+                                    fechaNuevoTurno &&
+                                    asignacion.empleadosDisponibles.length === 0
+                                ) {
+
+                                    <p class="reserva-ayuda">
+                                        No hay empleados disponibles para este servicio y fecha.
+                                    </p>
+                                }
+
+                            </div>
+
+                            <!-- SELECCIONAR HORARIO -->
+                            <div class="campo-formulario">
+
+                                <label>
+                                    Horario disponible
+                                </label>
+
+                                <select
+                                    [(ngModel)]="asignacion.fechaHoraInicio"
+                                    [disabled]="!asignacion.idEmpleado || creandoReserva">
+
+                                    <option [ngValue]="''">
+                                        Seleccionar horario
+                                    </option>
+
+                                    @for (hora of obtenerHorariosAsignacion(asignacion); track hora) {
+
+                                        <option [ngValue]="hora">
+                                            {{ hora.substring(11, 16) }}
+                                        </option>
+                                    }
+
+                                </select>
+
+                                @if (
+                                    asignacion.idEmpleado > 0 &&
+                                    obtenerHorariosAsignacion(asignacion).length === 0
+                                ) {
+
+                                    <p class="reserva-ayuda">
+                                        No hay horarios libres compatibles con los demás servicios seleccionados.
+                                    </p>
+                                }
+
+                            </div>
 
                         </div>
-
-                    </div>
+                    }
 
                 </section>
-
 
                 <!-- RESUMEN -->
                 <section class="nuevo-turno-resumen">
 
-                    <h3>Resumen</h3>
+                    <h3>Resumen de la reserva</h3>
 
                     <div class="resumen-datos">
 
                         <div>
-                            <span>Duración</span>
-                            <strong>{{ duracionTotalFormulario }} min</strong>
+                            <span>Servicios agregados</span>
+
+                            <strong>
+                                {{ asignacionesReserva.length }}
+                            </strong>
                         </div>
 
                         <div>
-                            <span>Total</span>
-                            <strong>${{ obtenerPrecioTotalFormulario() }}</strong>
+                            <span>Duración total</span>
+
+                            <strong>
+                                {{ obtenerDuracionTotalReserva() }} min
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Precio total</span>
+
+                            <strong>
+                                ${{ obtenerPrecioTotalFormulario() }}
+                            </strong>
                         </div>
 
                     </div>
-
                 </section>
+
+                <!-- MENSAJES DE ERROR -->
+                @if (errorDisponibilidadReserva) {
+
+                    <p class="reserva-error">
+                        {{ errorDisponibilidadReserva }}
+                    </p>
+                }
+
+                @if (errorReserva) {
+
+                    <p class="reserva-error">
+                        {{ errorReserva }}
+                    </p>
+                }
 
             </div>
 
 
+<!-- MOTIVO POR EL QUE NO SE PUEDE CREAR -->
+
+@if (!formularioNuevoTurnoValido() && !creandoReserva) {
+
+    <div class="reserva-validacion-aviso" role="status">
+
+        <mat-icon>info_outline</mat-icon>
+
+        <span>
+            {{ obtenerMotivoBloqueoReserva() }}
+        </span>
+
+    </div>
+
+}
+
+
+            <!-- BOTONES -->
             <div class="nuevo-turno-footer">
 
                 <button
                     type="button"
                     class="btn-cancelar"
-                    (click)="cerrarNuevoTurno()">
+                    (click)="cerrarNuevoTurno()"
+                    [disabled]="creandoReserva">
 
                     Cancelar
                 </button>
@@ -733,12 +1223,11 @@
 
                     <mat-icon>event_available</mat-icon>
 
-                    Crear turno
+                    {{ creandoReserva ? 'Creando reserva...' : 'Crear reserva' }}
                 </button>
 
             </div>
 
         </div>
-
     </div>
 }

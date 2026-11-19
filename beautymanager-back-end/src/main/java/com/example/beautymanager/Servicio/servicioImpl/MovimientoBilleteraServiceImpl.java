@@ -2,7 +2,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ObtenerMovimientoBilleteraDTO;
@@ -19,14 +18,20 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class MovimientoBilleteraServiceImpl implements MovimientoBilleteraService{
 
-    @Autowired
-    private MovimientoBilleteraRepository movimientoBilleteraRepository;
+    private final MovimientoBilleteraRepository movimientoBilleteraRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private BilleteraRepository billeteraRepository;
+    private final BilleteraRepository billeteraRepository;
+
+    public MovimientoBilleteraServiceImpl(MovimientoBilleteraRepository movimientoBilleteraRepository, UsuarioRepository usuarioRepository, BilleteraRepository billeteraRepository) {
+
+        this.movimientoBilleteraRepository = movimientoBilleteraRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.billeteraRepository = billeteraRepository;
+    }
 
     //=======================
     //Obtener billetera

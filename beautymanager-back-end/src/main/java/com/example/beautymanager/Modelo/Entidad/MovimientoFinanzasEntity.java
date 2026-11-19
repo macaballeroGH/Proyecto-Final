@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.beautymanager.Modelo.Enums.EstadoMovimientoEnums;
+import com.example.beautymanager.Modelo.Enums.MetodoPagoEnums;
 import com.example.beautymanager.Modelo.Enums.TipoMovimientoEnums;
 
 import jakarta.persistence.Column;
@@ -29,11 +30,18 @@ public class MovimientoFinanzasEntity {
     @Column(name = "id_movimiento")
     private Long id;
 
-    @Column(name = "fecha")
-    private LocalDateTime fecha;
+    @Column(name = "fecha_gasto", nullable = false)
+    private LocalDateTime fechaGasto;
+
+    @Column(name = "fecha_registro", nullable = false, updatable = false)
+    private LocalDateTime fechaRegistro;
 
     @Column(name = "monto")
     private BigDecimal monto;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "metodo_pago", nullable = false)
+    private MetodoPagoEnums metodoPago;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_movimiento")
@@ -51,7 +59,7 @@ public class MovimientoFinanzasEntity {
     private UsuarioEntity usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tipoGasto", nullable = true)
+    @JoinColumn(name = "id_tipoGasto")
     private TipoGastoEntity tipoGasto;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -60,8 +68,8 @@ public class MovimientoFinanzasEntity {
 
     @PrePersist
     public void prePersist() {
-        if (this.fecha == null) {
-            this.fecha = LocalDateTime.now();
+        if (this.fechaRegistro == null) {
+            this.fechaRegistro = LocalDateTime.now();
         }
     }
 }

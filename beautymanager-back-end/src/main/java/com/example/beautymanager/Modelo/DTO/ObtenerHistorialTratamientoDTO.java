@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.beautymanager.Modelo.Enums.EspecialidadEmpleadoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoTurnoEnums;
+import com.example.beautymanager.Modelo.Enums.ResultadoTratamientoEnums;
 
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class ObtenerHistorialTratamientoDTO {
     private String observacion;
     private Integer duracionReal;
     private String productosUtilizados;
+    private ResultadoTratamientoEnums resultadoTratamiento;
 
     //Turno
     private Long idTurno;
@@ -38,4 +40,5 @@ public class ObtenerHistorialTratamientoDTO {
     //Servicios realizados
     private List<String> servicios;
     private List<String> categorias;
+    private List<ObtenerHistorialTratamientoServicioDTO> serviciosRealizados;
 }

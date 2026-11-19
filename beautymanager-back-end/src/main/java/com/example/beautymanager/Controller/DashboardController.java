@@ -1,6 +1,5 @@
 package com.example.beautymanager.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +14,11 @@ import com.example.beautymanager.Servicio.DashboardService;
 @PreAuthorize("hasRole('ADMIN')")
 public class DashboardController {
 
-    @Autowired
-    private DashboardService dashboardService;
+    private final DashboardService dashboardService;
+
+    public DashboardController(DashboardService dashboardService){
+        this.dashboardService = dashboardService;
+    }
 
     //=======================
     //Obtener dashboard

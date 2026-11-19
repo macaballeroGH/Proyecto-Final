@@ -1,3 +1,12 @@
+/* =========================================================
+   BEAUTYMANAGER - AGENDA ADMIN
+   Diseño elegante, minimalista y premium
+   ========================================================= */
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
 .agenda-container {
     display: flex;
     flex-direction: column;
@@ -6,8 +15,18 @@
     min-height: 100%;
     padding: 24px;
     box-sizing: border-box;
-    background: #F8F9FA;
+    background: var(--bm-fondo);
 }
+
+.agenda-container *,
+.agenda-container *::before,
+.agenda-container *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
 
 .agenda-header {
     display: flex;
@@ -25,48 +44,58 @@
 
 .header-titulo h1 {
     margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-    color: #2F3440;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--bm-titulo);
     letter-spacing: -0.3px;
 }
 
 .cantidad-turnos,
 .sin-turnos {
     font-size: 13px;
-    color: #8A94A6;
+    color: var(--bm-texto-secundario);
 }
 
 .header-controles {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
+
+/* =========================================================
+   BOTONES SUPERIORES
+   ========================================================= */
 
 .btn-icon,
 .btn-mes,
 .btn-hoy,
 .btn-filtros {
-    border: 1px solid #E2E5EA;
-    background: #FFFFFF;
-    color: #4B5260;
+    border: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
+    color: var(--bm-texto-principal);
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        color 0.2s ease;
 }
 
 .btn-icon:hover,
 .btn-mes:hover,
 .btn-hoy:hover,
 .btn-filtros:hover {
-    background: #F7F8FA;
-    border-color: #D5D9E0;
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
 }
 
 .btn-icon:focus-visible,
 .btn-mes:focus-visible,
 .btn-hoy:focus-visible,
 .btn-filtros:focus-visible {
-    outline: 2px solid #C9A58A;
+    outline: 2px solid var(--bm-boton-principal);
     outline-offset: 2px;
 }
 
@@ -119,6 +148,10 @@
     font-size: 18px;
 }
 
+/* =========================================================
+   BÚSQUEDA
+   ========================================================= */
+
 .busqueda {
     display: flex;
     align-items: center;
@@ -126,22 +159,28 @@
     width: 280px;
     height: 38px;
     padding: 0 12px;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #E2E5EA;
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
     border-radius: 9px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .busqueda:focus-within {
-    border-color: #C9A58A;
-    box-shadow: 0 0 0 3px rgba(201, 165, 138, 0.12);
+    border-color: var(--bm-boton-principal);
+    box-shadow: 0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--bm-interactivo) 12%,
+            transparent
+        );
 }
 
 .busqueda mat-icon {
     flex-shrink: 0;
     font-size: 19px;
-    color: #9AA1AD;
+    color: var(--bm-texto-tenue);
 }
 
 .busqueda input {
@@ -151,14 +190,18 @@
     border: none;
     outline: none;
     background: transparent;
-    color: #3F4550;
+    color: var(--bm-texto-principal);
     font-family: inherit;
     font-size: 13px;
 }
 
 .busqueda input::placeholder {
-    color: #A6ACB7;
+    color: var(--bm-texto-tenue);
 }
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
 
 .agenda-content {
     display: grid;
@@ -168,23 +211,27 @@
     min-height: 0;
 }
 
+/* =========================================================
+   PANEL DE ACCIONES
+   ========================================================= */
+
 .agenda-sidebar {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 18px;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #E4E7EC;
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
     border-radius: 12px;
     align-self: start;
+    box-shadow: 0 8px 24px rgba(52, 42, 50, 0.05);
 }
 
 .agenda-sidebar h2 {
     margin: 0 0 6px;
     font-size: 12px;
     font-weight: 600;
-    color: #8A94A6;
+    color: var(--bm-texto-secundario);
     text-transform: uppercase;
     letter-spacing: 0.7px;
 }
@@ -196,21 +243,24 @@
     width: 100%;
     min-height: 42px;
     padding: 0 12px;
-    border: 1px solid #E5E7EB;
+    border: 1px solid var(--bm-borde);
     border-radius: 9px;
-    background: #FFFFFF;
-    color: #505764;
+    background: var(--bm-tarjeta);
+    color: var(--bm-texto-principal);
     cursor: pointer;
     font-family: inherit;
     font-size: 13px;
     font-weight: 500;
     text-align: left;
-    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
 }
 
 .sidebar-btn:hover {
-    background: #F8F9FA;
-    border-color: #D8DCE3;
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
 }
 
 .sidebar-btn:active {
@@ -221,33 +271,38 @@
     width: 19px;
     height: 19px;
     font-size: 19px;
-    color: #858D9A;
+    color: var(--bm-texto-secundario);
 }
 
 .sidebar-btn.btn-nuevo-turno {
-    border-color: #C9A58A;
-    background: #C9A58A;
-    color: #FFFFFF;
+    border-color: var(--bm-boton-principal);
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
 }
 
 .sidebar-btn.btn-nuevo-turno mat-icon {
-    color: #FFFFFF;
+    color: var(--bm-tarjeta);
 }
 
 .sidebar-btn.btn-nuevo-turno:hover {
-    background: #BD987B;
-    border-color: #BD987B;
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
 }
+
+/* =========================================================
+   CALENDARIO SEMANAL
+   ========================================================= */
 
 .agenda-calendar {
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
-    background: #FFFFFF;
-    border: 1px solid #E2E5EA;
+    overflow-x: auto;
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
     border-radius: 12px;
+    box-shadow: 0 10px 28px rgba(52, 42, 50, 0.05);
 }
 
 .calendar-header {
@@ -256,39 +311,41 @@
     justify-content: space-between;
     min-height: 54px;
     padding: 0 18px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #E5E7EB;
-    background: #FFFFFF;
+    border-bottom: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
 }
 
 .calendar-title {
     font-size: 14px;
     font-weight: 600;
-    color: #3E4450;
+    color: var(--bm-texto-principal);
 }
 
 .calendar-range {
     font-size: 13px;
-    color: #8A94A6;
+    color: var(--bm-texto-secundario);
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: 58px repeat(7, minmax(110px, 1fr));
+    width: 100%;
     min-width: 840px;
     flex: 1;
-    overflow-x: auto;
 }
 
+/* =========================================================
+   COLUMNA DE HORAS
+   ========================================================= */
+
 .calendar-time-column {
-    background: #FBFBFC;
-    border-right: 1px solid #E5E7EB;
+    background: var(--bm-fondo-secundario);
+    border-right: 1px solid var(--bm-borde);
 }
 
 .calendar-corner {
     height: 58px;
-    border-bottom: 1px solid #E5E7EB;
-    box-sizing: border-box;
+    border-bottom: 1px solid var(--bm-borde);
 }
 
 .calendar-time {
@@ -297,16 +354,19 @@
     justify-content: center;
     height: 60px;
     padding-top: 6px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #EEF0F3;
-    color: #9AA1AD;
+    border-bottom: 1px solid var(--bm-borde);
+    color: var(--bm-texto-tenue);
     font-size: 10px;
     font-weight: 500;
 }
 
+/* =========================================================
+   DÍAS DEL CALENDARIO
+   ========================================================= */
+
 .calendar-day {
     min-width: 0;
-    border-right: 1px solid #E5E7EB;
+    border-right: 1px solid var(--bm-borde);
 }
 
 .calendar-day:last-child {
@@ -319,13 +379,12 @@
     justify-content: center;
     gap: 7px;
     height: 58px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #E5E7EB;
-    background: #FFFFFF;
+    border-bottom: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
 }
 
 .dia-nombre {
-    color: #7D8592;
+    color: var(--bm-texto-secundario);
     font-size: 11px;
     font-weight: 500;
     text-transform: capitalize;
@@ -338,41 +397,46 @@
     width: 27px;
     height: 27px;
     border-radius: 50%;
-    color: #444B57;
+    color: var(--bm-texto-principal);
     font-size: 13px;
     font-weight: 600;
 }
 
 .calendar-day.dia-hoy .calendar-day-header {
-    background: #FCF9F6;
+    background: var(--bm-fondo-secundario);
 }
 
 .calendar-day.dia-hoy .dia-nombre {
-    color: #A77F5F;
+    color: var(--bm-boton-principal);
     font-weight: 600;
 }
 
 .calendar-day.dia-hoy .dia-numero {
-    background: #C9A58A;
-    color: #FFFFFF;
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
 }
 
 .calendar-day-slot {
     position: relative;
-    background: #FFFFFF;
+    background: var(--bm-tarjeta);
 }
 
 .calendar-slot {
     position: relative;
     height: 60px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #F0F1F3;
+    border-bottom: 1px solid var(--bm-borde);
     background: transparent;
 }
 
 .calendar-slot:nth-child(4n) {
-    border-bottom-color: #E3E6EA;
+    border-bottom-color: var(--bm-borde);
 }
+
+/* =========================================================
+   TARJETAS DE TURNOS
+   COLORES DE ESTADOS ORIGINALES
+   NO MODIFICAR LOS SIGUIENTES ESTADOS
+   ========================================================= */
 
 .turno-card {
     position: absolute;
@@ -386,7 +450,6 @@
     gap: 3px;
     min-height: 30px;
     padding: 7px 8px;
-    box-sizing: border-box;
     border: 1px solid transparent;
     border-left-width: 4px;
     border-radius: 7px;
@@ -397,7 +460,9 @@
     font-family: inherit;
     text-align: left;
     box-shadow: 0 1px 3px rgba(40, 45, 55, 0.08);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .turno-card:hover {
@@ -411,11 +476,15 @@
     outline-offset: 2px;
 }
 
+/* PENDIENTE */
+
 .turno-card.pendiente {
     border-color: rgba(244, 211, 94, 0.45);
     border-left-color: #F4D35E;
     background: #FFFBEA;
 }
+
+/* CONFIRMADO */
 
 .turno-card.confirmado {
     border-color: rgba(123, 198, 126, 0.40);
@@ -423,11 +492,15 @@
     background: #F3FBF3;
 }
 
+/* EN CURSO */
+
 .turno-card.en-curso {
     border-color: rgba(111, 168, 220, 0.40);
     border-left-color: #6FA8DC;
     background: #F2F8FD;
 }
+
+/* FINALIZADO */
 
 .turno-card.finalizado {
     border-color: rgba(138, 148, 166, 0.38);
@@ -435,11 +508,15 @@
     background: #F5F6F8;
 }
 
+/* CANCELADO */
+
 .turno-card.cancelado {
     border-color: rgba(229, 115, 115, 0.38);
     border-left-color: #E57373;
     background: #FFF5F5;
 }
+
+/* AUSENTE */
 
 .turno-card.ausente {
     border-color: rgba(244, 162, 97, 0.40);
@@ -447,17 +524,25 @@
     background: #FFF7F0;
 }
 
+/* RECHAZADO */
+
 .turno-card.rechazado {
     border-color: rgba(179, 157, 219, 0.40);
     border-left-color: #B39DDB;
     background: #F8F5FC;
 }
 
+/* REPROGRAMADO */
+
 .turno-card.reprogramado {
     border-color: rgba(100, 199, 199, 0.40);
     border-left-color: #64C7C7;
     background: #F1FAFA;
 }
+
+/* =========================================================
+   INFORMACIÓN DE CADA TURNO
+   ========================================================= */
 
 .turno-estado {
     display: flex;
@@ -545,18 +630,21 @@
     font-weight: 600;
 }
 
+/* =========================================================
+   LEYENDA DE ESTADOS
+   ========================================================= */
+
 .agenda-leyenda {
     width: 100%;
     padding: 16px 20px;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #E2E5EA;
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
     border-radius: 12px;
 }
 
 .agenda-leyenda h5 {
     margin: 0 0 12px;
-    color: #606875;
+    color: var(--bm-texto-secundario);
     font-size: 12px;
     font-weight: 600;
 }
@@ -572,7 +660,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #737B87;
+    color: var(--bm-texto-secundario);
     font-size: 11px;
 }
 
@@ -581,6 +669,8 @@
     height: 12px;
     font-size: 12px;
 }
+
+/* COLORES ORIGINALES DE LA LEYENDA */
 
 .estado-punto.pendiente {
     color: #F4D35E;
@@ -618,6 +708,10 @@
     color: #D5D9E0;
 }
 
+/* =========================================================
+   SELECTOR DE FECHA
+   ========================================================= */
+
 .selector-fecha {
     position: absolute;
     z-index: 100;
@@ -625,9 +719,8 @@
     left: 50%;
     width: 310px;
     padding: 18px;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #E2E5EA;
+    background: var(--bm-tarjeta);
+    border: 1px solid var(--bm-borde);
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(40, 45, 55, 0.14);
     transform: translateX(-50%);
@@ -646,7 +739,7 @@
     padding: 5px 8px;
     border: none;
     background: transparent;
-    color: #414752;
+    color: var(--bm-texto-principal);
     cursor: pointer;
     font-family: inherit;
     font-size: 14px;
@@ -668,7 +761,7 @@
 .selector-anio {
     border: none;
     background: transparent;
-    color: #555D69;
+    color: var(--bm-texto-secundario);
     cursor: pointer;
     font-family: inherit;
 }
@@ -687,42 +780,36 @@
 .selector-dia:hover,
 .selector-mes:hover,
 .selector-anio:hover {
-    background: #F3F4F6;
+    background: var(--bm-fondo-secundario);
 }
 
 .selector-dia.otro-mes {
-    color: #C3C7CE;
+    color: var(--bm-texto-tenue);
 }
 
 .selector-dia.dia-seleccionado {
-    background: #C9A58A;
-    color: #FFFFFF;
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
     font-weight: 600;
 }
 
-.selector-meses {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 7px;
-}
-
-.selector-mes {
-    min-height: 38px;
-    border-radius: 7px;
-    font-size: 12px;
-}
-
+.selector-meses,
 .selector-anios {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 7px;
 }
 
+.selector-mes,
 .selector-anio {
     min-height: 38px;
     border-radius: 7px;
     font-size: 12px;
 }
+
+/* =========================================================
+   FONDO DE VENTANAS EMERGENTES
+   ========================================================= */
 
 .turno-overlay,
 .modal-overlay {
@@ -733,19 +820,28 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    box-sizing: border-box;
     background: rgba(32, 36, 43, 0.35);
     backdrop-filter: blur(2px);
 }
 
+/* =========================================================
+   DETALLE DE TURNO
+   ========================================================= */
+
 .turno-detalle {
     position: relative;
-    width: min(500px, 100%);
+    width: min(560px, 100%);
+    max-height: calc(100dvh - 48px);
     padding: 28px;
-    box-sizing: border-box;
-    background: #FFFFFF;
+    background: var(--bm-tarjeta);
     border-radius: 14px;
     box-shadow: 0 18px 45px rgba(30, 35, 42, 0.18);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--bm-boton-principal)
+        var(--bm-fondo-secundario);
 }
 
 .btn-cerrar {
@@ -760,13 +856,13 @@
     padding: 0;
     border: none;
     border-radius: 50%;
-    background: #F5F6F8;
-    color: #737B87;
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-secundario);
     cursor: pointer;
 }
 
 .btn-cerrar:hover {
-    background: #ECEEF1;
+    background: var(--bm-borde);
 }
 
 .detalle-header {
@@ -775,7 +871,7 @@
 }
 
 .detalle-etiqueta {
-    color: #9AA1AD;
+    color: var(--bm-texto-tenue);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -784,9 +880,10 @@
 
 .detalle-header h2 {
     margin: 5px 0 0;
-    color: #303641;
+    color: var(--bm-texto-principal);
     font-size: 21px;
     font-weight: 600;
+    line-height: 1.3;
 }
 
 .detalle-estado {
@@ -809,6 +906,8 @@
     height: 9px;
     border-radius: 50%;
 }
+
+/* COLORES ORIGINALES DE INDICADORES */
 
 .estado-indicador.pendiente {
     background: #F4D35E;
@@ -842,6 +941,10 @@
     background: #64C7C7;
 }
 
+/* =========================================================
+   INFORMACIÓN DEL DETALLE
+   ========================================================= */
+
 .detalle-informacion {
     display: flex;
     flex-direction: column;
@@ -856,7 +959,7 @@
 
 .detalle-item > mat-icon {
     flex-shrink: 0;
-    color: #A1846C;
+    color: var(--bm-boton-principal);
     font-size: 20px;
 }
 
@@ -867,19 +970,23 @@
 }
 
 .detalle-item span {
-    color: #969DA8;
+    color: var(--bm-texto-tenue);
     font-size: 11px;
 }
 
 .detalle-item strong {
-    color: #464D59;
+    color: var(--bm-texto-principal);
     font-size: 13px;
     font-weight: 500;
 }
 
+/* =========================================================
+   PANEL DE FILTROS
+   ========================================================= */
+
 .filtros-panel {
     width: min(420px, 100%);
-    background: #FFFFFF;
+    background: var(--bm-tarjeta);
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 18px 45px rgba(30, 35, 42, 0.18);
@@ -891,15 +998,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 22px;
-    border-bottom: 1px solid #E8EAED;
+    border-bottom: 1px solid var(--bm-borde);
 }
 
 .filtros-header h2,
 .nuevo-turno-header h2 {
     margin: 0;
-    color: #343A45;
+    color: var(--bm-texto-principal);
     font-size: 17px;
     font-weight: 600;
+    line-height: 1.3;
 }
 
 .filtros-header button,
@@ -913,13 +1021,13 @@
     border: none;
     border-radius: 50%;
     background: transparent;
-    color: #7C8490;
+    color: var(--bm-texto-secundario);
     cursor: pointer;
 }
 
 .filtros-header button:hover,
 .nuevo-turno-header button:hover {
-    background: #F3F4F6;
+    background: var(--bm-fondo-secundario);
 }
 
 .filtros-body {
@@ -930,7 +1038,7 @@
 }
 
 .filtros-body > label {
-    color: #59616D;
+    color: var(--bm-texto-secundario);
     font-size: 12px;
     font-weight: 600;
 }
@@ -939,18 +1047,23 @@
     width: 100%;
     height: 40px;
     padding: 0 10px;
-    border: 1px solid #DDE1E6;
+    border: 1px solid var(--bm-borde);
     border-radius: 8px;
     outline: none;
-    background: #FFFFFF;
-    color: #4B5260;
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
     font-family: inherit;
     font-size: 13px;
 }
 
 .filtros-body select:focus {
-    border-color: #C9A58A;
-    box-shadow: 0 0 0 3px rgba(201, 165, 138, 0.10);
+    border-color: var(--bm-boton-principal);
+    box-shadow: 0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--bm-interactivo) 10%,
+            transparent
+        );
 }
 
 .checkbox-filtro {
@@ -958,7 +1071,7 @@
     align-items: center;
     gap: 8px;
     margin-top: 8px;
-    color: #666E7A;
+    color: var(--bm-texto-secundario);
     font-size: 12px;
     font-weight: 400 !important;
     cursor: pointer;
@@ -967,7 +1080,7 @@
 .checkbox-filtro input {
     width: 15px;
     height: 15px;
-    accent-color: #C9A58A;
+    accent-color: var(--bm-boton-principal);
 }
 
 .filtros-footer {
@@ -975,8 +1088,8 @@
     justify-content: flex-end;
     gap: 9px;
     padding: 16px 22px;
-    border-top: 1px solid #E8EAED;
-    background: #FBFBFC;
+    border-top: 1px solid var(--bm-borde);
+    background: var(--bm-fondo-secundario);
 }
 
 .btn-limpiar,
@@ -991,40 +1104,1306 @@
 }
 
 .btn-limpiar {
-    border: 1px solid #DDE1E6;
-    background: #FFFFFF;
-    color: #666E7A;
+    border: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
+    color: var(--bm-texto-secundario);
 }
 
 .btn-limpiar:hover {
-    background: #F5F6F8;
+    background: var(--bm-fondo-secundario);
 }
 
 .btn-aplicar {
-    border: 1px solid #C9A58A;
-    background: #C9A58A;
-    color: #FFFFFF;
+    border: 1px solid var(--bm-boton-principal);
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
 }
 
 .btn-aplicar:hover {
-    background: #BD987B;
+    background: var(--bm-interactivo);
 }
 
+/* =========================================================
+   NUEVO TURNO - VENTANA PRINCIPAL
+   ========================================================= */
+
 .nuevo-turno-panel {
-    width: min(480px, 100%);
-    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 48px);
+    min-height: 0;
+    background: var(--bm-tarjeta);
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 18px 45px rgba(30, 35, 42, 0.18);
 }
 
+.nuevo-turno-header {
+    position: relative;
+    flex-shrink: 0;
+    padding-right: 62px;
+}
+
+.nuevo-turno-header p {
+    margin: 6px 0 0;
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 .nuevo-turno-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 24px;
+    min-height: 0;
     padding: 22px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .nuevo-turno-body p {
     margin: 0;
-    color: #737B87;
+    color: var(--bm-texto-secundario);
     font-size: 13px;
     line-height: 1.6;
+}
+
+/* =========================================================
+   SECCIONES DEL FORMULARIO
+   ========================================================= */
+
+.formulario-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.formulario-seccion h3 {
+    margin: 0;
+    color: var(--bm-texto-principal);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.campo-formulario label {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.campo-formulario select,
+.campo-formulario input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 43px;
+    padding: 0 12px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+    background-color: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.campo-formulario select:focus,
+.campo-formulario input:focus {
+    outline: none;
+    border-color: var(--bm-boton-principal);
+    box-shadow: 0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--bm-interactivo) 12%,
+            transparent
+        );
+}
+
+/* =========================================================
+   LISTA DE SERVICIOS
+   ========================================================= */
+
+.servicios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.servicio-opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+    background-color: var(--bm-tarjeta);
+    cursor: pointer;
+}
+
+.servicio-opcion:hover {
+    background-color: var(--bm-fondo-secundario);
+}
+
+.servicio-opcion input {
+    flex-shrink: 0;
+    accent-color: var(--bm-boton-principal);
+}
+
+.servicio-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.servicio-nombre {
+    color: var(--bm-texto-principal);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.servicio-detalle {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+}
+
+/* =========================================================
+   FECHA Y HORARIO
+   ========================================================= */
+
+.fecha-horario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+/* =========================================================
+   ENCABEZADO DE SERVICIOS
+   ========================================================= */
+
+.reserva-servicios-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.reserva-servicios-header h3 {
+    margin: 0;
+}
+
+.btn-agregar-servicio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 36px;
+    padding: 7px 12px;
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 8px;
+    background: var(--bm-tarjeta);
+    color: var(--bm-boton-principal);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.btn-agregar-servicio:hover {
+    background: var(--bm-fondo-secundario);
+}
+
+.btn-agregar-servicio mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+/* =========================================================
+   ASIGNACIONES DE RESERVA
+   ========================================================= */
+
+.reserva-asignacion {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+    background: var(--bm-fondo-secundario);
+}
+
+.reserva-asignacion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.reserva-asignacion-header strong {
+    color: var(--bm-texto-principal);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-quitar-servicio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #F0D4D4;
+    border-radius: 8px;
+    background: #FFF7F7;
+    color: #C76F6F;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-quitar-servicio:hover {
+    background: #FCEBEB;
+}
+
+.btn-quitar-servicio mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.reserva-asignacion .campo-formulario select {
+    background: var(--bm-fondo);
+}
+
+/* =========================================================
+   MENSAJES DE RESERVA
+   ========================================================= */
+
+.reserva-ayuda {
+    margin: 2px 0 0;
+    color: var(--bm-texto-secundario);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.reserva-error {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid #EFCACA;
+    border-radius: 9px;
+    background: #FFF5F5;
+    color: #B65E5E;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   RESUMEN DE RESERVA
+   ========================================================= */
+
+.nuevo-turno-resumen {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 18px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+    background: var(--bm-fondo-secundario);
+}
+
+.nuevo-turno-resumen h3 {
+    margin: 0;
+    color: var(--bm-texto-principal);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.resumen-datos {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.resumen-datos > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resumen-datos span {
+    color: var(--bm-texto-secundario);
+    font-size: 11px;
+}
+
+.resumen-datos strong {
+    color: var(--bm-texto-principal);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   BOTONES DEL FORMULARIO
+   ========================================================= */
+
+.nuevo-turno-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+    padding: 16px 22px;
+    border-top: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
+}
+
+.btn-cancelar,
+.btn-crear-turno {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 9px 16px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-cancelar {
+    border: 1px solid var(--bm-borde);
+    background: var(--bm-tarjeta);
+    color: var(--bm-texto-secundario);
+}
+
+.btn-cancelar:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+}
+
+.btn-crear-turno {
+    border: 1px solid var(--bm-boton-principal);
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
+}
+
+.btn-crear-turno:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+}
+
+.btn-crear-turno mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.btn-cancelar:disabled,
+.btn-crear-turno:disabled,
+.btn-agregar-servicio:disabled,
+.btn-quitar-servicio:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   DETALLE - REPROGRAMACIÓN
+   ========================================================= */
+
+.turno-detalle .btn-cerrar:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.detalle-reprogramacion {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--bm-borde);
+}
+
+.btn-abrir-reprogramacion {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 15px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-abrir-reprogramacion:hover {
+    background: var(--bm-borde);
+    border-color: var(--bm-boton-principal);
+    box-shadow: 0 3px 10px rgba(52, 42, 50, 0.07);
+}
+
+.btn-abrir-reprogramacion mat-icon {
+    flex-shrink: 0;
+    color: var(--bm-boton-principal);
+}
+
+.btn-abrir-reprogramacion mat-icon:last-child {
+    margin-left: auto;
+}
+
+/* =========================================================
+   FORMULARIO DE REPROGRAMACIÓN
+   ========================================================= */
+
+.reprogramacion-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+    min-width: 0;
+}
+
+.reprogramacion-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.reprogramacion-titulo {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    min-width: 0;
+}
+
+.reprogramacion-titulo > mat-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    padding: 7px;
+    border-radius: 9px;
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+    font-size: 23px;
+}
+
+.reprogramacion-titulo h3 {
+    margin: 0 0 5px;
+    color: var(--bm-texto-principal);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.reprogramacion-titulo p {
+    margin: 0;
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.btn-cerrar-reprogramacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-secundario);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-cerrar-reprogramacion:hover:not(:disabled) {
+    background: var(--bm-borde);
+}
+
+/* =========================================================
+   HORARIO ORIGINAL
+   ========================================================= */
+
+.reprogramacion-horario-actual {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+    background: var(--bm-fondo-secundario);
+}
+
+.reprogramacion-horario-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: var(--bm-tarjeta);
+    color: var(--bm-boton-principal);
+}
+
+.reprogramacion-horario-actual > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.reprogramacion-horario-actual span {
+    color: var(--bm-texto-secundario);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.reprogramacion-horario-actual strong {
+    color: var(--bm-texto-principal);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   CAMPOS DE REPROGRAMACIÓN
+   ========================================================= */
+
+.reprogramacion-campos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.reprogramacion-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.reprogramacion-campo label {
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reprogramacion-campo input,
+.reprogramacion-campo textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+    outline: none;
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+    font-family: inherit;
+    font-size: 13px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.reprogramacion-campo input {
+    min-height: 43px;
+}
+
+.reprogramacion-campo textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.reprogramacion-campo input:focus,
+.reprogramacion-campo textarea:focus {
+    border-color: var(--bm-boton-principal);
+    box-shadow: 0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--bm-interactivo) 12%,
+            transparent
+        );
+}
+
+.reprogramacion-campo input:disabled,
+.reprogramacion-campo textarea:disabled {
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-secundario);
+    cursor: not-allowed;
+}
+
+.reprogramacion-campo textarea::placeholder {
+    color: var(--bm-texto-tenue);
+}
+
+.reprogramacion-contador {
+    align-self: flex-end;
+    color: var(--bm-texto-tenue);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   AVISO INFORMATIVO
+   ========================================================= */
+
+.reprogramacion-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 14px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+    background: var(--bm-fondo-secundario);
+}
+
+.reprogramacion-aviso mat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--bm-boton-principal);
+}
+
+.reprogramacion-aviso p {
+    margin: 0;
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   MENSAJES DE REPROGRAMACIÓN
+   ========================================================= */
+
+.reprogramacion-mensaje {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 14px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.reprogramacion-mensaje mat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+}
+
+.reprogramacion-exito {
+    border-color: #C9E5D2;
+    background: #F0FAF3;
+    color: #347B59;
+}
+
+.reprogramacion-error {
+    border-color: #EFCACA;
+    background: #FFF5F5;
+    color: #B65E5E;
+}
+
+/* =========================================================
+   ACCIONES DE REPROGRAMACIÓN
+   ========================================================= */
+
+.reprogramacion-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-cancelar-reprogramacion,
+.btn-enviar-reprogramacion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-cancelar-reprogramacion {
+    border-color: var(--bm-borde);
+    background: var(--bm-tarjeta);
+    color: var(--bm-texto-secundario);
+}
+
+.btn-cancelar-reprogramacion:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+}
+
+.btn-enviar-reprogramacion {
+    border-color: var(--bm-boton-principal);
+    background: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
+}
+
+.btn-enviar-reprogramacion:hover:not(:disabled) {
+    border-color: var(--bm-interactivo);
+    background: var(--bm-interactivo);
+    box-shadow: 0 3px 10px rgba(212, 92, 140, 0.20);
+}
+
+.btn-enviar-reprogramacion mat-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.btn-cancelar-reprogramacion:disabled,
+.btn-enviar-reprogramacion:disabled,
+.btn-cerrar-reprogramacion:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-abrir-reprogramacion:focus-visible,
+.btn-cancelar-reprogramacion:focus-visible,
+.btn-enviar-reprogramacion:focus-visible,
+.btn-cerrar-reprogramacion:focus-visible {
+    outline: 2px solid var(--bm-boton-principal);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   ACCIONES ADMINISTRATIVAS
+   ========================================================= */
+
+.detalle-acciones-admin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--bm-borde);
+}
+
+.detalle-acciones-admin button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 1 1 150px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.detalle-acciones-admin mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.btn-confirmar-admin {
+    background: #347B59;
+    color: var(--bm-tarjeta);
+}
+
+.btn-confirmar-admin:hover:not(:disabled) {
+    background: #286446;
+}
+
+.btn-rechazar-admin {
+    background: #FFF5F5;
+    border-color: #EFCACA !important;
+    color: #B65E5E;
+}
+
+.btn-rechazar-admin:hover:not(:disabled) {
+    background: #FCEBEB;
+}
+
+.btn-cancelar-admin {
+    background: var(--bm-tarjeta);
+    border-color: var(--bm-borde) !important;
+    color: var(--bm-texto-secundario);
+}
+
+.btn-cancelar-admin:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+}
+
+.detalle-acciones-admin button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.accion-admin-exito,
+.accion-admin-error {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.accion-admin-exito {
+    color: #347B59;
+    background: #F0FAF3;
+}
+
+.accion-admin-error {
+    color: #B65E5E;
+    background: #FFF5F5;
+}
+
+/* =========================================================
+   VALIDACIÓN DE RESERVA ADMIN
+   ========================================================= */
+
+.reserva-validacion-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 22px 16px;
+    padding: 13px 15px;
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-secundario);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.reserva-validacion-aviso mat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--bm-boton-principal);
+}
+
+/* =========================================================
+   ADAPTACIÓN A VENTANAS ANGOSTAS DE PC
+   ========================================================= */
+
+.agenda-container {
+    container-type: inline-size;
+}
+
+@container (max-width: 1050px) {
+
+    .agenda-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .agenda-sidebar {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .agenda-sidebar h2 {
+        width: 100%;
+    }
+
+    .agenda-sidebar .sidebar-btn {
+        width: auto;
+        flex: 1 1 auto;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .agenda-header {
+        align-items: stretch;
+    }
+
+    .header-controles {
+        flex-wrap: wrap;
+    }
+
+    .busqueda {
+        flex: 1 1 220px;
+        width: auto;
+    }
+}
+
+@container (max-width: 620px) {
+
+    .reprogramacion-campos {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .reprogramacion-acciones {
+        align-items: stretch;
+    }
+
+    .btn-cancelar-reprogramacion,
+    .btn-enviar-reprogramacion {
+        flex: 1 1 auto;
+    }
+
+    .agenda-sidebar .sidebar-btn {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .nuevo-turno-panel {
+        max-height: calc(100dvh - 20px);
+    }
+
+    .nuevo-turno-body {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .reserva-servicios-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reserva-asignacion {
+        padding: 14px;
+    }
+
+    .nuevo-turno-footer {
+        padding: 14px 16px;
+    }
+
+    .btn-cancelar,
+    .btn-crear-turno {
+        flex: 1;
+    }
+
+    .fecha-horario {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+/* ================================================
+   CORRECCIÓN DE VENTANAS EMERGENTES
+   AGENDA ADMIN - BEAUTYMANAGER
+   ================================================ */
+
+/*
+   Evitar que el contenedor principal
+   limite el posicionamiento de los modales.
+*/
+
+.agenda-container {
+    container-type: normal;
+}
+
+/* ================================================
+   FONDO DE LAS VENTANAS
+   ================================================ */
+
+.modal-overlay,
+.turno-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    overflow-y: auto;
+
+    background: rgba(52, 42, 50, 0.48);
+    backdrop-filter: blur(3px);
+}
+
+/* ================================================
+   VENTANA DE NUEVA RESERVA
+   ================================================ */
+
+.nuevo-turno-panel {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    width: min(620px, 100%);
+    max-height: calc(100dvh - 48px);
+    min-height: 0;
+
+    margin: auto;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+
+    box-shadow: 0 22px 55px rgba(52, 42, 50, 0.22);
+
+    overflow: hidden;
+}
+
+/* ================================================
+   ENCABEZADO DE NUEVA RESERVA
+   ================================================ */
+
+.nuevo-turno-header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex: 0 0 auto;
+
+    min-height: 86px;
+    padding: 18px 65px 18px 26px;
+
+    background: var(--bm-tarjeta);
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.nuevo-turno-header h2 {
+    margin: 0 0 6px;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.nuevo-turno-header p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ================================================
+   BOTÓN CERRAR
+   ================================================ */
+
+.nuevo-turno-header .btn-cerrar {
+    position: absolute;
+    top: 20px;
+    right: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-texto-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.nuevo-turno-header .btn-cerrar:hover:not(:disabled) {
+    background: var(--bm-borde);
+    color: var(--bm-boton-principal);
+}
+
+/* ================================================
+   CONTENIDO DESPLAZABLE
+   ================================================ */
+
+.nuevo-turno-body {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+    padding: 26px;
+
+    gap: 24px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--bm-borde)
+        var(--bm-tarjeta);
+}
+
+/* ================================================
+   MENSAJE DE VALIDACIÓN
+   ================================================ */
+
+.nuevo-turno-panel .reserva-validacion-aviso {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    flex: 0 0 auto;
+
+    margin: 0 26px 16px;
+    padding: 13px 15px;
+
+    background: var(--bm-fondo-secundario);
+    border: 1px solid var(--bm-borde);
+    border-radius: 10px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.nuevo-turno-panel .reserva-validacion-aviso mat-icon {
+    flex-shrink: 0;
+
+    color: var(--bm-boton-principal);
+}
+
+/* ================================================
+   BOTONES INFERIORES
+   ================================================ */
+
+.nuevo-turno-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    flex: 0 0 auto;
+
+    gap: 12px;
+    padding: 18px 26px;
+
+    background: var(--bm-tarjeta);
+    border-top: 1px solid var(--bm-borde);
+}
+
+/* ================================================
+   ADAPTACIÓN A VENTANAS DE PC ANGOSTAS
+   ================================================ */
+
+@media (max-width: 1200px) {
+
+    .agenda-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .agenda-sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .agenda-sidebar h2 {
+        width: 100%;
+    }
+
+    .agenda-sidebar .sidebar-btn {
+        width: auto;
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .header-controles {
+        flex-wrap: wrap;
+    }
+
+    .busqueda {
+        flex: 1 1 220px;
+        width: auto;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .modal-overlay,
+    .turno-overlay {
+        padding: 16px;
+    }
+
+    .nuevo-turno-panel {
+        max-height: calc(100dvh - 32px);
+    }
+
+    .nuevo-turno-header {
+        padding: 16px 60px 16px 20px;
+    }
+
+    .nuevo-turno-body {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .nuevo-turno-panel .reserva-validacion-aviso {
+        margin: 0 20px 12px;
+    }
+
+    .nuevo-turno-footer {
+        padding: 15px 20px;
+    }
+
+    .reprogramacion-campos {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
 }

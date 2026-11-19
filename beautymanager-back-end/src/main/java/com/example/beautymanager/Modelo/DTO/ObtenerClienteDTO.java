@@ -15,6 +15,7 @@ public class ObtenerClienteDTO {
     private String apellido;
     private String email;
     private String telefono;
+    private String fotoPerfil;
 
     //Cliente
     private String direccion;

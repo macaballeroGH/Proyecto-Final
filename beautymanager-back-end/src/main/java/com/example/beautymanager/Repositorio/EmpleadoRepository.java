@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.beautymanager.Modelo.Entidad.EmpleadoEntity;
 import com.example.beautymanager.Modelo.Enums.EspecialidadEmpleadoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoEmpleadoEnums;
+
+import jakarta.persistence.LockModeType;
 
 public interface EmpleadoRepository extends JpaRepository<EmpleadoEntity, Long> {
     List<EmpleadoEntity> findByEspecialidad(EspecialidadEmpleadoEnums especialidad);
@@ -36,4 +41,15 @@ public interface EmpleadoRepository extends JpaRepository<EmpleadoEntity, Long> 
     List<EmpleadoEntity> findAllByOrderByFechaAltaDesc();
 
     List<EmpleadoEntity> findAllByOrderByIdAsc();
+
+    //==========================
+    //Bloquear empleada para reserva
+    //==========================
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT e
+        FROM EmpleadoEntity e
+        WHERE e.id = :idEmpleado
+    """)
+    Optional<EmpleadoEntity> bloquearParaReserva(@Param("idEmpleado") Long idEmpleado);
 }

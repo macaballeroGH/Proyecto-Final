@@ -1,52 +1,22 @@
-:root{
+:root {
 
-    /*=======================
-       Colores principales
-    =======================*/
-    --color-primary: #5A2633;
-    --color-background: #FBF4F5;
-    --color-section-light: #FFFFFF;
-    --color-section-accent: #F8E8EC;
+   --bm-titulo: #b97f09;
 
-    /*=======================
-       Textos
-    =======================*/
-    --color-text: #2D2D2D;
-    --color-text-secondary: #6B7280;
+   --bm-fondo: #ffeef2;
+   --bm-tarjeta: #fff0f5;
+   --bm-fondo-secundario: #ffe1ec;
 
-    /*=======================
-       Colores de identidad
-    =======================*/
-    --color-secondary: #C77C8A;
-    --color-secondary-hover: #A65364;
+   --bm-boton-principal: #bd4475;
+   --bm-interactivo: #d45c8c;
+   --bm-boton-secundario: #ffe1ec;
 
-    --color-accent: #C9A45C;
-    --color-accent-light: #E3C98A;
+   --bm-borde: #f3ccdb;
 
-    /*=======================
-       Bordes
-    =======================*/
-    --color-border: #E8D7DB;
-
-    /*=======================
-       Sombras
-    =======================*/
-    --shadow-card: 0 4px 20px rgba(90, 38, 51, 0.10);
-    --shadow-hover: 0 8px 25px rgba(90, 38, 51, 0.16);
-
-    /*=======================
-       Bordes redondos
-    =======================*/
-    --radius-small: 10px;
-    --radius-medium: 16px;
-    --radius-large: 24px;
+   --bm-texto-principal: #342a32;
+   --bm-texto-secundario: #857782;
+   --bm-texto-tenue: #a99ba4;
 }
 
-body{
-
-    margin: 0;
-    background: var(--color-background);
-    color: var(--color-text);
-
-    font-family: "Inter", "Roboto", Arial, sans-serif;
+body {
+  background-color: var(--bm-fondo);
 }

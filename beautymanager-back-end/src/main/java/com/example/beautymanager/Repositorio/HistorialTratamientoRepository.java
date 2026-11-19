@@ -10,6 +10,8 @@ import com.example.beautymanager.Modelo.Entidad.HistorialTratamientoEntity;
 public interface HistorialTratamientoRepository extends JpaRepository<HistorialTratamientoEntity, Long> {
     List<HistorialTratamientoEntity> findByTurnoId(Long idTurno);
 
+    boolean existsByTurnoId(Long idTurno);
+
     List<HistorialTratamientoEntity> findByFecha(LocalDateTime fecha);
 
     List<HistorialTratamientoEntity> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin);

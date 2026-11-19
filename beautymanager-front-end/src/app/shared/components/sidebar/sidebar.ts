@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Session } from '../../../core/services/session';
+import { Auth } from '../../../core/services/auth';
 import { UserSession } from '../../../core/models/user-session';
 import { Rol } from '../../../core/enums/rol';
 
 interface MenuItem {
   nombre: string;
-  ruta: string;
+  ruta?: string;
+  accion?: 'logout';
 }
 
 @Component({
@@ -22,7 +24,7 @@ export class Sidebar implements OnInit {
   
   menuItems: MenuItem[] = [];
 
-  constructor(private session: Session) {}
+  constructor(private session: Session, private router: Router, private auth: Auth) {}
 
   ngOnInit(): void {
     
@@ -45,10 +47,6 @@ export class Sidebar implements OnInit {
           {
             nombre: 'Inicio',
             ruta: '/admin/inicio'
-          },
-          {
-            nombre: 'Perfil',
-            ruta: '/admin/perfil'
           },
           {
             nombre: 'Agenda',
@@ -77,6 +75,10 @@ export class Sidebar implements OnInit {
           {
             nombre: 'Recordatorios',
             ruta: '/admin/recordatorios'
+          },
+          {
+            nombre: 'Cerrar sesión',
+            accion: 'logout'
           }
         ];
 
@@ -98,16 +100,16 @@ export class Sidebar implements OnInit {
             ruta: '/cliente/historial-tratamientos'
           },
           {
-            nombre: 'Perfil',
-            ruta: '/cliente/perfil'
-          },
-          {
             nombre: 'Notificaciones',
             ruta: '/cliente/notificaciones'
           },
           {
             nombre: 'Tienda',
             ruta: '/cliente/tienda'
+          },
+          {
+            nombre: 'Cerrar sesión',
+            accion: 'logout'
           }
         ];
 
@@ -125,16 +127,20 @@ export class Sidebar implements OnInit {
             ruta: '/empleado/agenda'
           },
           {
-            nombre: 'Perfil',
-            ruta: '/empleado/perfil'
+            nombre: 'Tratamientos',
+            ruta: '/empleado/tratamientos'
           },
           {
-            nombre: 'Tratamientos',
-            ruta: 'empleado/tratamiento'
+            nombre: 'Cerrar sesión',
+            accion: 'logout'
           }
         ];
 
         break;
     }
+  }
+
+  cerrarSesion(): void {
+    this.session.cerrarSesionCompleta(this.auth, this.router);
   }
 }

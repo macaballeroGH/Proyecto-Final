@@ -3,15 +3,17 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarProductoDTO;
 import com.example.beautymanager.Modelo.DTO.CrearProductoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerProductoDTO;
 import com.example.beautymanager.Modelo.Entidad.ProductoEntity;
+import com.example.beautymanager.Modelo.Enums.CarpetaArchivoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoProductoEnums;
 import com.example.beautymanager.Repositorio.ProductoRepository;
+import com.example.beautymanager.Servicio.ArchivoService;
 import com.example.beautymanager.Servicio.ProductoService;
 import com.example.beautymanager.exception.BusinessException;
 
@@ -20,8 +22,16 @@ import jakarta.transaction.Transactional;
 @Service
 public class ProductoServiceImpl implements ProductoService {
     
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
+
+    private final ArchivoService archivoService;
+
+    public ProductoServiceImpl(ProductoRepository productoRepository, ArchivoService archivoService){
+
+        this.productoRepository = productoRepository;
+
+        this.archivoService = archivoService;
+    }
 
     //======================
     //Crear
@@ -58,7 +68,9 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setPrecio(crearProducto.getPrecio());
         producto.setStock(crearProducto.getStock());
 
-        if(crearProducto.getEstado() == null){
+        if (crearProducto.getStock() == 0) {
+            producto.setEstadoProducto(EstadoProductoEnums.SIN_STOCK);
+        } else if (crearProducto.getEstado() == null) {
             producto.setEstadoProducto(EstadoProductoEnums.ACTIVO);
         } else {
             producto.setEstadoProducto(crearProducto.getEstado());
@@ -126,6 +138,11 @@ public class ProductoServiceImpl implements ProductoService {
         if(producto.getDetalleCompra() != null && !producto.getDetalleCompra().isEmpty()){
             throw new BusinessException("No se puede eliminar un producto con compras asociadas");
         }
+
+        if (producto.getFoto() != null && !producto.getFoto().isBlank()) {
+            archivoService.eliminarArchivo(producto.getFoto(), CarpetaArchivoEnums.PRODUCTOS);
+        }
+
         productoRepository.delete(producto);
     }
 
@@ -157,19 +174,65 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional
     public void descontarStock(Long idProducto, Integer cantidad) {
 
-        ProductoEntity producto = productoRepository.findById(idProducto)
-                .orElseThrow(() -> new BusinessException("Producto no encotrado"));
-
-        if (cantidad == null || cantidad <= 0){
-            throw new BusinessException("Cantidad invalida");
+        if(idProducto == null || idProducto <= 0){
+            throw new BusinessException("ID de producto inválido");
         }
 
-        if(producto.getStock() < cantidad){
-            throw new BusinessException("Stock insuficiente");
+        if(cantidad == null || cantidad <= 0){
+            throw new BusinessException("La cantidad debe ser mayor a cero");
         }
 
-        producto.setStock(producto.getStock() - cantidad);
+        //========================
+        //Obtener producto bloqueado
+        //========================
+        ProductoEntity producto = productoRepository
+            .buscarPorIdConBloqueo(idProducto)
+            .orElseThrow(() ->
+                new BusinessException("Producto no encontrado")
+            );
 
+        //========================
+        //Validar estado
+        //========================
+        if(producto.getEstadoProducto() != EstadoProductoEnums.ACTIVO){
+            throw new BusinessException(
+                "El producto no está disponible para la venta: "
+                + producto.getNombre()
+            );
+        }
+
+        //========================
+        //Validar stock
+        //========================
+        if(producto.getStock() == null ||
+           producto.getStock() < cantidad){
+
+            throw new BusinessException(
+                "Stock insuficiente para el producto: "
+                + producto.getNombre()
+            );
+        }
+
+        //========================
+        //Descontar unidades
+        //========================
+        int stockRestante = producto.getStock() - cantidad;
+
+        producto.setStock(stockRestante);
+
+        //========================
+        //Actualizar estado
+        //========================
+        if(stockRestante == 0){
+
+            producto.setEstadoProducto(
+                EstadoProductoEnums.SIN_STOCK
+            );
+        }
+
+        //========================
+        //Guardar producto
+        //========================
         productoRepository.save(producto);
     }
     
@@ -192,6 +255,60 @@ public class ProductoServiceImpl implements ProductoService {
         productoRepository.save(producto);
     }
 
+    //=======================
+    //Actualizar foto
+    //=======================
+    @Override
+    @Transactional
+    public void actualizarFotoProducto(Long idProducto, MultipartFile foto) {
+
+        if (idProducto == null || idProducto <= 0) {
+            throw new BusinessException("ID de producto inválido");
+        }
+
+        if (foto == null || foto.isEmpty()) {
+            throw new BusinessException("La fotografía es obligatoria");
+        }
+
+        ProductoEntity producto = productoRepository.findById(idProducto)
+            .orElseThrow(() -> new BusinessException("Producto no encontrado"));
+
+        String fotoAnterior = producto.getFoto();
+
+        String nombreArchivo = archivoService.guardarArchivo(foto, CarpetaArchivoEnums.PRODUCTOS);
+
+        producto.setFoto(nombreArchivo);
+        productoRepository.save(producto);
+
+        if (fotoAnterior != null && !fotoAnterior.isBlank()) {
+            archivoService.eliminarArchivo(fotoAnterior, CarpetaArchivoEnums.PRODUCTOS);
+        }
+    }
+
+    //=======================
+    //Eliminar foto
+    //=======================
+    @Override
+    @Transactional
+    public void eliminarFotoProducto(Long idProducto) {
+
+        if (idProducto == null || idProducto <= 0) {
+            throw new BusinessException("ID de producto inválido");
+        }
+
+        ProductoEntity producto = productoRepository.findById(idProducto)
+            .orElseThrow(() -> new BusinessException("Producto no encontrado"));
+
+        if (producto.getFoto() == null || producto.getFoto().isBlank()) {
+            throw new BusinessException("El producto no tiene una fotografía");
+        }
+
+        archivoService.eliminarArchivo(producto.getFoto(), CarpetaArchivoEnums.PRODUCTOS);
+
+        producto.setFoto(null);
+        productoRepository.save(producto);
+    }
+
     @Override
     public ObtenerProductoDTO toMap(ProductoEntity producto) {
 
@@ -199,7 +316,8 @@ public class ProductoServiceImpl implements ProductoService {
 
         obtenerProductoDTO.setIdProducto(producto.getId());
         obtenerProductoDTO.setNombre(producto.getNombre());
-        obtenerProductoDTO.setDescripcion(producto.getDescripcion());
+        obtenerProductoDTO.setDescripcion(producto.getDescripcion()); 
+        obtenerProductoDTO.setFoto(archivoService.obtenerRutaArchivo(producto.getFoto(), CarpetaArchivoEnums.PRODUCTOS));
         obtenerProductoDTO.setPrecio(producto.getPrecio());
         obtenerProductoDTO.setStock(producto.getStock());
         obtenerProductoDTO.setEstadoProducto(producto.getEstadoProducto());

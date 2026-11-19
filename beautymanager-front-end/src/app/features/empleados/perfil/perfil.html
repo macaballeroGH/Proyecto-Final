@@ -1,1 +1,454 @@
-<p>perfil works!</p>
+<div class="perfil-empleado-container">
+
+    <!-- ======================================== -->
+    <!-- BIENVENIDA                               -->
+    <!-- ======================================== -->
+
+    <header class="perfil-bienvenida">
+
+        <div class="bienvenida-contenido">
+
+            <h1>
+                @if (usuario(); as datos) {
+                    ¡Bienvenida, {{ datos.nombre }}!
+                } @else {
+                    Mi perfil
+                }
+            </h1>
+        </div>
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- INFORMACIÓN PRINCIPAL                    -->
+    <!-- ======================================== -->
+
+    <section class="perfil-principal">
+
+        <!-- ==================================== -->
+        <!-- FOTOGRAFÍA                          -->
+        <!-- ==================================== -->
+
+        <mat-card class="foto-card">
+
+            <div class="foto-contenedor">
+
+                <img
+                    [src]="fotoPerfilUrl()"
+                    alt="Foto de perfil de la empleada"
+                    class="foto-perfil"
+                >
+
+                <span class="foto-decoracion">
+
+                    <mat-icon>photo_camera</mat-icon>
+
+                </span>
+
+            </div>
+
+
+            <div class="foto-informacion">
+
+                <h2>
+                    @if (usuario()) {
+                        {{ nombreCompleto() }}
+                    } @else {
+                        Mi fotografía
+                    }
+                </h2>
+
+                <p>
+                    Tu imagen de perfil
+                </p>
+
+            </div>
+
+
+            <!-- SELECCIONAR IMAGEN -->
+
+            <input
+                type="file"
+                #archivoInput
+                hidden
+                accept="image/*"
+                (change)="cambiarFoto($event)"
+            >
+
+
+            <!-- ACCIONES DE FOTO -->
+
+            <div class="foto-acciones">
+
+                <button
+                    mat-raised-button
+                    type="button"
+                    class="btn-cambiar-foto"
+                    [disabled]="
+                        actualizandoFoto() ||
+                        eliminandoFoto()
+                    "
+                    (click)="archivoInput.click()"
+                >
+
+                    <mat-icon>add_a_photo</mat-icon>
+
+                    @if (actualizandoFoto()) {
+                        Actualizando...
+                    } @else {
+                        Cambiar foto
+                    }
+
+                </button>
+
+
+                @if (usuario()?.fotoPerfil) {
+
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        class="btn-eliminar-foto"
+                        [disabled]="
+                            actualizandoFoto() ||
+                            eliminandoFoto()
+                        "
+                        (click)="eliminarFoto()"
+                    >
+
+                        <mat-icon>delete_outline</mat-icon>
+
+                        @if (eliminandoFoto()) {
+                            Eliminando...
+                        } @else {
+                            Eliminar foto
+                        }
+
+                    </button>
+
+                }
+
+            </div>
+
+
+            <!-- ERROR DE FOTOGRAFÍA -->
+
+            @if (errorFoto()) {
+
+                <p class="mensaje-error" role="alert">
+                    {{ errorFoto() }}
+                </p>
+
+            }
+
+        </mat-card>
+
+
+        <!-- ==================================== -->
+        <!-- DATOS PERSONALES                    -->
+        <!-- ==================================== -->
+
+        <mat-card class="datos-card">
+
+            <div class="card-encabezado">
+
+                <div>
+
+                    <span class="card-subtitulo">
+                        INFORMACIÓN PERSONAL
+                    </span>
+
+                    <h2>
+                        Mis datos
+                    </h2>
+
+                    <p>
+                        Información asociada a tu cuenta.
+                    </p>
+
+                </div>
+
+                <div class="card-icono">
+
+                    <mat-icon>person_outline</mat-icon>
+
+                </div>
+
+            </div>
+
+
+            <!-- ESTADO DE CARGA -->
+
+            @if (cargandoPerfil()) {
+
+                <div class="estado-carga" role="status">
+
+                    <mat-icon>hourglass_empty</mat-icon>
+
+                    <p>Cargando información personal...</p>
+
+                </div>
+
+            }
+
+            <!-- ERROR -->
+
+            @else if (errorPerfil()) {
+
+                <div class="estado-error" role="alert">
+
+                    <mat-icon>error_outline</mat-icon>
+
+                    <p>{{ errorPerfil() }}</p>
+
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        (click)="cargarPerfil()"
+                    >
+                        Reintentar
+                    </button>
+
+                </div>
+
+            }
+
+            <!-- DATOS DEL USUARIO -->
+
+            @else if (usuario(); as datos) {
+
+                <div class="datos-grid">
+
+                    <!-- NOMBRE -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Nombre
+                        </span>
+
+                        <strong>
+                            {{ datos.nombre }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- APELLIDO -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Apellido
+                        </span>
+
+                        <strong>
+                            {{ datos.apellido }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Correo electrónico
+                        </span>
+
+                        <strong class="dato-email">
+                            {{ datos.email }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- TELÉFONO -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Teléfono
+                        </span>
+
+                        <strong>
+                            {{ datos.telefono || 'No registrado' }}
+                        </strong>
+
+                    </div>
+
+                    <div class="dato-item">
+
+    <span class="dato-label">
+        Especialidad
+    </span>
+
+    @if (cargandoEmpleado()) {
+
+        <strong>
+            Cargando...
+        </strong>
+
+    } @else if (errorEmpleado()) {
+
+        <strong class="texto-secundario">
+            No disponible
+        </strong>
+
+    } @else {
+
+        <strong>
+            {{ especialidadTexto() }}
+        </strong>
+
+    }
+
+</div>
+
+
+                    <!-- TIPO DE CUENTA -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Tipo de cuenta
+                        </span>
+
+                        <strong>
+                            Empleada
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ESTADO DEL USUARIO -->
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Estado de cuenta
+                        </span>
+
+                        <span
+                            class="estado-cuenta"
+                            [class.estado-activo]="
+                                datos.estadoUsuario === 'ACTIVO'
+                            "
+                            [class.estado-inactivo]="
+                                datos.estadoUsuario === 'INACTIVO'
+                            "
+                        >
+
+                            <span class="estado-punto"></span>
+
+                            {{ datos.estadoUsuario }}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            }
+
+        </mat-card>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- RESUMEN DE ACTIVIDAD                     -->
+    <!-- ======================================== -->
+
+    <section class="perfil-estadisticas">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-etiqueta">
+                    MI ACTIVIDAD
+                </span>
+
+                <h2>
+                    Mi resumen
+                </h2>
+
+                <p>
+                    Un vistazo a tu actividad en el centro estético.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="estadisticas-grid">
+
+            <!-- TRATAMIENTOS REALIZADOS -->
+
+            <mat-card class="estadistica-card">
+
+                <div class="estadistica-icono icono-tratamientos">
+
+                    <mat-icon>spa</mat-icon>
+
+                </div>
+
+                <span class="estadistica-label">
+                    Tratamientos realizados
+                </span>
+
+
+                @if (cargandoTratamientos()) {
+
+                    <strong class="estadistica-valor">
+                        ...
+                    </strong>
+
+                } @else if (errorTratamientos()) {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                } @else {
+
+                    <strong class="estadistica-valor">
+                        {{ cantidadTratamientos() ?? 0 }}
+                    </strong>
+
+                }
+
+                <p>
+                    Registros de tus atenciones.
+                </p>
+
+
+                @if (errorTratamientos()) {
+
+                    <div class="estadistica-error">
+
+                        <span>
+                            {{ errorTratamientos() }}
+                        </span>
+
+                        <button
+                            mat-stroked-button
+                            type="button"
+                            (click)="cargarTratamientos()"
+                        >
+                            Reintentar
+                        </button>
+
+                    </div>
+
+                }
+
+            </mat-card>
+
+        </div>
+
+    </section>
+
+</div>

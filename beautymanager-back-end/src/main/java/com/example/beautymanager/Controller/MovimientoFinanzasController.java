@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarMovimientoFinanzasDTO;
+import com.example.beautymanager.Modelo.DTO.CrearGastoDTO;
 import com.example.beautymanager.Modelo.DTO.CrearMovimientoFinanzasDTO;
+import com.example.beautymanager.Modelo.DTO.FiltroGastosDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerMovimientoFinanzasDTO;
 import com.example.beautymanager.Modelo.Enums.EstadoMovimientoEnums;
+import com.example.beautymanager.Modelo.Enums.TipoGastoEnums;
 import com.example.beautymanager.Modelo.Enums.TipoMovimientoEnums;
 import com.example.beautymanager.Servicio.MovimientoFinanzasService;
 
@@ -28,9 +32,12 @@ import com.example.beautymanager.Servicio.MovimientoFinanzasService;
 @RequestMapping("/movimiento-finanzas")
 @PreAuthorize("hasRole('ADMIN')")
 public class MovimientoFinanzasController {
+    
+    private final MovimientoFinanzasService movimientoFinanzasService;
 
-    @Autowired
-    private MovimientoFinanzasService movimientoFinanzasService;
+    public MovimientoFinanzasController(MovimientoFinanzasService movimientoFinanzasService){
+        this.movimientoFinanzasService = movimientoFinanzasService;
+    }
 
     //=======================
     //Crear movimiento
@@ -38,6 +45,17 @@ public class MovimientoFinanzasController {
     @PostMapping("/crear")
     public ResponseEntity<ObtenerMovimientoFinanzasDTO> crearMovimiento(@RequestBody CrearMovimientoFinanzasDTO crearMovimiento){
         return ResponseEntity.ok(movimientoFinanzasService.crearMovimiento(crearMovimiento));
+    }
+
+    //=======================
+    //Registrar gasto
+    //=======================
+    @PostMapping("/gastos/crear")
+    public ResponseEntity<ObtenerMovimientoFinanzasDTO> crearGasto(@RequestBody CrearGastoDTO crearGasto, Authentication authentication) {
+
+        Long idUsuario = (Long) authentication.getPrincipal();
+
+        return ResponseEntity.ok(movimientoFinanzasService.crearGasto(crearGasto, idUsuario));
     }
 
     //=======================
@@ -62,6 +80,14 @@ public class MovimientoFinanzasController {
     @GetMapping("/listar")
     public ResponseEntity<List<ObtenerMovimientoFinanzasDTO>> listarTodos(){
         return ResponseEntity.ok(movimientoFinanzasService.listarTodos());
+    }
+
+    //=======================
+    //Listar gastos
+    //=======================
+    @GetMapping("/gastos/listar")
+    public ResponseEntity<List<ObtenerMovimientoFinanzasDTO>> listarGastos(@ModelAttribute FiltroGastosDTO filtros) {
+        return ResponseEntity.ok(movimientoFinanzasService.listarGastos(filtros));
     }
 
     //=======================
@@ -110,10 +136,10 @@ public class MovimientoFinanzasController {
     //=======================
     //Buscar por tipo gasto
     //=======================
-    @GetMapping("/tipo-gasto/{idTipoGasto}")
-    public ResponseEntity<List<ObtenerMovimientoFinanzasDTO>> buscarPorTipoGasto(@PathVariable Long idTipoGasto){
-        return ResponseEntity.ok(movimientoFinanzasService.buscarPorTipoGasto(idTipoGasto));
-    }
+    @GetMapping("/tipo-gasto/{tipoGasto}")
+    public ResponseEntity<List<ObtenerMovimientoFinanzasDTO>> buscarPorTipoGasto(@PathVariable TipoGastoEnums tipoGasto) {
+    return ResponseEntity.ok(movimientoFinanzasService.buscarPorTipoGasto(tipoGasto));
+}
 
     //=======================
     //Buscar por compra

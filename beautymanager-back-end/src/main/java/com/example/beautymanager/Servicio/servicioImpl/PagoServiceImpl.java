@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarPagoDTO;
@@ -37,27 +36,36 @@ import jakarta.transaction.Transactional;
 @Service
 public class PagoServiceImpl implements PagoService {
 
+    private final PagoRepository pagoRepository;
 
-    @Autowired
-    private PagoRepository pagoRepository;
+    private final TurnoRepository turnoRepository;
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    private final BilleteraService billeteraService;
 
-    @Autowired
-    private BilleteraService billeteraService;
+    private final MovimientoFinanzasRepository movimientoFinanzasRepository;
 
-    @Autowired
-    private MovimientoFinanzasRepository movimientoFinanzasRepository;
+    private final CompraRepository compraRepository;
 
-    @Autowired
-    private CompraRepository compraRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    public PagoServiceImpl(PagoRepository pagoRepository, TurnoRepository turnoRepository, BilleteraService billeteraService, MovimientoFinanzasRepository movimientoFinanzasRepository, CompraRepository compraRepository, UsuarioRepository usuarioRepository, ClienteRepository clienteRepository){
+
+        this.pagoRepository = pagoRepository;
+
+        this.turnoRepository = turnoRepository;
+
+        this.billeteraService = billeteraService;
+
+        this.movimientoFinanzasRepository = movimientoFinanzasRepository;
+
+        this.compraRepository = compraRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.clienteRepository = clienteRepository;
+    }
 
     //=======================
     //Crear pago turno
@@ -242,16 +250,18 @@ public class PagoServiceImpl implements PagoService {
         //=======================
         MovimientoFinanzasEntity movimiento = new MovimientoFinanzasEntity();
 
+        movimiento.setFechaGasto(pago.getFecha());
         movimiento.setMonto(pago.getMonto());
         movimiento.setTipoMovimiento(TipoMovimientoEnums.INGRESO);
         movimiento.setEstado(EstadoMovimientoEnums.CONFIRMADO);
+        movimiento.setMetodoPago(pago.getMetodoPago());
         movimiento.setUsuario(usuario);
 
-        if(pago.getTurno() != null){
+        if (pago.getTurno() != null) {
             movimiento.setDescripcion("Pago turno ID: " + pago.getTurno().getId());
-        }
+        }   
 
-        if(pago.getCompra() != null){
+        if (pago.getCompra() != null) {
             movimiento.setDescripcion("Pago compra ID: " + pago.getCompra().getId());
         }
 
@@ -266,13 +276,53 @@ public class PagoServiceImpl implements PagoService {
     @Override
     public ObtenerPagoDTO actualizarPago(Long idPago, ActualizarPagoDTO actualizarPago){
 
-        PagoEntity pago = pagoRepository.findById(idPago)
-            .orElseThrow(() -> new BusinessException("Pago no encontrado"));
+        if(idPago == null){
+            throw new BusinessException("El ID del pago es obligatorio");
+        }
 
+        if(actualizarPago == null){
+            throw new BusinessException("Los datos del pago son obligatorios");
+        }
+
+        PagoEntity pago = pagoRepository.findById(idPago)
+            .orElseThrow(() ->
+                new BusinessException("Pago no encontrado")
+            );
+
+        //=======================
+        //Validar estado actual
+        //=======================
+        if(pago.getEstado() == EstadoPagoEnums.PAGADO){
+            throw new BusinessException(
+                "No se puede modificar un pago que ya fue realizado"
+            );
+        }
+
+        if(pago.getEstado() == EstadoPagoEnums.CANCELADO){
+            throw new BusinessException(
+                "No se puede modificar un pago cancelado"
+            );
+        }
+
+        //=======================
+        //Evitar pagos manuales
+        //=======================
+        if(actualizarPago.getEstadoPago() == EstadoPagoEnums.PAGADO){
+            throw new BusinessException(
+                "Para registrar un pago debe utilizarse el proceso de pago correspondiente"
+            );
+        }
+
+        //=======================
+        //Actualizar metodo de pago
+        //=======================
         if(actualizarPago.getMetodoPago() != null){
             pago.setMetodoPago(actualizarPago.getMetodoPago());
         }
 
+        //=======================
+        //Actualizar estado
+        //=======================
         if(actualizarPago.getEstadoPago() != null){
             pago.setEstado(actualizarPago.getEstadoPago());
         }
@@ -323,18 +373,9 @@ public class PagoServiceImpl implements PagoService {
                 .orElseThrow(() -> new BusinessException("El usuario no es cliente"));
 
         List<PagoEntity> pagos = pagoRepository.findAll().stream()
-                .filter(p -> {
-                    
-                    if(p.getTurno() != null && p.getTurno().getCliente().getId().equals(cliente.getId())){
-                        return true;
-                    }
-
-                    if(p.getCompra() != null && p.getCompra().getCliente().getId().equals(cliente.getId())){
-                        return true;
-                    }
-                    return false;
-                })
-                .toList();
+                .filter(p -> 
+                    (p.getTurno() != null && p.getTurno().getCliente().getId().equals(cliente.getId())) || (p.getCompra() != null && p.getCompra().getCliente().getId().equals(cliente.getId()))
+                ).toList();
 
         return pagos.stream().map(this::toMap).toList();
     }
@@ -353,18 +394,11 @@ public class PagoServiceImpl implements PagoService {
                 .orElseThrow(() -> new BusinessException("Cliente no encontrado"));
 
         List<PagoEntity> pagos = pagoRepository.findAll().stream()
-                .filter(p -> {
-
-                    if(p.getTurno() != null && p.getTurno().getCliente().getId().equals(cliente.getId())){
-                        return true;
-                    }
-
-                    if(p.getCompra() != null && p.getCompra().getCliente().getId().equals(cliente.getId())){
-                        return true;
-                    }
-
-                    return false;
-                })
+                    .filter(p ->
+                        (p.getTurno() != null && p.getTurno().getCliente().getId().equals(cliente.getId()))
+                        ||
+                        (p.getCompra() != null && p.getCompra().getCliente().getId().equals(cliente.getId()))
+                    )
                 .toList();
 
         return pagos.stream().map(this::toMap).toList();

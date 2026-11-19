@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarNotificacionDTO;
@@ -19,11 +18,16 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class NotificacionServiceImpl implements NotificacionService {
 
-    @Autowired
-    private NotificacionRepository notificacionRepository;
+    private final NotificacionRepository notificacionRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public NotificacionServiceImpl(NotificacionRepository notificacionRepository, UsuarioRepository usuarioRepository){
+
+        this.notificacionRepository = notificacionRepository;
+
+        this.usuarioRepository = usuarioRepository;
+    }
 
     //=======================
     //Crear Notificacion

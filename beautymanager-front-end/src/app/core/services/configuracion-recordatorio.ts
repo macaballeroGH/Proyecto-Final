@@ -27,6 +27,6 @@ export class ConfiguracionRecordatorio {
   }
 
   probarEmail(email: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/probar-email0`, { email }, { responseType: 'text' });
+    return this.http.post(`${this.apiUrl}/probar-email`, { email }, { responseType: 'text' });
   }
 }

@@ -2,7 +2,6 @@ package com.example.beautymanager.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +15,11 @@ import com.example.beautymanager.Servicio.MovimientoBilleteraService;
 @RequestMapping("/movimiento-billetera")
 public class MovimientoBilleteraController {
 
-    @Autowired
-    private MovimientoBilleteraService movimientoBilleteraService;
+    private final MovimientoBilleteraService movimientoBilleteraService;
+
+    public MovimientoBilleteraController(MovimientoBilleteraService movimientoBilleteraService){
+        this.movimientoBilleteraService = movimientoBilleteraService;
+    }
 
     //===========================
     //Movimientos por usuario

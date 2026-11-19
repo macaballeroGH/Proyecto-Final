@@ -26,11 +26,13 @@ public interface HistorialTratamientoService {
 
     List<ObtenerHistorialTratamientoDTO> listarPorRangoFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin);
 
+    List<ObtenerHistorialTratamientoDTO> listarMisTratamientosEmpleado(Long idUsuario);
+
     List<ObtenerHistorialTratamientoDTO> listarPorTurno(Long idTurno);
 
     List<ObtenerHistorialTratamientoDTO> buscarPorTexto(String texto);
 
-    List<ObtenerHistorialTratamientoDTO> verHistorialCliente(Long idCliente);
+    List<ObtenerHistorialTratamientoDTO> verHistorialCliente(Long idUsuario, Long idCliente);
 
     HistorialClienteDTO obtenerHistorialCompletoCliente(Long idCliente);
 

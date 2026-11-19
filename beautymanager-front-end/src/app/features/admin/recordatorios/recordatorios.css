@@ -1,0 +1,991 @@
+/* ==========================================================
+   BEAUTYMANAGER - ADMINISTRADORA
+   CONFIGURACIÓN DE RECORDATORIOS
+   ========================================================== */
+
+/* ==========================================================
+   BASE GENERAL
+   ========================================================== */
+
+.recordatorios-container {
+    --rec-superficie: #fff9fc;
+    --rec-superficie-clara: #fffdfd;
+    --rec-superficie-suave: #fff3f7;
+    --rec-sombra: 0 5px 20px rgba(79, 42, 64, 0.045);
+
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+
+    padding: 28px;
+
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+}
+
+.recordatorios-container,
+.recordatorios-container *,
+.recordatorios-container *::before,
+.recordatorios-container *::after {
+    box-sizing: border-box;
+}
+
+.recordatorios-container button,
+.recordatorios-container input {
+    font: inherit;
+}
+
+.recordatorios-container button {
+    cursor: pointer;
+}
+
+.recordatorios-container button:disabled,
+.recordatorios-container input:disabled {
+    cursor: not-allowed;
+}
+
+.recordatorios-container button:focus-visible,
+.recordatorios-container input:focus-visible {
+    outline: 2px solid var(--bm-interactivo);
+    outline-offset: 2px;
+}
+
+.recordatorios-container mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* ==========================================================
+   ENCABEZADO
+   ========================================================== */
+
+.recordatorios-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-width: 0;
+    gap: 18px;
+}
+
+.recordatorios-titulo {
+    min-width: 0;
+}
+
+.recordatorios-titulo h1 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+}
+
+/* ==========================================================
+   ESTADO DE CARGA
+   ========================================================== */
+
+.estado-carga {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 170px;
+    padding: 30px;
+
+    background: var(--rec-superficie);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--rec-sombra);
+}
+
+.estado-carga p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.86rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* ==========================================================
+   MENSAJES DE ÉXITO Y ERROR
+   ========================================================== */
+
+.recordatorios-container .mensaje {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 43px;
+
+    margin: 0;
+    padding: 12px 16px;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    font-size: 0.83rem;
+    font-weight: 500;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.recordatorios-container .mensaje-exito {
+    background: #eef9f2;
+    color: #28764c;
+    border-color: #c5e5d0;
+}
+
+.recordatorios-container .mensaje-error {
+    background: #fff0f1;
+    color: #ab4053;
+    border-color: #efc6ce;
+}
+
+/* ==========================================================
+   TARJETAS DE RECORDATORIOS
+   ========================================================== */
+
+.tarjeta-recordatorio {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
+
+    background: var(--rec-superficie);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--rec-sombra);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.tarjeta-recordatorio:hover {
+    border-color: #e8b7c9;
+
+    box-shadow:
+        0 8px 25px rgba(79, 42, 64, 0.065);
+}
+
+/* ==========================================================
+   IDENTIDAD DE CADA CANAL
+   ========================================================== */
+
+.tarjeta-correo {
+    border-top: 3px solid var(--bm-boton-principal);
+}
+
+.tarjeta-notificacion {
+    border-top: 3px solid #9475b8;
+}
+
+.tarjeta-whatsapp {
+    border-top: 3px solid #69a987;
+}
+
+/* ==========================================================
+   ENCABEZADO DE TARJETAS
+   ========================================================== */
+
+.tarjeta-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+
+    min-width: 0;
+    padding: 22px 24px;
+
+    background: var(--rec-superficie-clara);
+}
+
+.canal-informacion {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.canal-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 46px;
+    height: 46px;
+
+    border: 1px solid transparent;
+    border-radius: 13px;
+}
+
+.canal-icono mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+}
+
+/* Correo */
+
+.icono-correo {
+    background: #fce3ed;
+    color: #b74475;
+    border-color: #f3cbdb;
+}
+
+/* Notificaciones */
+
+.icono-notificacion {
+    background: #f1eafb;
+    color: #8467a9;
+    border-color: #e4d6f1;
+}
+
+/* WhatsApp */
+
+.icono-whatsapp {
+    background: #eaf6ee;
+    color: #42865d;
+    border-color: #d0e8d7;
+}
+
+/* ==========================================================
+   TEXTOS DE CANALES
+   ========================================================== */
+
+.canal-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-width: 0;
+}
+
+.canal-texto h2 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.canal-texto p {
+    max-width: 660px;
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.82rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   INTERRUPTORES
+   ========================================================== */
+
+.interruptor {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 47px;
+    height: 26px;
+
+    cursor: pointer;
+}
+
+.interruptor input {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+
+    opacity: 0;
+    cursor: pointer;
+}
+
+.interruptor-deslizante {
+    position: absolute;
+    inset: 0;
+
+    display: block;
+
+    background: #d8cbd2;
+
+    border: 1px solid #cbbdc5;
+    border-radius: 999px;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.interruptor-deslizante::before {
+    content: "";
+
+    position: absolute;
+    top: 3px;
+    left: 3px;
+
+    width: 18px;
+    height: 18px;
+
+    background: #ffffff;
+    border-radius: 50%;
+
+    box-shadow:
+        0 2px 5px rgba(52, 42, 50, 0.15);
+
+    transition: transform 0.2s ease;
+}
+
+/* Estado activado */
+
+.interruptor input:checked + .interruptor-deslizante {
+    background: var(--bm-boton-principal);
+    border-color: var(--bm-boton-principal);
+}
+
+.interruptor input:checked + .interruptor-deslizante::before {
+    transform: translateX(21px);
+}
+
+/* Foco mediante teclado */
+
+.interruptor input:focus-visible {
+    outline: none;
+}
+
+.interruptor input:focus-visible + .interruptor-deslizante {
+    outline: 2px solid var(--bm-interactivo);
+    outline-offset: 3px;
+}
+
+/* Estado deshabilitado */
+
+.interruptor input:disabled,
+.interruptor input:disabled + .interruptor-deslizante {
+    cursor: not-allowed;
+}
+
+.interruptor input:disabled + .interruptor-deslizante {
+    opacity: 0.55;
+}
+
+/* ==========================================================
+   CONTENIDO DE LAS TARJETAS
+   ========================================================== */
+
+.tarjeta-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    min-width: 0;
+
+    padding: 22px 24px 24px;
+
+    border-top: 1px solid var(--bm-borde);
+}
+
+.tarjeta-notificacion .tarjeta-contenido,
+.tarjeta-whatsapp .tarjeta-contenido {
+    gap: 0;
+    padding-top: 17px;
+    padding-bottom: 20px;
+}
+
+.descripcion-canal {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.83rem;
+    line-height: 1.7;
+}
+
+/* ==========================================================
+   ENCABEZADO DE HORARIOS
+   ========================================================== */
+
+.horarios-encabezado {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.horarios-encabezado h3 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 0.94rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.horarios-encabezado p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   HORARIOS DE RECORDATORIOS
+   ========================================================== */
+
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-horario {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    min-width: 0;
+    padding: 17px;
+
+    background: var(--rec-superficie-suave);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+}
+
+.campo-horario label {
+    color: var(--bm-texto-principal);
+
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   CAMPOS NUMÉRICOS
+   ========================================================== */
+
+.campo-numero {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-numero input {
+    width: 115px;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 42px;
+
+    padding: 9px 11px;
+
+    background: #ffffff;
+    color: var(--bm-texto-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    font-size: 0.86rem;
+    font-weight: 600;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-numero input:focus {
+    outline: none;
+
+    border-color: var(--bm-interactivo);
+    box-shadow: 0 0 0 3px rgba(212, 92, 140, 0.12);
+}
+
+.campo-numero input::placeholder {
+    color: var(--bm-texto-tenue);
+    font-weight: 400;
+}
+
+.campo-numero input:disabled {
+    background: #f7f1f4;
+    color: var(--bm-texto-secundario);
+}
+
+.campo-numero > span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   PRUEBA DE CORREO
+   ========================================================== */
+
+.correo-prueba {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+
+    min-width: 0;
+
+    padding: 19px 20px;
+
+    background: #fffdfd;
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+}
+
+.correo-prueba-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.correo-prueba-texto h3 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 0.94rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.correo-prueba-texto p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   FORMULARIO DE CORREO DE PRUEBA
+   ========================================================== */
+
+.correo-prueba-formulario {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    align-items: end;
+    gap: 9px 12px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.correo-prueba-formulario label {
+    grid-column: 1 / -1;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 0.81rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.correo-prueba-formulario input {
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+
+    padding: 10px 13px;
+
+    background: #ffffff;
+    color: var(--bm-texto-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    font-size: 0.85rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.correo-prueba-formulario input::placeholder {
+    color: var(--bm-texto-tenue);
+}
+
+.correo-prueba-formulario input:focus {
+    outline: none;
+
+    border-color: var(--bm-interactivo);
+    box-shadow: 0 0 0 3px rgba(212, 92, 140, 0.12);
+}
+
+.correo-prueba-formulario input:disabled {
+    background: #f7f1f4;
+    color: var(--bm-texto-secundario);
+}
+
+/* ==========================================================
+   BOTÓN DE PRUEBA DE CORREO
+   ========================================================== */
+
+.boton-prueba-correo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-width: 145px;
+    min-height: 43px;
+
+    padding: 10px 15px;
+
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.35;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.boton-prueba-correo mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.boton-prueba-correo:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+.boton-prueba-correo:disabled {
+    opacity: 0.55;
+}
+
+/* ==========================================================
+   AVISO DE WHATSAPP
+   ========================================================== */
+
+.aviso-whatsapp {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+
+    margin: 0 24px 22px;
+    padding: 16px 18px;
+
+    background: #f0f8f3;
+
+    border: 1px solid #d2e9d9;
+    border-radius: 11px;
+}
+
+.aviso-whatsapp > mat-icon {
+    width: 21px;
+    height: 21px;
+    margin-top: 1px;
+
+    color: #438761;
+    font-size: 21px;
+}
+
+.aviso-whatsapp > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.aviso-whatsapp h3 {
+    margin: 0 0 6px;
+
+    color: #34734e;
+
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.aviso-whatsapp p {
+    margin: 0;
+
+    color: #587465;
+
+    font-size: 0.81rem;
+    line-height: 1.65;
+}
+
+/* ==========================================================
+   BOTÓN GUARDAR CONFIGURACIÓN
+   ========================================================== */
+
+.recordatorios-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    width: 100%;
+    min-width: 0;
+
+    padding-top: 5px;
+    padding-bottom: 8px;
+}
+
+.boton-guardar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 44px;
+    padding: 11px 20px;
+
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 10px;
+
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.35;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.boton-guardar mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.boton-guardar:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+.boton-guardar:disabled {
+    opacity: 0.55;
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO MEDIANAS
+   ========================================================== */
+
+@media (max-width: 1200px) {
+
+    .recordatorios-container {
+        padding: 24px;
+    }
+
+    .tarjeta-encabezado {
+        padding: 20px 22px;
+    }
+
+    .tarjeta-contenido {
+        padding: 20px 22px 22px;
+    }
+
+    .aviso-whatsapp {
+        margin-right: 22px;
+        margin-left: 22px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO ANGOSTAS
+   ========================================================== */
+
+@media (max-width: 850px) {
+
+    .recordatorios-container {
+        gap: 18px;
+        padding: 19px;
+    }
+
+    .recordatorios-titulo h1 {
+        font-size: 1.85rem;
+    }
+
+    .tarjeta-encabezado {
+        gap: 16px;
+        padding: 18px;
+    }
+
+    .tarjeta-contenido {
+        padding: 18px;
+    }
+
+    .canal-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+    .canal-icono mat-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+    }
+
+    .canal-texto h2 {
+        font-size: 1rem;
+    }
+
+    .horarios-grid {
+        gap: 11px;
+    }
+
+    .campo-horario {
+        padding: 14px;
+    }
+
+    .correo-prueba {
+        padding: 17px;
+    }
+
+    .aviso-whatsapp {
+        margin: 0 18px 18px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS MÁS ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+    .recordatorios-container {
+        padding: 15px;
+    }
+
+    .recordatorios-titulo h1 {
+        font-size: 1.6rem;
+    }
+
+    .tarjeta-encabezado {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .canal-informacion {
+        align-items: flex-start;
+        gap: 11px;
+    }
+
+    .canal-icono {
+        width: 37px;
+        height: 37px;
+        border-radius: 10px;
+    }
+
+    .canal-icono mat-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+    }
+
+    .canal-texto h2 {
+        font-size: 0.94rem;
+    }
+
+    .canal-texto p {
+        font-size: 0.78rem;
+    }
+
+    .interruptor {
+        margin-top: 5px;
+    }
+
+    .horarios-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .correo-prueba-formulario {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .correo-prueba-formulario label {
+        grid-column: 1;
+    }
+
+    .boton-prueba-correo {
+        width: 100%;
+    }
+
+    .recordatorios-acciones {
+        justify-content: stretch;
+    }
+
+    .boton-guardar {
+        width: 100%;
+    }
+}
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .recordatorios-container *,
+    .recordatorios-container *::before,
+    .recordatorios-container *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

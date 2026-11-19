@@ -1,6 +1,5 @@
 package com.example.beautymanager.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +16,11 @@ import com.example.beautymanager.Modelo.DTO.ObtenerEstadisticasDTO;
 @PreAuthorize ("hasRole('ADMIN')") 
 public class EstadisticasController {
 
-    @Autowired 
-    private EstadisticasService estadisticasService;
+    private final EstadisticasService estadisticasService;
+
+    public EstadisticasController(EstadisticasService estadisticasService){
+        this.estadisticasService = estadisticasService;
+    }
 
     @PostMapping ("/obtener")
     public ResponseEntity<ObtenerEstadisticasDTO> obtenerEstadisticas(@RequestBody FiltroEstadisticasDTO filtro) {

@@ -1,5 +1,7 @@
 import { EspecialidadEmpleado } from "../enums/especialidadEmpleado";
 import { EstadoTurno } from "../enums/estadoTurno";
+import { ResultadoTratamiento } from "../enums/resultadoTratamiento";
+import { ObtenerHistorialTratamientoServicio } from "./obtener-tratamiento-servicio";
 
 export interface ObtenerHistorialTratamiento {
     idHistorial: number;
@@ -7,6 +9,7 @@ export interface ObtenerHistorialTratamiento {
     observacion: string | null;
     duracionReal: number | null;
     productosUtilizados: string | null;
+    resultadoTratamiento: ResultadoTratamiento | null;
     idTurno: number;
     fechaHoraTurno: string;
     estadoTurno: EstadoTurno;
@@ -20,4 +23,5 @@ export interface ObtenerHistorialTratamiento {
     especialidadEmpleado: EspecialidadEmpleado;
     servicios: string[];
     categorias: string[];
+    serviciosRealizados: ObtenerHistorialTratamientoServicio[];
 }

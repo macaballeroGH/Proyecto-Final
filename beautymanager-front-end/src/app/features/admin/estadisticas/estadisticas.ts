@@ -93,7 +93,7 @@ export class Estadisticas implements OnInit {
         position: 'bottom',
         labels: {
           filter: (legendItem) => {
-            return legendItem.text !== 'Sin datos para este período';
+            return legendItem.text !== 'Sin datos para este periodo';
           }
         }
       },
@@ -123,7 +123,7 @@ export class Estadisticas implements OnInit {
         position: 'bottom',
         labels: {
           filter: (legendItem) => {
-            return legendItem.text !== 'Sin datos para este período';
+            return legendItem.text !== 'Sin datos para este periodo';
           }
         }
       },

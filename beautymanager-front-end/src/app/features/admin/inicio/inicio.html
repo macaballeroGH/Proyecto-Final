@@ -1,30 +1,181 @@
-<div class="inicio-container">
+<main class="revista-container">
 
-    <mat-card class="bienvenida-card">
-        <h2>Esperamos que tengas un excelente día de trabajo.</h2>
-    </mat-card>
+    <header class="revista-header">
+        <div class="encabezado-texto">
+            <h1>BeautyManager</h1>
+        </div>
+    </header>
 
-    <mat-card class="imagen-card">
-        <img>
-    </mat-card>
+    <section class="revista-seccion">
 
-    <mat-card class="info-card">
-        <div class="titulo">
-            <mat-icon>lightblue</mat-icon>
-            <h3>Tip de belleza del día</h3>
+        <div class="seccion-titulo">
+           <h2>Descubre lo nuevo</h2>
         </div>
 
-        <p>Mantener una rutina de hidratación ayuda a conservar un cabello sano, brillante y fuerte.</p>
-    </mat-card>
+        <nav class="categorias">
+            @for (categoria of categorias; track categoria) {
+                <button
+                    type="button"
+                    class="categoria-btn"
+                    [class.activa]="categoriaSeleccionada === categoria"
+                    (click)="seleccionarCategoria(categoria)">
+                    {{ categoria }}
+                </button>
+            }
+        </nav>
 
-    <mat-card class="info-card">
-        <div class="titulo">
-            <mat-icon>format_quote</mat-icon>
-            <h3>Frase motivacional del día</h3>
-        </div>
+        @if (cargando) {
+            
+            <div class="estado-mensaje">
+                <mat-icon>hourglass_empty</mat-icon>
+                <p>Estamos buscando las últimas novedades...</p>
+            </div>
+        }
 
-        <p class="frase">
-            "La belleza comienza en el momento en que decides cuidar de ti."
-        </p>
-    </mat-card>
-</div>
+        @else if (error) {
+            <div class="estado-mensaje estado-error">
+                <span class="material-symbols-outlined">cloud_off</span>
+                <h3>No pudimos cargar las publicaciones</h3>
+                <p>Comprobá tu conexión e intentá nuevamente.</p>
+                <button type="button" (click)="obtenerArticulos()">
+                    Volver a intentar
+                </button>
+            </div>
+        }
+
+        @else if (articulosFiltrados.length === 0) {
+            <div class="estado-mensaje">
+                <mat-icon>auto_stories</mat-icon>
+                <h3>Estamos preparando esta edición</h3>
+                <p>Por el momento no hay publicaciones disponibles en esta categoría.</p>
+            </div>
+        }
+
+        @else {
+
+            @if (articuloDestacado; as destacado) {
+                <article class="articulo-destacado">
+
+                    <div class="destacado-imagen">
+                        @if (destacado.imagenUrl) {
+                            <img
+                                [src]="destacado.imagenUrl"
+                                [alt]="destacado.titulo"
+                                referrerpolicy="no-referrer">
+                        }
+                        @else {
+                            <div class="imagen-placeholder">
+                                <mat-icon>spa</mat-icon>
+                                <span>BEAUTY JOURNAL</span>
+                            </div>
+                        }
+
+                        <span class="destacado-etiqueta">DESTACADO</span>
+                    </div>
+
+                    <div class="destacado-contenido">
+                        <span class="articulo-categoria">
+                            {{ destacado.categoria }}
+                        </span>
+
+                        <h2>{{ destacado.titulo }}</h2>
+
+                        <p class="destacado-descripcion">
+                            {{ destacado.descripcion }}
+                        </p>
+
+                        <div class="articulo-metadata">
+                            <span>{{ destacado.fuente }}</span>
+
+                            @if (destacado.fechaPublicacion) {
+                                <span>{{ destacado.fechaPublicacion | date:'d MMM y' }}</span>
+                            }
+                        </div>
+
+                        <a
+                            class="leer-articulo"
+                            [href]="destacado.enlace"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Leer artículo original
+                            <mat-icon>arrow_outward</mat-icon>
+                        </a>
+                    </div>
+
+                </article>
+            }
+
+            @if (otrosArticulos.length > 0) {
+                <section class="ultimas-publicaciones">
+
+                    <div class="publicaciones-titulo">
+                        <div>
+                            <span class="etiqueta-seccion">PARA SEGUIR EXPLORANDO</span>
+                            <h2>Últimas publicaciones</h2>
+                        </div>
+
+                        <span class="cantidad-articulos">
+                            {{ articulosFiltrados.length }} artículos
+                        </span>
+                    </div>
+
+                    <div class="articulos-grid">
+
+                        @for (articulo of otrosArticulos; track articulo.enlace) {
+                            <article class="articulo-card">
+
+                                <div class="card-imagen">
+                                    @if (articulo.imagenUrl) {
+                                        <img
+                                            [src]="articulo.imagenUrl"
+                                            [alt]="articulo.titulo"
+                                            loading="lazy"
+                                            referrerpolicy="no-referrer">
+                                    }
+                                    @else {
+                                        <div class="imagen-placeholder">
+                                            <mat-icon>spa</mat-icon>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="card-contenido">
+
+                                    <span class="articulo-categoria">
+                                        {{ articulo.categoria }}
+                                    </span>
+
+                                    <h3>{{ articulo.titulo }}</h3>
+
+                                    <p>{{ articulo.descripcion }}</p>
+
+                                    <div class="articulo-metadata">
+                                        <span>{{ articulo.fuente }}</span>
+
+                                        @if (articulo.fechaPublicacion) {
+                                            <span>{{ articulo.fechaPublicacion | date:'d MMM y' }}</span>
+                                        }
+                                    </div>
+
+                                    <a
+                                        [href]="articulo.enlace"
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                        Leer publicación
+                                        <mat-icon>arrow_outward</mat-icon>
+                                    </a>
+
+                                </div>
+
+                            </article>
+                        }
+
+                    </div>
+
+                </section>
+            }
+        }
+
+    </section>
+
+</main>

@@ -20,4 +20,6 @@ public interface BilleteraService {
     ObtenerBilleteraDTO recargarSaldo(RecargarSaldoDTO recargarSaldo);
 
     ObtenerBilleteraDTO debitarSaldo(DebitarSaldoDTO debitarSaldo);
+
+    void transferirSaldo(Long idUsuarioOrigen, Long idUsuarioDestino, BigDecimal monto, String descripcion);
 }

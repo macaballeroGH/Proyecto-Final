@@ -1,0 +1,1022 @@
+/* ==========================================================
+   BEAUTYMANAGER - PERFIL DE EMPLEADO
+   ========================================================== */
+
+/* ==========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================== */
+
+.perfil-empleado-container {
+    width: 100%;
+    max-width: 1450px;
+    min-width: 0;
+    min-height: 100%;
+
+    margin: 0 auto;
+    padding: 32px 38px 60px;
+
+    color: var(--bm-texto-principal);
+}
+
+.perfil-empleado-container,
+.perfil-empleado-container *,
+.perfil-empleado-container *::before,
+.perfil-empleado-container *::after {
+    box-sizing: border-box;
+}
+
+.perfil-empleado-container mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.perfil-empleado-container button:focus-visible {
+    outline: 2px solid var(--bm-boton-principal);
+    outline-offset: 3px;
+}
+
+.perfil-empleado-container button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ==========================================================
+   ENCABEZADO - BIENVENIDA
+   ========================================================== */
+
+.perfil-bienvenida {
+    display: flex;
+    align-items: center;
+
+    min-height: 110px;
+
+    margin-bottom: 28px;
+    padding: 28px 35px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+}
+
+/* SIN DECORACIONES */
+
+.perfil-bienvenida::before,
+.perfil-bienvenida::after {
+    display: none;
+    content: none;
+}
+
+.bienvenida-contenido {
+    width: 100%;
+    min-width: 0;
+}
+
+.bienvenida-contenido h1 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   INFORMACIÓN PRINCIPAL
+   ========================================================== */
+
+.perfil-principal {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 22px;
+
+    width: 100%;
+    min-width: 0;
+
+    margin-bottom: 43px;
+}
+
+/* TARJETAS PRINCIPALES */
+
+.perfil-principal .foto-card,
+.perfil-principal .datos-card {
+    min-width: 0;
+    margin: 0;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 20px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 4%,
+            transparent
+        );
+}
+
+/* ==========================================================
+   TARJETA DE FOTOGRAFÍA
+   ========================================================== */
+
+.foto-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 30px 23px;
+
+    text-align: center;
+}
+
+/* CONTENEDOR DE LA IMAGEN */
+
+.foto-contenedor {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 154px;
+    height: 154px;
+
+    margin-bottom: 21px;
+
+    border: 5px solid var(--bm-fondo-secundario);
+    border-radius: 50%;
+
+    background: var(--bm-fondo);
+
+    box-shadow:
+        0 0 0 1px var(--bm-borde);
+
+    flex-shrink: 0;
+}
+
+/* IMAGEN */
+
+.foto-perfil {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+/* PEQUEÑO ICONO DE CÁMARA */
+
+.foto-decoracion {
+    position: absolute;
+    right: 1px;
+    bottom: 2px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    background: var(--bm-boton-principal);
+
+    border: 3px solid var(--bm-tarjeta);
+    border-radius: 50%;
+
+    color: var(--bm-tarjeta);
+}
+
+.foto-decoracion mat-icon {
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+}
+
+/* INFORMACIÓN DE LA FOTOGRAFÍA */
+
+.foto-informacion {
+    width: 100%;
+    min-width: 0;
+
+    margin-bottom: 22px;
+}
+
+.foto-informacion h2 {
+    margin: 0 0 8px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+}
+
+.foto-informacion p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+/* ==========================================================
+   ACCIONES DE FOTOGRAFÍA
+   ========================================================== */
+
+.foto-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 11px;
+
+    width: 100%;
+    max-width: 245px;
+
+    margin-top: auto;
+}
+
+.foto-acciones .btn-cambiar-foto,
+.foto-acciones .btn-eliminar-foto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    width: 100%;
+    min-height: 43px;
+    padding: 11px 15px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.foto-acciones button mat-icon {
+    width: 19px;
+    height: 19px;
+
+    margin: 0;
+
+    font-size: 19px;
+}
+
+/* CAMBIAR FOTO */
+
+.foto-acciones .btn-cambiar-foto {
+    background: var(--bm-boton-principal);
+
+    border: 1px solid var(--bm-boton-principal);
+
+    color: var(--bm-tarjeta);
+
+    box-shadow: none;
+}
+
+.foto-acciones .btn-cambiar-foto:hover:not(:disabled) {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+/* ELIMINAR FOTO */
+
+.foto-acciones .btn-eliminar-foto {
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+
+    color: var(--bm-boton-principal);
+
+    box-shadow: none;
+}
+
+.foto-acciones .btn-eliminar-foto:hover:not(:disabled) {
+    background: var(--bm-fondo-secundario);
+    border-color: var(--bm-interactivo);
+}
+
+/* ERROR DE FOTO */
+
+.foto-card .mensaje-error {
+    width: 100%;
+
+    margin: 18px 0 0;
+    padding: 12px 14px;
+
+    background: color-mix(
+        in srgb,
+        var(--bm-boton-principal) 8%,
+        var(--bm-tarjeta)
+    );
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 11px;
+    line-height: 1.7;
+    text-align: left;
+}
+
+/* ==========================================================
+   TARJETA DE DATOS PERSONALES
+   ========================================================== */
+
+.datos-card {
+    display: flex;
+    flex-direction: column;
+
+    padding: 27px 29px;
+}
+
+/* ENCABEZADO DE TARJETA */
+
+.card-encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 23px;
+    padding-bottom: 19px;
+
+    border-bottom: 1px solid var(--bm-borde);
+}
+
+.card-encabezado > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-subtitulo {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.5;
+    letter-spacing: 1.4px;
+}
+
+.card-encabezado h2 {
+    margin: 0 0 8px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.card-encabezado p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ICONO DECORATIVO */
+
+.card-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 42px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+
+    color: var(--bm-boton-principal);
+}
+
+.card-icono mat-icon {
+    width: 23px;
+    height: 23px;
+
+    font-size: 23px;
+}
+
+/* ==========================================================
+   DATOS PERSONALES
+   ========================================================== */
+
+.datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.dato-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 9px;
+
+    min-width: 0;
+    min-height: 84px;
+
+    padding: 16px 18px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 11px;
+}
+
+.dato-label {
+    display: block;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    font-weight: 550;
+    line-height: 1.4;
+}
+
+.dato-item > strong {
+    display: block;
+
+    max-width: 100%;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.55;
+
+    overflow-wrap: anywhere;
+}
+
+/* CORREO ELECTRÓNICO */
+
+.dato-email {
+    word-break: break-word;
+}
+
+/* ESPECIALIDAD */
+
+.dato-item .texto-secundario {
+    color: var(--bm-texto-secundario);
+    font-weight: 500;
+}
+
+/* ==========================================================
+   ESTADO DE CUENTA
+   ========================================================== */
+
+.estado-cuenta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    max-width: 100%;
+    min-height: 29px;
+
+    padding: 6px 11px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+}
+
+.estado-punto {
+    display: inline-block;
+
+    flex-shrink: 0;
+
+    width: 7px;
+    height: 7px;
+
+    background: currentColor;
+    border-radius: 50%;
+}
+
+.estado-cuenta.estado-activo {
+    background: #eaf6ee;
+    border-color: #bfdfc8;
+    color: #2c7547;
+}
+
+.estado-cuenta.estado-inactivo {
+    background: #fbecef;
+    border-color: #edc4cd;
+    color: #a4475c;
+}
+
+/* ==========================================================
+   ESTADOS DE CARGA Y ERROR
+   ========================================================== */
+
+.estado-carga,
+.estado-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+
+    flex: 1;
+
+    min-height: 220px;
+    padding: 30px 20px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.estado-carga > mat-icon,
+.estado-error > mat-icon {
+    width: 32px;
+    height: 32px;
+
+    color: var(--bm-boton-principal);
+    font-size: 32px;
+}
+
+.estado-carga p,
+.estado-error p {
+    max-width: 380px;
+
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.estado-error button {
+    min-height: 38px;
+    margin-top: 5px;
+    padding: 8px 16px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 9px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.estado-error button:hover {
+    background: var(--bm-fondo-secundario);
+}
+
+/* ==========================================================
+   RESUMEN DE ACTIVIDAD
+   ========================================================== */
+
+.perfil-estadisticas {
+    width: 100%;
+    min-width: 0;
+}
+
+/* ENCABEZADO DE SECCIÓN */
+
+.perfil-estadisticas .seccion-encabezado {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 22px;
+}
+
+.perfil-estadisticas .seccion-encabezado > div {
+    min-width: 0;
+}
+
+.seccion-etiqueta {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.5;
+    letter-spacing: 1.5px;
+}
+
+.perfil-estadisticas .seccion-encabezado h2 {
+    margin: 0 0 10px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(24px, 2.4vw, 29px);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.perfil-estadisticas .seccion-encabezado p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+/* ==========================================================
+   TARJETA DE ESTADÍSTICAS
+   ========================================================== */
+
+.estadisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.perfil-estadisticas .estadistica-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    min-width: 0;
+    min-height: 215px;
+
+    margin: 0;
+    padding: 24px 25px;
+
+    background: var(--bm-tarjeta);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 16px;
+
+    box-shadow:
+        0 5px 19px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 4%,
+            transparent
+        );
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.perfil-estadisticas .estadistica-card:hover {
+    transform: translateY(-3px);
+
+    border-color: color-mix(
+        in srgb,
+        var(--bm-interactivo) 35%,
+        var(--bm-borde)
+    );
+
+    box-shadow:
+        0 9px 24px color-mix(
+            in srgb,
+            var(--bm-texto-principal) 7%,
+            transparent
+        );
+}
+
+/* ICONO */
+
+.estadistica-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+
+    margin-bottom: 18px;
+
+    background: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    color: var(--bm-boton-principal);
+}
+
+.estadistica-icono mat-icon {
+    width: 24px;
+    height: 24px;
+
+    font-size: 24px;
+}
+
+.icono-tratamientos {
+    background: color-mix(
+        in srgb,
+        var(--bm-interactivo) 13%,
+        var(--bm-tarjeta)
+    );
+}
+
+/* ETIQUETA */
+
+.estadistica-label {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* VALOR */
+
+.estadistica-valor {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 41px;
+    font-weight: 700;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+/* DESCRIPCIÓN */
+
+.estadistica-card > p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* ==========================================================
+   ERROR DE ESTADÍSTICAS
+   ========================================================== */
+
+.estadistica-error {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 11px;
+
+    width: 100%;
+
+    margin-top: 17px;
+    padding-top: 15px;
+
+    border-top: 1px solid var(--bm-borde);
+}
+
+.estadistica-error span {
+    color: var(--bm-boton-principal);
+
+    font-size: 11px;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+.estadistica-error button {
+    min-height: 35px;
+    padding: 8px 13px;
+
+    background: var(--bm-fondo);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 8px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.estadistica-error button:hover {
+    background: var(--bm-fondo-secundario);
+}
+
+/* ==========================================================
+   RESPONSIVE - ESCRITORIO MEDIANO
+   ========================================================== */
+
+@media (max-width: 1200px) {
+
+    .perfil-empleado-container {
+        padding: 29px 30px 52px;
+    }
+
+    .perfil-principal {
+        grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .foto-card {
+        padding: 27px 20px;
+    }
+
+    .datos-card {
+        padding: 25px;
+    }
+
+    .dato-item {
+        padding: 14px;
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - ESCRITORIO COMPACTO
+   ========================================================== */
+
+@media (max-width: 950px) {
+
+    .perfil-empleado-container {
+        padding: 25px 23px 45px;
+    }
+
+    .perfil-principal {
+        grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+        gap: 15px;
+    }
+
+    .datos-grid {
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .dato-item {
+        min-height: 73px;
+    }
+
+    .estadisticas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - VENTANAS ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .perfil-empleado-container {
+        padding: 20px 17px 38px;
+    }
+
+    .perfil-bienvenida {
+        min-height: 92px;
+        margin-bottom: 21px;
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .bienvenida-contenido h1 {
+        font-size: 29px;
+    }
+
+    .perfil-principal {
+        grid-template-columns: 1fr;
+        gap: 17px;
+        margin-bottom: 35px;
+    }
+
+    .foto-card {
+        padding: 28px 22px;
+    }
+
+    .foto-contenedor {
+        width: 140px;
+        height: 140px;
+    }
+
+    .datos-card {
+        padding: 23px;
+    }
+
+    .datos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .estadisticas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-estadisticas .estadistica-card {
+        min-height: 190px;
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE - VENTANAS MUY ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 470px) {
+
+    .bienvenida-contenido h1 {
+        font-size: 26px;
+    }
+
+    .card-encabezado {
+        gap: 10px;
+    }
+
+    .card-encabezado h2 {
+        font-size: 24px;
+    }
+
+    .card-icono {
+        width: 37px;
+        height: 37px;
+    }
+
+    .datos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dato-item {
+        min-height: 70px;
+    }
+
+}
+
+/* ==========================================================
+   ACCESIBILIDAD - MOVIMIENTO REDUCIDO
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .perfil-empleado-container *,
+    .perfil-empleado-container *::before,
+    .perfil-empleado-container *::after {
+        animation-duration: 0.01ms;
+        animation-iteration-count: 1;
+        transition-duration: 0.01ms;
+        scroll-behavior: auto;
+    }
+
+}

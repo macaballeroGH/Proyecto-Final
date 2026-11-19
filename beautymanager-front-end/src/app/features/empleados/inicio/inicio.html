@@ -1,1 +1,1118 @@
-<p>inicio works!</p>
+
+<div class="inicio-empleado-container">
+
+    <!--========================================
+        ENCABEZADO PRINCIPAL
+    ========================================-->
+    <header class="inicio-header">
+
+        <div class="inicio-header-contenido">
+
+            <h1>
+                Tu jornada,
+                <span>tu espacio</span>
+            </h1>
+
+            <div class="inicio-header-detalles">
+
+                <span>
+
+                    <mat-icon>calendar_today</mat-icon>
+
+                    {{ fechaFormateada() }}
+
+                </span>
+
+                <span>
+
+                    <mat-icon>favorite_border</mat-icon>
+
+                    Belleza y dedicación
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!--========================================
+        MI JORNADA DE HOY
+    ========================================-->
+    <section class="seccion-jornada">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    ORGANIZÁ TU DÍA
+                </span>
+
+                <h2>
+
+                    <mat-icon>today</mat-icon>
+
+                    Mi jornada de hoy
+
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!--====================================
+            ERROR AL CARGAR TURNOS
+        ====================================-->
+        @if (errorTurnos()) {
+
+            <div class="jornada-error" role="alert">
+
+                <mat-icon>cloud_off</mat-icon>
+
+                <div>
+
+                    <h3>
+                        No pudimos cargar tu jornada
+                    </h3>
+
+                    <p>
+                        {{ errorTurnos() }}
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    (click)="actualizarJornada()">
+
+                    Reintentar
+
+                </button>
+
+            </div>
+
+        }
+
+
+        <!--====================================
+            TARJETAS DE ESTADÍSTICAS
+        ====================================-->
+        <div class="jornada-estadisticas">
+
+            <!--TURNOS DEL DÍA-->
+            <article class="estadistica-tarjeta">
+
+                <div class="estadistica-superior">
+
+                    <span class="estadistica-icono icono-turnos">
+
+                        <mat-icon>event_note</mat-icon>
+
+                    </span>
+
+                    <span class="estadistica-periodo">
+                        Hoy
+                    </span>
+
+                </div>
+
+                <div class="estadistica-contenido">
+
+                    @if (cargandoTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            ...
+                        </strong>
+
+                    } @else if (errorTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            —
+                        </strong>
+
+                    } @else {
+
+                        <strong class="estadistica-numero">
+                            {{ cantidadTurnosHoy() }}
+                        </strong>
+
+                    }
+
+                    <h3>
+                        Turnos del día
+                    </h3>
+
+                </div>
+
+            </article>
+
+
+            <!--TURNOS PENDIENTES-->
+            <article class="estadistica-tarjeta">
+
+                <div class="estadistica-superior">
+
+                    <span class="estadistica-icono icono-pendientes">
+
+                        <mat-icon>schedule</mat-icon>
+
+                    </span>
+
+                    <span class="estadistica-periodo">
+                        Por atender
+                    </span>
+
+                </div>
+
+                <div class="estadistica-contenido">
+
+                    @if (cargandoTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            ...
+                        </strong>
+
+                    } @else if (errorTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            —
+                        </strong>
+
+                    } @else {
+
+                        <strong class="estadistica-numero">
+                            {{ cantidadTurnosPendientes() }}
+                        </strong>
+
+                    }
+
+                    <h3>
+                        Turnos pendientes
+                    </h3>
+
+                </div>
+
+            </article>
+
+
+            <!--TURNOS FINALIZADOS-->
+            <article class="estadistica-tarjeta">
+
+                <div class="estadistica-superior">
+
+                    <span class="estadistica-icono icono-finalizados">
+
+                        <mat-icon>task_alt</mat-icon>
+
+                    </span>
+
+                    <span class="estadistica-periodo">
+                        Completados
+                    </span>
+
+                </div>
+
+                <div class="estadistica-contenido">
+
+                    @if (cargandoTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            ...
+                        </strong>
+
+                    } @else if (errorTurnos()) {
+
+                        <strong class="estadistica-numero">
+                            —
+                        </strong>
+
+                    } @else {
+
+                        <strong class="estadistica-numero">
+                            {{ cantidadTurnosFinalizados() }}
+                        </strong>
+
+                    }
+
+                    <h3>
+                        Turnos finalizados
+                    </h3>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!--========================================
+        PRÓXIMA ATENCIÓN
+    ========================================-->
+    <section class="seccion-proxima-atencion">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    LO QUE VIENE
+                </span>
+
+                <h2>
+
+                    <mat-icon>event_available</mat-icon>
+
+                    Mi próxima atención
+
+                </h2>
+
+                <p>
+                    Consultá la próxima atención
+                    que tenés asignada.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (cargandoTurnos()) {
+
+            <div class="atencion-estado">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <p>
+                    Buscando tus próximas atenciones...
+                </p>
+
+            </div>
+
+        } @else if (errorTurnos()) {
+
+            <div class="atencion-estado">
+
+                <mat-icon>info_outline</mat-icon>
+
+                <p>
+                    No se pudo consultar la próxima atención.
+                </p>
+
+            </div>
+
+        } @else if (proximaAtencion(); as turno) {
+
+            <article class="proxima-atencion-tarjeta">
+
+                <!--DECORACIÓN LATERAL-->
+                <div class="atencion-decoracion">
+
+                    <mat-icon>spa</mat-icon>
+
+                </div>
+
+
+                <!--INFORMACIÓN DE LA ATENCIÓN-->
+                <div class="atencion-contenido">
+
+                    <div class="atencion-superior">
+
+                        <span class="atencion-etiqueta">
+
+                            <mat-icon>notifications_active</mat-icon>
+
+                            PRÓXIMA ATENCIÓN PROGRAMADA
+
+                        </span>
+
+                        <span
+                            class="atencion-estado-turno"
+                            [class.estado-en-curso]="
+                                turno.estadoTurno === 'EN_CURSO'
+                            "
+                            [class.estado-confirmado]="
+                                turno.estadoTurno === 'CONFIRMADO'
+                            "
+                            [class.estado-pendiente]="
+                                turno.estadoTurno === 'PENDIENTE'
+                            ">
+
+                            {{ turno.estadoTurno }}
+
+                        </span>
+
+                    </div>
+
+
+                    <!--CLIENTA-->
+                    <div class="atencion-cliente">
+
+                        <span class="cliente-icono">
+
+                            <mat-icon>person_outline</mat-icon>
+
+                        </span>
+
+                        <div>
+
+                            <span class="atencion-label">
+                                CLIENTA
+                            </span>
+
+                            <h3>
+                                {{ turno.nombreCliente }}
+                                {{ turno.apellidoCliente }}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <!--DETALLES-->
+                    <div class="atencion-detalles">
+
+                        <!--FECHA-->
+                        <div class="atencion-detalle">
+
+                            <mat-icon>calendar_month</mat-icon>
+
+                            <div>
+
+                                <span>
+                                    Fecha
+                                </span>
+
+                                <strong>
+                                    {{ obtenerFecha(turno.fechaHoraInicio) }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!--HORARIO-->
+                        <div class="atencion-detalle">
+
+                            <mat-icon>schedule</mat-icon>
+
+                            <div>
+
+                                <span>
+                                    Horario
+                                </span>
+
+                                <strong>
+
+                                    {{ obtenerHora(turno.fechaHoraInicio) }}
+
+                                    –
+
+                                    {{ obtenerHora(turno.fechaHoraFin) }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!--SERVICIOS-->
+                        <div class="atencion-detalle">
+
+                            <mat-icon>spa</mat-icon>
+
+                            <div>
+
+                                <span>
+                                    Servicios reservados
+                                </span>
+
+                                <strong>
+
+                                    {{ turno.servicios.length }}
+
+                                    @if (turno.servicios.length === 1) {
+
+                                        servicio
+
+                                    } @else {
+
+                                        servicios
+
+                                    }
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="atencion-pie">
+
+                        <mat-icon>info_outline</mat-icon>
+
+                        <span>
+                            Podés consultar los detalles
+                            y gestionar esta atención desde tu agenda.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        } @else {
+
+            <div class="atencion-vacia">
+
+                <div class="atencion-vacia-icono">
+
+                    <mat-icon>event_available</mat-icon>
+
+                </div>
+
+                <h3>
+                    No tenés próximas atenciones
+                </h3>
+
+                <p>
+                    Cuando tengas un nuevo turno asignado,
+                    vas a poder consultarlo desde este espacio.
+                </p>
+
+            </div>
+
+        }
+
+    </section>
+
+
+    <!--========================================
+        CONSEJO PROFESIONAL DEL DÍA
+    ========================================-->
+    <section class="seccion-consejo">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    UN CONSEJO PARA TU JORNADA
+                </span>
+
+                <h2>
+
+                    <mat-icon>lightbulb_outline</mat-icon>
+
+                    Consejo profesional del día
+
+                </h2>
+
+                <p>
+                    Pequeñas recomendaciones que pueden
+                    ayudarte en tu trabajo cotidiano.
+                </p>
+
+            </div>
+
+            <span class="etiqueta-diaria">
+
+                <mat-icon>auto_awesome</mat-icon>
+
+                Un consejo cada día
+
+            </span>
+
+        </div>
+
+
+        <article class="consejo-tarjeta">
+
+            <div class="consejo-icono">
+
+                <mat-icon>
+                    {{ consejoDelDia().icono }}
+                </mat-icon>
+
+            </div>
+
+            <div class="consejo-informacion">
+
+                <span class="consejo-categoria">
+                    {{ consejoDelDia().categoria }}
+                </span>
+
+                <h3>
+                    {{ consejoDelDia().titulo }}
+                </h3>
+
+                <p>
+                    {{ consejoDelDia().descripcion }}
+                </p>
+
+            </div>
+
+            <div class="consejo-decoracion">
+
+                <mat-icon>auto_awesome</mat-icon>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!--========================================
+        BIBLIOTECA PROFESIONAL
+    ========================================-->
+    <section class="seccion-biblioteca">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    UN ESPACIO PARA DESCUBRIR
+                </span>
+
+                <h2>
+
+                    <mat-icon>auto_stories</mat-icon>
+
+                    Biblioteca profesional
+
+                </h2>
+
+                <p>
+                    Explorá ideas, recomendaciones
+                    y lecturas sobre el trabajo
+                    en centros estéticos.
+                </p>
+
+            </div>
+
+            <span class="seccion-contador">
+
+                <mat-icon>menu_book</mat-icon>
+
+                {{ articulosFiltrados().length }}
+
+                artículos
+
+            </span>
+
+        </div>
+
+
+        <!--====================================
+            CATEGORÍAS DE ARTÍCULOS
+        ====================================-->
+        <nav
+            class="biblioteca-filtros"
+            aria-label="Categorías de la biblioteca profesional">
+
+            @for (
+                categoria of categoriasArticulos;
+                track categoria
+            ) {
+
+                <button
+                    type="button"
+                    class="biblioteca-filtro"
+                    [class.filtro-activo]="
+                        categoriaSeleccionada() === categoria
+                    "
+                    [attr.aria-pressed]="
+                        categoriaSeleccionada() === categoria
+                    "
+                    (click)="seleccionarCategoria(categoria)">
+
+                    {{ categoria }}
+
+                </button>
+
+            }
+
+        </nav>
+
+
+        <!--====================================
+            LISTADO DE ARTÍCULOS
+        ====================================-->
+        @if (articulosFiltrados().length > 0) {
+
+            <div class="biblioteca-grid">
+
+                @for (
+                    articulo of articulosFiltrados();
+                    track articulo.id
+                ) {
+
+                    <article class="biblioteca-tarjeta">
+
+                        <!--ILUSTRACIÓN-->
+                        <div class="articulo-visual">
+
+                            <span class="articulo-visual-icono">
+
+                                <mat-icon>
+                                    {{ articulo.icono }}
+                                </mat-icon>
+
+                            </span>
+
+                            <span class="articulo-visual-decoracion">
+
+                                <mat-icon>auto_awesome</mat-icon>
+
+                            </span>
+
+                        </div>
+
+
+                        <!--CONTENIDO-->
+                        <div class="articulo-contenido">
+
+                            <div class="articulo-metadatos">
+
+                                <span class="articulo-categoria">
+                                    {{ articulo.categoria }}
+                                </span>
+
+                                <span class="articulo-tiempo">
+
+                                    <mat-icon>schedule</mat-icon>
+
+                                    {{ articulo.tiempoLectura }}
+
+                                </span>
+
+                            </div>
+
+
+                            <h3>
+                                {{ articulo.titulo }}
+                            </h3>
+
+                            <p>
+                                {{ articulo.descripcion }}
+                            </p>
+
+
+                            <button
+                                type="button"
+                                class="boton-leer-articulo"
+                                (click)="abrirArticulo(articulo)">
+
+                                Leer artículo
+
+                                <mat-icon>arrow_forward</mat-icon>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                }
+
+            </div>
+
+        } @else {
+
+            <div class="biblioteca-vacia">
+
+                <mat-icon>menu_book</mat-icon>
+
+                <h3>
+                    No hay artículos en esta categoría
+                </h3>
+
+                <p>
+                    Seleccioná otra categoría para
+                    descubrir más contenido.
+                </p>
+
+            </div>
+
+        }
+
+    </section>
+
+
+    <!--========================================
+        PREPARACIÓN DE LA JORNADA
+    ========================================-->
+    <section class="seccion-preparacion">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-subtitulo">
+                    TODO LISTO PARA COMENZAR
+                </span>
+
+                <h2>
+
+                    <mat-icon>checklist</mat-icon>
+
+                    Preparación de la jornada
+
+                </h2>
+
+                <p>
+                    Organizá tus preparativos y marcá
+                    las tareas que ya completaste.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="preparacion-contenedor">
+
+            <!--====================================
+                ENCABEZADO DE PREPARACIÓN
+            ====================================-->
+            <div class="preparacion-encabezado">
+
+                <div class="preparacion-encabezado-info">
+
+                    <span class="preparacion-etiqueta">
+
+                        <mat-icon>task_alt</mat-icon>
+
+                        MI LISTA DEL DÍA
+
+                    </span>
+
+                    <h3>
+                        Prepará tu jornada
+                    </h3>
+
+                </div>
+
+                <div class="preparacion-icono">
+
+                    <mat-icon>fact_check</mat-icon>
+
+                </div>
+
+            </div>
+
+
+            <!--====================================
+                PROGRESO DE PREPARACIÓN
+            ====================================-->
+            <div class="preparacion-progreso">
+
+                <div class="preparacion-progreso-superior">
+
+                    <span>
+                        Tu progreso
+                    </span>
+
+                    <strong>
+
+                        {{ cantidadTareasCompletadas() }}
+
+                        de
+
+                        {{ tareasPreparacion.length }}
+
+                        tareas
+
+                    </strong>
+
+                </div>
+
+
+                <!--BARRA DE PROGRESO-->
+                <div
+                    class="preparacion-barra"
+                    role="progressbar"
+                    [attr.aria-valuenow]="porcentajePreparacion()"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-label="Progreso de preparación de la jornada">
+
+                    <div
+                        class="preparacion-barra-progreso"
+                        [style.width.%]="porcentajePreparacion()">
+                    </div>
+
+                </div>
+
+
+                <span class="preparacion-porcentaje">
+                    {{ porcentajePreparacion() }}% completado
+                </span>
+
+            </div>
+
+
+            <!--====================================
+                LISTA DE TAREAS
+            ====================================-->
+            <div class="preparacion-tareas">
+
+                @for (
+                    tarea of tareasPreparacion;
+                    track tarea.id
+                ) {
+
+                    <button
+                        type="button"
+                        class="preparacion-tarea"
+                        [class.tarea-completada]="
+                            tareaCompletada(tarea.id)
+                        "
+                        [attr.aria-pressed]="
+                            tareaCompletada(tarea.id)
+                        "
+                        (click)="alternarTarea(tarea.id)">
+
+                        <!--ESTADO-->
+                        <span class="tarea-estado">
+
+                            @if (tareaCompletada(tarea.id)) {
+
+                                <mat-icon>check_circle</mat-icon>
+
+                            } @else {
+
+                                <mat-icon>
+                                    radio_button_unchecked
+                                </mat-icon>
+
+                            }
+
+                        </span>
+
+
+                        <!--INFORMACIÓN-->
+                        <span class="tarea-informacion">
+
+                            <strong>
+                                {{ tarea.titulo }}
+                            </strong>
+
+                            <span>
+                                {{ tarea.descripcion }}
+                            </span>
+
+                        </span>
+
+
+                        <!--ICONO-->
+                        <span class="tarea-icono">
+
+                            <mat-icon>
+                                {{ tarea.icono }}
+                            </mat-icon>
+
+                        </span>
+
+                    </button>
+
+                }
+
+            </div>
+
+
+            <!--====================================
+                MENSAJE DE FINALIZACIÓN
+            ====================================-->
+            @if (preparacionCompletada()) {
+
+                <div class="preparacion-completada">
+
+                    <mat-icon>celebration</mat-icon>
+
+                    <div>
+
+                        <strong>
+                            ¡Todo listo para comenzar!
+                        </strong>
+
+                        <p>
+                            Completaste las tareas de
+                            preparación de tu jornada.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            }
+
+
+            <!--====================================
+                REINICIAR LISTA
+            ====================================-->
+            @if (cantidadTareasCompletadas() > 0) {
+
+                <button
+                    type="button"
+                    class="boton-reiniciar-preparacion"
+                    (click)="reiniciarPreparacion()">
+
+                    <mat-icon>restart_alt</mat-icon>
+
+                    Reiniciar preparación
+
+                </button>
+
+            }
+
+        </div>
+
+    </section>
+
+    <!--========================================
+        MODAL: LEER ARTÍCULO
+    ========================================-->
+    @if (articuloSeleccionado(); as articulo) {
+
+        <div class="articulo-overlay">
+
+            <section
+                class="articulo-modal"
+                role="dialog"
+                aria-modal="true"
+                [attr.aria-labelledby]="
+                    'titulo-articulo-' + articulo.id
+                ">
+
+                <!--================================
+                    ENCABEZADO DEL MODAL
+                ================================-->
+                <header class="articulo-modal-header">
+
+                    <span class="articulo-modal-categoria">
+
+                        <mat-icon>
+                            {{ articulo.icono }}
+                        </mat-icon>
+
+                        {{ articulo.categoria }}
+
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="articulo-modal-cerrar"
+                        aria-label="Cerrar artículo"
+                        (click)="cerrarArticulo()">
+
+                        <mat-icon>close</mat-icon>
+
+                    </button>
+
+                </header>
+
+
+                <!--================================
+                    CONTENIDO DEL ARTÍCULO
+                ================================-->
+                <div class="articulo-modal-contenido">
+
+                    <div class="articulo-modal-visual">
+
+                        <mat-icon>
+                            {{ articulo.icono }}
+                        </mat-icon>
+
+                    </div>
+
+
+                    <h2
+                        [id]="
+                            'titulo-articulo-' + articulo.id
+                        ">
+
+                        {{ articulo.titulo }}
+
+                    </h2>
+
+
+                    <div class="articulo-modal-metadatos">
+
+                        <span>
+
+                            <mat-icon>category</mat-icon>
+
+                            {{ articulo.categoria }}
+
+                        </span>
+
+                        <span>
+
+                            <mat-icon>schedule</mat-icon>
+
+                            {{ articulo.tiempoLectura }} de lectura
+
+                        </span>
+
+                    </div>
+
+
+                    <!--PÁRRAFOS-->
+                    <div class="articulo-modal-parrafos">
+
+                        @for (
+                            parrafo of articulo.contenido;
+                            track $index
+                        ) {
+
+                            <p>
+                                {{ parrafo }}
+                            </p>
+
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!--================================
+                    ACCIONES DEL MODAL
+                ================================-->
+                <footer class="articulo-modal-acciones">
+
+                    <button
+                        type="button"
+                        class="boton-cerrar-articulo"
+                        (click)="cerrarArticulo()">
+
+                        <mat-icon>check</mat-icon>
+
+                        Terminar de leer
+
+                    </button>
+
+                </footer>
+
+            </section>
+
+        </div>
+
+    }
+
+</div>

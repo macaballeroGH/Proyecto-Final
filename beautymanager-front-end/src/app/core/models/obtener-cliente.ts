@@ -5,6 +5,7 @@ export interface ObtenerCliente {
     apellido: string;
     email: string;
     telefono: string;
+    fotoPerfil: string | null;
     direccion: string;
     fechaNacimiento: string;
 }

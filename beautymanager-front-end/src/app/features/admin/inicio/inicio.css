@@ -1,0 +1,1240 @@
+/* ==========================================================
+   BEAUTYMANAGER - ADMINISTRADORA
+   INICIO | REVISTA DIGITAL DE BELLEZA
+   ========================================================== */
+
+/* ==========================================================
+   BASE GENERAL
+   ========================================================== */
+
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.revista-container {
+    --rev-superficie: #fff9fc;
+    --rev-superficie-clara: #fffdfd;
+    --rev-superficie-suave: #fff3f7;
+    --rev-borde: var(--bm-borde);
+    --rev-sombra: 0 5px 20px rgba(79, 42, 64, 0.045);
+    --rev-sombra-hover: 0 12px 30px rgba(79, 42, 64, 0.085);
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+
+    padding: 28px;
+
+    background: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+}
+
+.revista-container,
+.revista-container *,
+.revista-container *::before,
+.revista-container *::after {
+    box-sizing: border-box;
+}
+
+.revista-container button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.revista-container button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.revista-container button:focus-visible,
+.revista-container a:focus-visible {
+    outline: 2px solid var(--bm-interactivo);
+    outline-offset: 3px;
+}
+
+.revista-container mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.revista-container img {
+    display: block;
+    max-width: 100%;
+}
+
+/* ==========================================================
+   PORTADA SUPERIOR
+   ========================================================== */
+
+.revista-header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 34px 38px;
+
+    background: linear-gradient(
+        125deg,
+        #fffafc 0%,
+        #fff1f6 65%,
+        #ffe8f0 100%
+    );
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 17px;
+
+    box-shadow: var(--rev-sombra);
+
+    overflow: hidden;
+}
+
+/* Detalle decorativo discreto */
+
+.revista-header::after {
+    content: "";
+
+    position: absolute;
+    right: -60px;
+    bottom: -105px;
+
+    width: 230px;
+    height: 230px;
+
+    border: 1px solid rgba(189, 68, 117, 0.10);
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+.encabezado-texto {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    min-width: 0;
+}
+
+/* ==========================================================
+   SOBRETÍTULO
+   ========================================================== */
+
+.sobretitulo {
+    display: inline-flex;
+    align-items: center;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.20em;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   TÍTULO PRINCIPAL
+   ========================================================== */
+
+.encabezado-texto h1 {
+    margin: 0;
+
+    color: var(--bm-titulo);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 2.9vw, 2.85rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+
+    overflow-wrap: anywhere;
+}
+
+.encabezado-texto > p {
+    max-width: 590px;
+    margin: 3px 0 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+/* ==========================================================
+   DETALLES DE EDICIÓN
+   ========================================================== */
+
+.encabezado-detalle {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 9px;
+
+    flex-shrink: 0;
+
+    padding-left: 23px;
+
+    border-left: 1px solid #e9c8d5;
+}
+
+.encabezado-detalle span {
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    text-align: right;
+}
+
+.encabezado-detalle span:first-child {
+    color: var(--bm-boton-principal);
+}
+
+/* ==========================================================
+   SECCIÓN DE REVISTA
+   ========================================================== */
+
+.revista-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 23px;
+
+    width: 100%;
+    min-width: 0;
+
+    container-type: inline-size;
+}
+
+/* ==========================================================
+   ENCABEZADO DE SECCIÓN
+   ========================================================== */
+
+.seccion-titulo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+
+    width: 100%;
+}
+
+.seccion-titulo > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.etiqueta-seccion {
+    display: inline-block;
+
+    color: var(--bm-boton-principal);
+
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    line-height: 1.5;
+}
+
+.seccion-titulo h2,
+.publicaciones-titulo h2 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+/* ==========================================================
+   NAVEGACIÓN DE CATEGORÍAS
+   ========================================================== */
+
+.categorias {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 7px;
+
+    border-bottom: 1px solid var(--rev-borde);
+}
+
+/* ==========================================================
+   BOTONES DE CATEGORÍAS
+   ========================================================== */
+
+.categoria-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 37px;
+    padding: 9px 15px;
+
+    background: var(--rev-superficie);
+    color: var(--bm-texto-secundario);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 9px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.35;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.categoria-btn:hover {
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+
+    border-color: var(--bm-interactivo);
+}
+
+/* Categoría seleccionada */
+
+.categoria-btn.activa {
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border-color: var(--bm-boton-principal);
+}
+
+.categoria-btn.activa:hover {
+    background: var(--bm-interactivo);
+    color: #ffffff;
+
+    border-color: var(--bm-interactivo);
+}
+
+/* ==========================================================
+   ESTADOS DE CARGA, ERROR Y SIN PUBLICACIONES
+   ========================================================== */
+
+.estado-mensaje {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+
+    width: 100%;
+    min-height: 270px;
+
+    padding: 35px 25px;
+
+    background: var(--rev-superficie);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 15px;
+
+    box-shadow: var(--rev-sombra);
+
+    text-align: center;
+}
+
+.estado-mensaje > mat-icon,
+.estado-mensaje > .material-symbols-outlined {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 15px;
+
+    font-size: 27px;
+}
+
+.estado-mensaje h3 {
+    margin: 2px 0 0;
+
+    color: var(--bm-texto-principal);
+
+    font-size: 1.07rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.estado-mensaje p {
+    max-width: 430px;
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.84rem;
+    line-height: 1.65;
+}
+
+/* ==========================================================
+   ESTADO DE ERROR
+   ========================================================== */
+
+.estado-error {
+    background: #fff9fa;
+    border-color: #ecc8d0;
+}
+
+.estado-error > mat-icon,
+.estado-error > .material-symbols-outlined {
+    background: #fff0f2;
+    color: #b4485c;
+
+    border-color: #ecc8d0;
+}
+
+.estado-error button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 41px;
+    margin-top: 7px;
+    padding: 10px 18px;
+
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    font-size: 0.83rem;
+    font-weight: 600;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.estado-error button:hover {
+    background: var(--bm-interactivo);
+    border-color: var(--bm-interactivo);
+}
+
+/* ==========================================================
+   ARTÍCULO DESTACADO
+   ========================================================== */
+
+.articulo-destacado {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.05fr)
+        minmax(0, 1fr);
+
+    width: 100%;
+    min-width: 0;
+    min-height: 365px;
+
+    background: var(--rev-superficie-clara);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 16px;
+
+    box-shadow: var(--rev-sombra);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.articulo-destacado:hover {
+    border-color: #e8b8ca;
+    box-shadow: var(--rev-sombra-hover);
+}
+
+/* ==========================================================
+   IMAGEN DEL ARTÍCULO DESTACADO
+   ========================================================== */
+
+.destacado-imagen {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 365px;
+
+    background: #f7e4ec;
+
+    overflow: hidden;
+}
+
+.destacado-imagen > img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 0.4s ease;
+}
+
+.articulo-destacado:hover .destacado-imagen > img {
+    transform: scale(1.025);
+}
+
+/* ==========================================================
+   ETIQUETA DESTACADO
+   ========================================================== */
+
+.destacado-etiqueta {
+    position: absolute;
+    top: 19px;
+    left: 19px;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 28px;
+    padding: 7px 11px;
+
+    background: rgba(255, 250, 252, 0.96);
+    color: var(--bm-boton-principal);
+
+    border: 1px solid rgba(243, 204, 219, 0.9);
+    border-radius: 7px;
+
+    box-shadow: 0 3px 12px rgba(52, 42, 50, 0.08);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+}
+
+/* ==========================================================
+   IMAGEN DE RESPALDO
+   ========================================================== */
+
+.imagen-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+
+    background: linear-gradient(
+        140deg,
+        #fff2f7 0%,
+        #f9e2ec 100%
+    );
+
+    color: var(--bm-interactivo);
+}
+
+.imagen-placeholder mat-icon {
+    width: 53px;
+    height: 53px;
+    font-size: 53px;
+}
+
+.imagen-placeholder span {
+    color: var(--bm-boton-principal);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+}
+
+/* ==========================================================
+   CONTENIDO DEL ARTÍCULO DESTACADO
+   ========================================================== */
+
+.destacado-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    min-width: 0;
+    padding: 35px;
+
+    background: var(--rev-superficie-clara);
+}
+
+/* ==========================================================
+   CATEGORÍA DE ARTÍCULO
+   ========================================================== */
+
+.articulo-categoria {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+
+    max-width: 100%;
+    padding: 7px 11px;
+
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 7px;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   TÍTULO DEL ARTÍCULO DESTACADO
+   ========================================================== */
+
+.destacado-contenido h2 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.6rem, 2.2vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   DESCRIPCIÓN DEL DESTACADO
+   ========================================================== */
+
+.destacado-descripcion {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.88rem;
+    line-height: 1.8;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   METADATOS
+   ========================================================== */
+
+.articulo-metadata {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 12px;
+
+    width: 100%;
+    min-width: 0;
+
+    color: var(--bm-texto-tenue);
+
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.articulo-metadata span {
+    overflow-wrap: anywhere;
+}
+
+.articulo-metadata span + span::before {
+    content: "•";
+
+    display: inline-block;
+    margin-right: 12px;
+
+    color: #d3b0c0;
+}
+
+/* ==========================================================
+   ENLACE DEL ARTÍCULO DESTACADO
+   ========================================================== */
+
+.leer-articulo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 43px;
+    margin-top: auto;
+    padding: 11px 16px;
+
+    background: var(--bm-boton-principal);
+    color: #ffffff;
+
+    border: 1px solid var(--bm-boton-principal);
+    border-radius: 9px;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.leer-articulo:hover {
+    background: var(--bm-interactivo);
+    color: #ffffff;
+
+    border-color: var(--bm-interactivo);
+    text-decoration: none;
+}
+
+.leer-articulo mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+/* ==========================================================
+   ÚLTIMAS PUBLICACIONES
+   ========================================================== */
+
+.ultimas-publicaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+}
+
+/* ==========================================================
+   ENCABEZADO DE PUBLICACIONES
+   ========================================================== */
+
+.publicaciones-titulo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    width: 100%;
+}
+
+.publicaciones-titulo > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-width: 0;
+}
+
+.cantidad-articulos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 12px;
+
+    background: var(--bm-fondo-secundario);
+    color: var(--bm-boton-principal);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 8px;
+
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ==========================================================
+   CUADRÍCULA DE ARTÍCULOS
+   ========================================================== */
+
+.articulos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 19px;
+
+    width: 100%;
+    min-width: 0;
+
+    align-items: stretch;
+}
+
+/* ==========================================================
+   TARJETAS DE PUBLICACIONES
+   ========================================================== */
+
+.articulo-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    height: 100%;
+
+    background: var(--rev-superficie-clara);
+
+    border: 1px solid var(--rev-borde);
+    border-radius: 14px;
+
+    box-shadow: var(--rev-sombra);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.articulo-card:hover {
+    border-color: #e8b8ca;
+    box-shadow: var(--rev-sombra-hover);
+
+    transform: translateY(-3px);
+}
+
+/* ==========================================================
+   IMÁGENES DE LAS PUBLICACIONES
+   ========================================================== */
+
+.card-imagen {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 16 / 9;
+
+    background: #f8e4ec;
+    overflow: hidden;
+}
+
+.card-imagen > img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 0.4s ease;
+}
+
+.articulo-card:hover .card-imagen > img {
+    transform: scale(1.035);
+}
+
+.card-imagen .imagen-placeholder {
+    min-height: 100%;
+}
+
+.card-imagen .imagen-placeholder mat-icon {
+    width: 43px;
+    height: 43px;
+    font-size: 43px;
+}
+
+/* ==========================================================
+   CONTENIDO DE PUBLICACIONES
+   ========================================================== */
+
+.card-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13px;
+
+    flex: 1;
+    min-width: 0;
+
+    padding: 21px;
+}
+
+/* ==========================================================
+   TÍTULO DE PUBLICACIONES
+   ========================================================== */
+
+.card-contenido h3 {
+    margin: 0;
+
+    color: var(--bm-texto-principal);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.13rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   DESCRIPCIÓN DE PUBLICACIONES
+   ========================================================== */
+
+.card-contenido > p {
+    margin: 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 0.82rem;
+    line-height: 1.75;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   METADATOS DE PUBLICACIONES
+   ========================================================== */
+
+.card-contenido .articulo-metadata {
+    margin-top: auto;
+    padding-top: 5px;
+
+    font-size: 0.73rem;
+}
+
+/* ==========================================================
+   ENLACES DE PUBLICACIONES
+   ========================================================== */
+
+.card-contenido > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 2px;
+    padding: 9px 0 2px;
+
+    background: transparent;
+    color: var(--bm-boton-principal);
+
+    border: none;
+
+    font-size: 0.81rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.card-contenido > a:hover {
+    color: var(--bm-interactivo);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.card-contenido > a mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+
+    transition: transform 0.2s ease;
+}
+
+.card-contenido > a:hover mat-icon {
+    transform: translate(2px, -2px);
+}
+
+/* ==========================================================
+   ADAPTACIÓN AL ANCHO REAL DEL CONTENIDO
+   ========================================================== */
+
+/*
+   Estas reglas dependen del ancho de la sección
+   y no únicamente del ancho de la pantalla.
+   Son útiles cuando el panel lateral de
+   BeautyManager ocupa parte del espacio.
+*/
+
+@container (max-width: 1150px) {
+
+    .articulos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .destacado-contenido {
+        padding: 27px;
+    }
+
+    .destacado-contenido h2 {
+        font-size: 1.85rem;
+    }
+}
+
+/* ==========================================================
+   CONTENIDO MÁS ESTRECHO
+   ========================================================== */
+
+@container (max-width: 800px) {
+
+    .articulo-destacado {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+    }
+
+    .destacado-imagen {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 16 / 8;
+    }
+
+    .destacado-contenido {
+        gap: 14px;
+        padding: 24px;
+    }
+
+    .destacado-contenido h2 {
+        font-size: 1.65rem;
+    }
+
+    .destacado-descripcion {
+        font-size: 0.84rem;
+        line-height: 1.7;
+    }
+
+    .articulos-grid {
+        gap: 14px;
+    }
+
+    .card-contenido {
+        padding: 18px;
+    }
+}
+
+/* ==========================================================
+   CONTENIDO MUY ESTRECHO
+   ========================================================== */
+
+@container (max-width: 510px) {
+
+    .articulos-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .card-imagen {
+        aspect-ratio: 16 / 8;
+    }
+
+    .card-contenido {
+        gap: 11px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO MEDIANAS
+   ========================================================== */
+
+@media (max-width: 1200px) {
+
+    .revista-container {
+        padding: 23px;
+        gap: 26px;
+    }
+
+    .revista-header {
+        padding: 29px;
+    }
+
+    .encabezado-texto h1 {
+        font-size: 2.25rem;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO ANGOSTAS
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .revista-container {
+        padding: 19px;
+        gap: 22px;
+    }
+
+    .revista-header {
+        gap: 18px;
+        padding: 25px;
+    }
+
+    .encabezado-texto h1 {
+        font-size: 2rem;
+    }
+
+    .encabezado-texto > p {
+        font-size: 0.84rem;
+    }
+
+    .encabezado-detalle {
+        padding-left: 16px;
+    }
+
+    .encabezado-detalle span {
+        font-size: 0.6rem;
+    }
+
+    .seccion-titulo h2,
+    .publicaciones-titulo h2 {
+        font-size: 1.5rem;
+    }
+
+    .categorias {
+        gap: 7px;
+    }
+
+    .categoria-btn {
+        padding: 8px 12px;
+        font-size: 0.77rem;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE ESCRITORIO MÁS ESTRECHAS
+   ========================================================== */
+
+@media (max-width: 650px) {
+
+    .revista-container {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .revista-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        padding: 22px;
+    }
+
+    .encabezado-texto h1 {
+        font-size: 1.85rem;
+    }
+
+    .encabezado-detalle {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+
+        width: 100%;
+        padding: 14px 0 0;
+
+        border-left: none;
+        border-top: 1px solid #e9c8d5;
+    }
+
+    .encabezado-detalle span {
+        text-align: left;
+    }
+
+    .destacado-contenido {
+        padding: 20px;
+    }
+
+    .publicaciones-titulo {
+        align-items: flex-start;
+    }
+
+    .cantidad-articulos {
+        padding: 7px 10px;
+    }
+}
+
+/* ==========================================================
+   VENTANAS DE POCO ANCHO
+   ========================================================== */
+
+@media (max-width: 430px) {
+
+    .revista-container {
+        padding: 13px;
+    }
+
+    .revista-header {
+        padding: 18px;
+    }
+
+    .encabezado-texto h1 {
+        font-size: 1.65rem;
+    }
+
+    .categorias {
+        gap: 6px;
+    }
+
+    .categoria-btn {
+        min-height: 34px;
+        padding: 7px 10px;
+        font-size: 0.74rem;
+    }
+
+    .destacado-imagen {
+        aspect-ratio: 16 / 10;
+    }
+
+    .destacado-contenido {
+        padding: 18px;
+    }
+
+    .destacado-contenido h2 {
+        font-size: 1.45rem;
+    }
+
+    .card-contenido {
+        padding: 16px;
+    }
+}
+
+/* ==========================================================
+   ACCESIBILIDAD
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .revista-container *,
+    .revista-container *::before,
+    .revista-container *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

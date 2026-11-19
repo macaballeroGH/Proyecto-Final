@@ -2,15 +2,10 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.beautymanager.Modelo.DTO.ActualizarTurnoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
-import com.example.beautymanager.Modelo.Entidad.EmpleadoEntity;
 import com.example.beautymanager.Modelo.Entidad.TurnoEntity;
-import com.example.beautymanager.Modelo.Enums.EstadoTurnoEnums;
-import com.example.beautymanager.Repositorio.EmpleadoRepository;
 import com.example.beautymanager.Repositorio.TurnoRepository;
 import com.example.beautymanager.Servicio.GestionAgendaService;
 import com.example.beautymanager.Servicio.TurnoService;
@@ -19,162 +14,143 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class GestionAgendaServiceImpl implements GestionAgendaService{
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    private final TurnoRepository turnoRepository;
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final TurnoService turnoService;
 
-    @Autowired
-    private TurnoService turnoService;
+    //========================================
+    //Constructor
+    //========================================
+    public GestionAgendaServiceImpl(
+            TurnoRepository turnoRepository,
+            TurnoService turnoService) {
 
-    //=======================
-    //Listar todos
-    //=======================
-    @Override
-    public List<ObtenerTurnoDTO> listarTodos(){
-        return turnoRepository.findAll().stream().map(turnoService::toMap).toList();
+        this.turnoRepository = turnoRepository;
+        this.turnoService = turnoService;
     }
 
-    //=======================
-    //Obtener por id
-    //=======================
+    //========================================
+    //Listar todos los turnos
+    //========================================
     @Override
-    public ObtenerTurnoDTO obtenerPorId(Long idTurno){
+    public List<ObtenerTurnoDTO> listarTodos() {
+
+        return turnoRepository.findAll()
+            .stream()
+            .map(turnoService::toMap)
+            .toList();
+    }
+
+    //========================================
+    //Obtener turno por ID
+    //========================================
+    @Override
+    public ObtenerTurnoDTO obtenerPorId(Long idTurno) {
 
         TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
+            .orElseThrow(() ->
+                new BusinessException("Turno no encontrado")
+            );
 
         return turnoService.toMap(turno);
     }
 
-    //=======================
-    //Listar por cliente
-    //=======================
+    //========================================
+    //Listar turnos por clienta
+    //========================================
     @Override
-    public List<ObtenerTurnoDTO> listarPorCliente(Long idCliente){
+    public List<ObtenerTurnoDTO> listarPorCliente(Long idCliente) {
 
-        if(idCliente == null){
-            throw new BusinessException("Cliente invalido");
+        if (idCliente == null || idCliente <= 0) {
+            throw new BusinessException(
+                "El identificador de la clienta es inválido"
+            );
         }
 
-        return turnoRepository.findByClienteId(idCliente).stream().map(turnoService::toMap).toList();
+        return turnoRepository.findByClienteId(idCliente)
+            .stream()
+            .map(turnoService::toMap)
+            .toList();
     }
 
-    //=======================
-    //Listar por empleado
-    //=======================
+    //========================================
+    //Listar turnos por empleada
+    //========================================
     @Override
-    public List<ObtenerTurnoDTO> listarPorEmpleado(Long idEmpleado){
+    public List<ObtenerTurnoDTO> listarPorEmpleado(Long idEmpleado) {
 
-        if(idEmpleado == null){
-            throw new BusinessException("Empleado invalido");
+        if (idEmpleado == null || idEmpleado <= 0) {
+            throw new BusinessException(
+                "El identificador de la empleada es inválido"
+            );
         }
 
-        return turnoRepository.findByEmpleadoId(idEmpleado).stream().map(turnoService::toMap).toList();
+        return turnoRepository.findByEmpleadoId(idEmpleado)
+            .stream()
+            .map(turnoService::toMap)
+            .toList();
     }
 
-    //=======================
-    //Aceptar turno
-    //=======================
+    //========================================
+    //Confirmar turno (ADMIN)
+    //========================================
     @Override
-    public ObtenerTurnoDTO aceptarTurno(Long idTurno){
+    public ObtenerTurnoDTO aceptarTurno(Long idTurno) {
 
-        TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
+        turnoService.confirmarTurnoAdmin(idTurno);
 
-        if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
-            throw new BusinessException("No se puede aceptar un turno cancelado");
-        }
-
-        turno.setEstadoTurno(EstadoTurnoEnums.CONFIRMADO);
-
-        return turnoService.toMap(turnoRepository.save(turno));
+        return obtenerPorId(idTurno);
     }
 
-    //=======================
-    //Rechazar turno
-    //=======================
+    //========================================
+    //Rechazar turno (ADMIN)
+    //========================================
     @Override
-    public ObtenerTurnoDTO rechazarTurno(Long idTurno){
+    public ObtenerTurnoDTO rechazarTurno(Long idTurno) {
 
-        TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
+        turnoService.rechazarTurnoAdmin(idTurno);
 
-        if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
-            throw new BusinessException("No se puede rechazar un turno cancelado");
-        }
-
-        turno.setEstadoTurno(EstadoTurnoEnums.RECHAZADO);
-
-        return turnoService.toMap(turnoRepository.save(turno));
+        return obtenerPorId(idTurno);
     }
 
-    //=======================
-    //Cancelar turno
-    //=======================
+    //========================================
+    //Cancelar turno (ADMIN)
+    //Pendiente de implementación segura
+    //========================================
     @Override
-    public ObtenerTurnoDTO cancelarTurno(Long idTurno){
+    public ObtenerTurnoDTO cancelarTurno(Long idTurno) {
 
-        TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
+        //====================================
+        //Ejecutar cancelación segura
+        //====================================
 
-        if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
-            throw new BusinessException("El turno ya se encuentra cancelado");
-        }
+        turnoService.cancelarTurnoAdmin(idTurno);
 
-        turno.setEstadoTurno(EstadoTurnoEnums.CANCELADO);
+        //====================================
+        //Devolver turno actualizado
+        //====================================
 
-        return turnoService.toMap(turnoRepository.save(turno));
+        return obtenerPorId(idTurno);
     }
 
-    //=======================
-    //Reprogramar turno
-    //=======================
+    //========================================
+    //Cambiar empleada (ADMIN)
+    //Pendiente de validaciones completas
+    //========================================
     @Override
-    public ObtenerTurnoDTO reprogramarTurno(Long idTurno, ActualizarTurnoDTO actualizarTurno){
+    public ObtenerTurnoDTO cambiarEmpleado(
+            Long idTurno,
+            Long idEmpleado) {
 
-        TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
+        turnoService.cambiarEmpleadoAdmin(
+            idTurno,
+            idEmpleado
+        );
 
-        if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
-            throw new BusinessException("No se puede reprogramar un turno cancelado");
-        }
+        //====================================
+        //Devolver turno actualizado
+        //====================================
 
-        if(actualizarTurno.getFechaHoraInicio() != null){
-            turno.setFechaHoraInicio(actualizarTurno.getFechaHoraInicio());
-        }
-
-        if(actualizarTurno.getObservaciones() != null){
-            turno.setObservaciones(actualizarTurno.getObservaciones());
-        }
-
-        return turnoService.toMap(turnoRepository.save(turno));
+        return obtenerPorId(idTurno);
     }
-
-    //=======================
-    //Cambiar empleado
-    //=======================
-    @Override
-    public ObtenerTurnoDTO cambiarEmpleado(Long idTurno, Long idEmpleado){
-
-        TurnoEntity turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new BusinessException("Turno no encontrado"));
-
-        if(idEmpleado == null){
-            throw new BusinessException("Empleado invalido");
-        }
-
-        EmpleadoEntity empleado = empleadoRepository.findById(idEmpleado)
-                .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
-
-        if(turno.getEstadoTurno() == EstadoTurnoEnums.CANCELADO){
-            throw new BusinessException("No se puede cambiar el empleado de un turno cancelado");
-        }
-
-        turno.setEmpleado(empleado);
-
-        return turnoService.toMap(turnoRepository.save(turno));
-    }
-
 }

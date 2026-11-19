@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarBloqueoAgendaDTO;
@@ -21,11 +20,16 @@ import jakarta.transaction.Transactional;
 @Service
 public class BloqueoAgendaServiceImpl implements BloqueoAgendaService{
 
-    @Autowired
-    private BloqueoAgendaRepository bloqueoAgendaRepository;
+    private final BloqueoAgendaRepository bloqueoAgendaRepository;
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepository empleadoRepository;
+
+    public BloqueoAgendaServiceImpl(BloqueoAgendaRepository bloqueoAgendaRepository, EmpleadoRepository empleadoRepository){
+
+        this.bloqueoAgendaRepository = bloqueoAgendaRepository;
+
+        this.empleadoRepository = empleadoRepository;
+    }
 
     //=======================
     //Crear Bloqueo

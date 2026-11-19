@@ -1,1 +1,859 @@
-<p>perfil works!</p>
+<div class="perfil-cliente-container">
+
+    <!-- =====================================
+         BIENVENIDA
+    ====================================== -->
+
+    <header class="perfil-bienvenida">
+
+        <div class="bienvenida-contenido">
+
+            <h1>
+                @if (usuario(); as datos) {
+                    ¡Bienvenida, {{ datos.nombre }}!
+                } @else {
+                    Mi perfil
+                }
+            </h1>
+
+        </div>
+    </header>
+    <!-- =====================================
+         INFORMACIÓN PERSONAL
+    ====================================== -->
+
+    <section class="perfil-principal">
+
+        <!-- FOTO DE PERFIL -->
+
+        <mat-card class="foto-card">
+
+            <div class="foto-contenedor">
+
+                <img
+                    [src]="fotoPerfilUrl()"
+                    alt="Foto de perfil de la clienta"
+                    class="foto-perfil"
+                >
+
+                <span class="foto-decoracion">
+                    <mat-icon>photo_camera</mat-icon>
+                </span>
+
+            </div>
+
+            <div class="foto-informacion">
+
+                <h2>
+                    @if (usuario(); as datos) {
+                        {{ datos.nombre }} {{ datos.apellido }}
+                    } @else {
+                        Mi fotografía
+                    }
+                </h2>
+
+                <p>Tu imagen de perfil</p>
+
+            </div>
+
+            <input
+                type="file"
+                #archivoInput
+                hidden
+                accept="image/*"
+                (change)="cambiarFoto($event)"
+            >
+
+            <div class="foto-acciones">
+
+                <button
+                    mat-raised-button
+                    type="button"
+                    class="btn-cambiar-foto"
+                    [disabled]="actualizandoFoto() || eliminandoFoto()"
+                    (click)="archivoInput.click()"
+                >
+                    <mat-icon>add_a_photo</mat-icon>
+
+                    @if (actualizandoFoto()) {
+                        Actualizando...
+                    } @else {
+                        Cambiar foto
+                    }
+                </button>
+
+                @if (usuario()?.fotoPerfil) {
+
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        class="btn-eliminar-foto"
+                        [disabled]="actualizandoFoto() || eliminandoFoto()"
+                        (click)="eliminarFoto()"
+                    >
+                        <mat-icon>delete_outline</mat-icon>
+
+                        @if (eliminandoFoto()) {
+                            Eliminando...
+                        } @else {
+                            Eliminar foto
+                        }
+                    </button>
+
+                }
+
+            </div>
+
+            @if (errorFoto()) {
+                <p class="mensaje-error">
+                    {{ errorFoto() }}
+                </p>
+            }
+
+        </mat-card>
+
+        <!-- DATOS PERSONALES -->
+
+        <mat-card class="datos-card">
+
+            <div class="card-encabezado">
+
+                <div>
+
+                    <span class="card-subtitulo">
+                        INFORMACIÓN PERSONAL
+                    </span>
+
+                    <h2>Mis datos</h2>
+
+                    <p>
+                        Información asociada a tu cuenta.
+                    </p>
+
+                </div>
+
+                
+@if (datosCliente()) {
+
+    <button
+        type="button"
+        class="btn-editar-datos"
+        [disabled]="cargandoDatosCliente() || guardandoEdicion()"
+        (click)="abrirEdicion()"
+    >
+        <mat-icon>edit</mat-icon>
+        Editar información
+    </button>
+
+}
+
+
+            </div>
+
+            @if (cargandoPerfil()) {
+
+                <div class="estado-carga">
+                    <p>Cargando información personal...</p>
+                </div>
+
+            } @else if (errorPerfil()) {
+
+                <div class="estado-error">
+
+                    <p>{{ errorPerfil() }}</p>
+
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        (click)="cargarPerfil()"
+                    >
+                        Reintentar
+                    </button>
+
+                </div>
+
+            } @else if (usuario(); as datos) {
+
+                <div class="datos-grid">
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Nombre
+                        </span>
+
+                        <strong>
+                            {{ datos.nombre }}
+                        </strong>
+
+                    </div>
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Apellido
+                        </span>
+
+                        <strong>
+                            {{ datos.apellido }}
+                        </strong>
+
+                    </div>
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Correo electrónico
+                        </span>
+
+                        <strong class="dato-email">
+                            {{ datos.email }}
+                        </strong>
+
+                    </div>
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Teléfono
+                        </span>
+
+                        <strong>
+                            {{ datos.telefono || 'No registrado' }}
+                        </strong>
+
+                    </div>
+
+
+@if (datosCliente(); as cliente) {
+
+    <div class="dato-item">
+
+        <span class="dato-label">
+            Dirección
+        </span>
+
+        <strong>
+            {{ cliente.direccion || 'No registrada' }}
+        </strong>
+
+    </div>
+
+    <div class="dato-item">
+
+        <span class="dato-label">
+            Fecha de nacimiento
+        </span>
+
+        <strong>
+            @if (cliente.fechaNacimiento) {
+                {{ cliente.fechaNacimiento | date:'dd/MM/yyyy' }}
+            } @else {
+                No registrada
+            }
+        </strong>
+
+    </div>
+
+}
+
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Tipo de cuenta
+                        </span>
+
+                        <strong>
+                            Cliente
+                        </strong>
+
+                    </div>
+
+                    <div class="dato-item">
+
+                        <span class="dato-label">
+                            Estado de cuenta
+                        </span>
+
+                        <span
+                            class="estado-cuenta"
+                            [class.estado-activo]="datos.estadoUsuario === 'ACTIVO'"
+                            [class.estado-inactivo]="datos.estadoUsuario === 'INACTIVO'"
+                        >
+                            <span class="estado-punto"></span>
+                            {{ datos.estadoUsuario }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            }
+
+
+@if (errorDatosCliente()) {
+
+    <div class="perfil-aviso-error" role="alert">
+
+        <span>
+            {{ errorDatosCliente() }}
+        </span>
+
+        <button
+            type="button"
+            (click)="cargarDatosCliente()"
+        >
+            Reintentar
+        </button>
+
+    </div>
+
+}
+
+@if (mensajeEdicion()) {
+
+    <p class="perfil-mensaje-exito" role="status">
+        <mat-icon>check_circle</mat-icon>
+        {{ mensajeEdicion() }}
+    </p>
+
+}
+
+
+        </mat-card>
+
+    </section>
+
+    <!-- =====================================
+         RESUMEN DE ACTIVIDAD
+    ====================================== -->
+
+    <section class="perfil-estadisticas">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-etiqueta">
+                    MI ACTIVIDAD
+                </span>
+
+                <h2>Mi resumen</h2>
+
+                <p>
+                    Un vistazo a tu actividad en BeautyManager.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="estadisticas-grid">
+
+            <!-- TURNOS REALIZADOS -->
+
+            <mat-card class="estadistica-card">
+
+                <div class="estadistica-icono icono-turnos">
+                    <mat-icon>event_available</mat-icon>
+                </div>
+
+                <span class="estadistica-label">
+                    Turnos realizados
+                </span>
+
+                @if (cargandoTurnos()) {
+
+                    <strong class="estadistica-valor">
+                        ...
+                    </strong>
+
+                } @else if (errorTurnos()) {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                } @else {
+
+                    <strong class="estadistica-valor">
+                        {{ cantidadTurnosRealizados() }}
+                    </strong>
+
+                }
+
+                <p>
+                    Turnos finalizados
+                </p>
+
+            </mat-card>
+
+            <!-- PRÓXIMOS TURNOS -->
+
+            <mat-card class="estadistica-card">
+
+                <div class="estadistica-icono icono-proximos">
+                    <mat-icon>event_note</mat-icon>
+                </div>
+
+                <span class="estadistica-label">
+                    Próximos turnos
+                </span>
+
+                @if (cargandoTurnos()) {
+
+                    <strong class="estadistica-valor">
+                        ...
+                    </strong>
+
+                } @else if (errorTurnos()) {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                } @else {
+
+                    <strong class="estadistica-valor">
+                        {{ cantidadTurnosProximos() }}
+                    </strong>
+
+                }
+
+                <p>
+                    Reservas futuras vigentes
+                </p>
+
+            </mat-card>
+
+            <!-- TRATAMIENTOS RECIBIDOS -->
+
+            <mat-card class="estadistica-card">
+
+                <div class="estadistica-icono icono-tratamientos">
+                    <mat-icon>spa</mat-icon>
+                </div>
+
+                <span class="estadistica-label">
+                    Tratamientos recibidos
+                </span>
+
+                @if (cargandoTratamientos()) {
+
+                    <strong class="estadistica-valor">
+                        ...
+                    </strong>
+
+                } @else if (errorTratamientos()) {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                } @else {
+
+                    <strong class="estadistica-valor">
+                        {{ cantidadTratamientos() }}
+                    </strong>
+
+                }
+
+                <p>
+                    Registros de tu historial
+                </p>
+
+            </mat-card>
+
+            <!-- BILLETERA -->
+
+            <mat-card class="estadistica-card">
+
+                <div class="estadistica-icono icono-billetera">
+                    <mat-icon>account_balance_wallet</mat-icon>
+                </div>
+
+                <span class="estadistica-label">
+                    Mi billetera
+                </span>
+
+                @if (cargandoBilletera()) {
+
+                    <strong class="estadistica-valor">
+                        ...
+                    </strong>
+
+                } @else if (errorBilletera()) {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                } @else if (saldoDisponible() !== null) {
+
+                    <strong class="estadistica-valor">
+                        ${{ saldoDisponible() | number:'1.2-2' }}
+                    </strong>
+
+                } @else {
+
+                    <strong class="estadistica-valor">
+                        —
+                    </strong>
+
+                }
+
+                <p>
+                    Saldo disponible
+                </p>
+
+            </mat-card>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================
+         PRÓXIMO TURNO
+    ====================================== -->
+
+    <section class="proximo-turno-seccion">
+
+        <div class="seccion-encabezado">
+
+            <div>
+
+                <span class="seccion-etiqueta">
+                    MIS RESERVAS
+                </span>
+
+                <h2>Mi próximo turno</h2>
+
+                <p>
+                    Consultá los detalles de tu próxima visita.
+                </p>
+
+            </div>
+
+            <a
+                routerLink="/cliente/agenda"
+                class="enlace-agenda"
+            >
+                Ver agenda
+                <mat-icon>arrow_forward</mat-icon>
+            </a>
+
+        </div>
+
+        <mat-card class="proximo-turno-card">
+
+            @if (cargandoTurnos()) {
+
+                <div class="proximo-turno-vacio">
+
+                    <mat-icon>hourglass_empty</mat-icon>
+
+                    <h3>Cargando tu próximo turno...</h3>
+
+                </div>
+
+            } @else if (errorTurnos()) {
+
+                <div class="proximo-turno-vacio">
+
+                    <mat-icon>error_outline</mat-icon>
+
+                    <h3>No pudimos consultar tus turnos</h3>
+
+                    <p>{{ errorTurnos() }}</p>
+
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        (click)="cargarTurnos()"
+                    >
+                        Intentar nuevamente
+                    </button>
+
+                </div>
+
+            } @else if (proximoTurno(); as turno) {
+
+                <div class="proximo-turno-contenido">
+
+                    <div class="turno-fecha">
+
+                        <span class="fecha-dia">
+                            {{ turno.fechaHoraInicio | date:'dd' }}
+                        </span>
+
+                        <span class="fecha-mes">
+                            {{ turno.fechaHoraInicio | date:'MM/yyyy' }}
+                        </span>
+
+                        <span class="fecha-hora">
+                            {{ turno.fechaHoraInicio | date:'HH:mm' }} hs
+                        </span>
+
+                    </div>
+
+                    <div class="turno-informacion">
+
+                        <div class="turno-superior">
+
+                            <span class="turno-etiqueta">
+                                PRÓXIMA VISITA
+                            </span>
+
+                            <span
+                                class="turno-estado"
+                                [class.estado-pendiente]="turno.estadoTurno === 'PENDIENTE'"
+                                [class.estado-confirmado]="turno.estadoTurno === 'CONFIRMADO'"
+                                [class.estado-reprogramado]="turno.estadoTurno === 'REPROGRAMADO'"
+                            >
+                                {{ obtenerEstadoTurno(turno) }}
+                            </span>
+
+                        </div>
+
+                        <h3>
+                            {{ obtenerServiciosTurno(turno) }}
+                        </h3>
+
+                        <div class="turno-detalles">
+
+                            <div class="turno-detalle-item">
+
+                                <mat-icon>person_outline</mat-icon>
+
+                                <span>
+                                    {{ obtenerProfesionalTurno(turno) }}
+                                </span>
+
+                            </div>
+
+                            <div class="turno-detalle-item">
+
+                                <mat-icon>schedule</mat-icon>
+
+                                <span>
+                                    {{ turno.fechaHoraInicio | date:'HH:mm' }}
+                                    -
+                                    {{ turno.fechaHoraFin | date:'HH:mm' }}
+                                    hs
+                                </span>
+
+                            </div>
+
+                            <div class="turno-detalle-item">
+
+                                <mat-icon>payments</mat-icon>
+
+                                <span>
+                                    ${{ turno.precioTotal | number:'1.2-2' }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="proximo-turno-pie">
+
+                    <span>
+                        Tené presente la fecha y el horario de tu reserva.
+                    </span>
+
+                    <a
+                        routerLink="/cliente/agenda"
+                        class="btn-ver-turnos"
+                    >
+                        Ir a mi agenda
+
+                        <mat-icon>arrow_forward</mat-icon>
+                    </a>
+
+                </div>
+
+            } @else {
+
+                <div class="proximo-turno-vacio">
+
+                    <div class="vacio-icono">
+                        <mat-icon>event_busy</mat-icon>
+                    </div>
+
+                    <h3>No tenés próximos turnos</h3>
+
+                    <p>
+                        Cuando reserves un nuevo turno,
+                        vas a poder consultar sus detalles acá.
+                    </p>
+
+                    <a
+                        routerLink="/cliente/agenda"
+                        class="btn-reservar"
+                    >
+                        <mat-icon>add</mat-icon>
+                        Reservar un turno
+                    </a>
+
+                </div>
+
+            }
+
+        </mat-card>
+
+    </section>
+
+
+<!-- =====================================
+     EDITAR INFORMACIÓN PERSONAL
+====================================== -->
+
+@if (edicionAbierta()) {
+
+    <div
+        class="edicion-overlay"
+        (click)="cerrarEdicion()"
+    >
+
+        <section
+            class="edicion-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-edicion"
+            (click)="$event.stopPropagation()"
+        >
+
+            <header class="edicion-modal-header">
+
+                <div>
+                    <h2 id="titulo-edicion">
+                        Editar información
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="edicion-cerrar"
+                    aria-label="Cerrar edición"
+                    [disabled]="guardandoEdicion()"
+                    (click)="cerrarEdicion()"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+
+            </header>
+
+            <form
+                class="edicion-formulario"
+                #formulario="ngForm"
+                (ngSubmit)="guardarEdicion()"
+            >
+
+                <div class="edicion-campo">
+
+                    <label for="editar-email">
+                        Correo electrónico
+                    </label>
+
+                    <input
+                        id="editar-email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                        [(ngModel)]="formularioEdicion.email"
+                        [disabled]="guardandoEdicion()"
+                    >
+
+                </div>
+
+                <div class="edicion-campo">
+
+                    <label for="editar-telefono">
+                        Teléfono
+                    </label>
+
+                    <input
+                        id="editar-telefono"
+                        name="telefono"
+                        type="tel"
+                        autocomplete="tel"
+                        [(ngModel)]="formularioEdicion.telefono"
+                        [disabled]="guardandoEdicion()"
+                    >
+
+                </div>
+
+                <div class="edicion-campo">
+
+                    <label for="editar-direccion">
+                        Dirección
+                    </label>
+
+                    <input
+                        id="editar-direccion"
+                        name="direccion"
+                        type="text"
+                        autocomplete="street-address"
+                        [(ngModel)]="formularioEdicion.direccion"
+                        [disabled]="guardandoEdicion()"
+                    >
+
+                </div>
+
+                @if (errorEdicion()) {
+
+                    <p class="edicion-error" role="alert">
+                        {{ errorEdicion() }}
+                    </p>
+
+                }
+
+                <footer class="edicion-modal-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-cancelar-edicion"
+                        [disabled]="guardandoEdicion()"
+                        (click)="cerrarEdicion()"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-guardar-edicion"
+                        [disabled]="guardandoEdicion() || formulario.invalid"
+                    >
+
+                        @if (guardandoEdicion()) {
+
+                            Guardando...
+
+                        } @else {
+
+                            <mat-icon>save</mat-icon>
+                            Guardar cambios
+
+                        }
+
+                    </button>
+
+                </footer>
+
+            </form>
+
+        </section>
+
+    </div>
+
+}
+
+
+</div>

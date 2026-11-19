@@ -1,6 +1,5 @@
 package com.example.beautymanager.Servicio.servicioImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +21,24 @@ import jakarta.transaction.Transactional;
 @Service
 public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ClienteInicializacionService clienteInicializacionService;
+    private final ClienteInicializacionService clienteInicializacionService;
 
-    @Autowired
-    private RolRepository rolRepository;
+    private final RolRepository rolRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public RegistroUsuarioServiceImpl(UsuarioRepository usuarioRepository, ClienteInicializacionService clienteInicializacionService, RolRepository rolRepository, PasswordEncoder passwordEncoder){
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.clienteInicializacionService = clienteInicializacionService;
+
+        this.rolRepository = rolRepository;
+
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     @Transactional

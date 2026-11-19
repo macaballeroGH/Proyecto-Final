@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,13 +7,36 @@ import { TurnoService } from '../../../core/services/turno';
 import { Turno } from '../../../core/models/turno';
 import { EstadoTurno } from '../../../core/enums/estadoTurno';
 import { AgendaService } from '../../../core/services/agenda';
+import { ServicioService } from '../../../core/services/servicio';
 import { BloqueoAgendaService } from '../../../core/services/bloqueo-agenda';
 import { BloqueoAgenda } from '../../../core/models/bloqueo-agenda';
 import { Empleado } from '../../../core/models/empleado';
 import { CrearTurno } from '../../../core/models/crear-turno';
 import { ObtenerCliente } from '../../../core/models/obtener-cliente';
 import { ObtenerServicio } from '../../../core/models/obtener-servicio';
+import { ClienteService } from '../../../core/services/cliente';
+import { EmpleadoService } from '../../../core/services/empleado';
+import { ObtenerDisponibilidadReserva } from '../../../core/models/obtener-disponibilidad-reserva';
+import { ReservaService } from '../../../core/services/reserva';
+import { CrearReserva } from '../../../core/models/crear-reserva';
+import { ReprogramarTurno } from '../../../core/models/reprogramar-turno';
 
+interface AsignacionReserva {
+
+  idLocal: number;
+
+  idServicio: number;
+
+  idEmpleado: number;
+
+  fechaHoraInicio: string;
+
+  empleadosDisponibles: ObtenerDisponibilidadReserva[];
+
+  cargandoDisponibilidad: boolean;
+
+  numeroConsulta: number;
+}
 @Component({
   selector: 'app-agenda',
   standalone: true,
@@ -39,6 +62,20 @@ export class AgendaAdmin implements OnInit {
 
   turnoSeleccionado: Turno | null = null;
 
+  mostrarFormularioReprogramacion: boolean = false;
+
+  fechaReprogramacion: string = '';
+
+  horaReprogramacion: string = '';
+
+  motivoReprogramacion: string = '';
+
+  enviandoPropuestaReprogramacion: boolean = false;
+
+  errorReprogramacion: string = '';
+
+  mensajeReprogramacion: string = '';
+
   mostrarFiltros: boolean = false;
 
   mostrarFormularioNuevoTurno: boolean = false;
@@ -56,6 +93,12 @@ export class AgendaAdmin implements OnInit {
     fechaHoraInicio: ''
   };
 
+  procesandoAccionTurno: boolean = false;
+
+  errorAccionTurno: string = '';
+
+  mensajeAccionTurno: string = '';
+
   fechaNuevoTurno: string = '';
   
   horaNuevoTurno: string = '';
@@ -63,6 +106,16 @@ export class AgendaAdmin implements OnInit {
   duracionTotalFormulario: number = 0;
 
   horariosDisponibles: string[] = [];
+
+  asignacionesReserva: AsignacionReserva[] = [];
+
+  private siguienteIdAsignacion: number = 1;
+
+  errorDisponibilidadReserva: string = '';
+
+  creandoReserva: boolean = false;
+
+  errorReserva: string = '';
 
   textoBusqueda: string = '';
 
@@ -123,7 +176,7 @@ export class AgendaAdmin implements OnInit {
     [EstadoTurno.REPROGRAMADO]: 'reprogramado',
   }
 
-  constructor(private turnoService: TurnoService, private agendaService: AgendaService, private bloqueoAgendaService: BloqueoAgendaService, private router: Router) {}
+  constructor(private agendaService: AgendaService, private bloqueoAgendaService: BloqueoAgendaService, private empleadoService: EmpleadoService, private clienteService: ClienteService, private servicioService: ServicioService, private reservaService: ReservaService, private turnoService: TurnoService, private cdr: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
     
@@ -159,6 +212,8 @@ export class AgendaAdmin implements OnInit {
         this.aplicarFiltros();
 
         console.log('Turnos recibidos:', this.turnos);
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
@@ -170,6 +225,8 @@ export class AgendaAdmin implements OnInit {
         this.turnosFiltrados = [];
 
         this.turnosPorFranja.clear();
+
+        this.cdr.detectChanges();
       }
     });
   }
@@ -191,11 +248,15 @@ export class AgendaAdmin implements OnInit {
         );
 
         console.log('Bloqueos recibidos:', this.bloqueos);
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
 
         console.error('Error al cargar los bloqueos de la agenda', error);
+
+        this.cdr.detectChanges();
       }
     });
   }
@@ -470,6 +531,90 @@ export class AgendaAdmin implements OnInit {
     );
   }
 
+  private ordenarPorNombreYApellido<T extends { nombre: string; apellido: string }>(lista: T[]): T[] {
+
+    return [...lista].sort((a, b) => {
+
+      const comparacionNombre = a.nombre.localeCompare(b.nombre, 'es', {
+        sensitivity: 'base'
+      });
+
+      if(comparacionNombre !== 0){
+        return comparacionNombre;
+      }
+
+      return a.apellido.localeCompare(b.apellido, 'es', {
+        sensitivity: 'base'
+      });
+    });
+  }
+
+  cargarEmpleados(): void {
+
+    this.empleadoService.empleadosActivos().subscribe({
+
+      next: (data) => {
+
+        this.empleados = this.ordenarPorNombreYApellido(data);
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error('Error al cargar los empleados activos:', error);
+
+        this.empleados = [];
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cargarClientes(): void {
+
+    this.clienteService.listarTodos().subscribe({
+
+      next: (data) => {
+
+        this.clientes = this.ordenarPorNombreYApellido(data);
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error('Error al cargar los clientes:', error);
+
+        this.clientes = [];
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cargarServicios(): void {
+
+    this.servicioService.listarActivos().subscribe({
+
+      next: (data) => {
+
+        this.servicios = [...data].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', {sensitivity: 'base'}));
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error('Error al cargar los servicios activos:', error);
+
+        this.servicios = [];
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   tieneTurnos(dia: Date, hora: string): boolean {
     return this.obtenerTurnos(dia, hora).length > 0;
   }
@@ -562,12 +707,365 @@ export class AgendaAdmin implements OnInit {
   }
 
   abrirDetalle(turno: Turno): void {
+
     this.turnoSeleccionado = turno;
+
+    this.restablecerFormularioReprogramacion();
+
+    this.mensajeReprogramacion = '';
   }
 
   cerrarDetalle(): void {
+
+    if (this.enviandoPropuestaReprogramacion) {
+      return;
+    }
+
     this.turnoSeleccionado = null;
+
+    this.restablecerFormularioReprogramacion();
+
+    this.mensajeReprogramacion = '';
   }
+
+
+  //========================================
+  //Verificar si un turno puede gestionarse
+  //========================================
+  puedeGestionarTurno(turno: Turno): boolean {
+
+    const estadoValido =
+      turno.estadoTurno === EstadoTurno.PENDIENTE ||
+      turno.estadoTurno === EstadoTurno.CONFIRMADO;
+
+    const fechaInicio = new Date(turno.fechaHoraInicio);
+
+    return estadoValido &&
+      !Number.isNaN(fechaInicio.getTime()) &&
+      fechaInicio.getTime() > Date.now();
+  }
+
+
+  //========================================
+  //Confirmar, rechazar o cancelar
+  //un turno desde ADMIN
+  //========================================
+  ejecutarAccionTurnoAdmin(
+    accion: 'confirmar' | 'rechazar' | 'cancelar'
+  ): void {
+
+    const turno = this.turnoSeleccionado;
+
+    if (
+      !turno ||
+      this.procesandoAccionTurno ||
+      this.enviandoPropuestaReprogramacion ||
+      !this.puedeGestionarTurno(turno)
+    ) {
+      return;
+    }
+
+    if (
+      accion !== 'cancelar' &&
+      turno.estadoTurno !== EstadoTurno.PENDIENTE
+    ) {
+      return;
+    }
+
+    if (accion === 'rechazar' || accion === 'cancelar') {
+
+      const mensaje = accion === 'rechazar'
+        ? '¿Querés rechazar este turno?'
+        : '¿Querés cancelar este turno?';
+
+      if (!window.confirm(mensaje)) {
+        return;
+      }
+    }
+
+    this.procesandoAccionTurno = true;
+    this.errorAccionTurno = '';
+    this.mensajeAccionTurno = '';
+
+    const solicitud =
+      accion === 'confirmar'
+        ? this.turnoService.confirmarTurnoAdmin(turno.id)
+        : accion === 'rechazar'
+          ? this.turnoService.rechazarTurnoAdmin(turno.id)
+          : this.turnoService.cancelarTurnoAdmin(turno.id);
+
+    solicitud.subscribe({
+
+      next: (turnoActualizado) => {
+
+        this.procesandoAccionTurno = false;
+
+        this.turnoSeleccionado = turnoActualizado;
+
+        this.mensajeAccionTurno =
+          accion === 'confirmar'
+            ? 'El turno fue confirmado correctamente.'
+            : accion === 'rechazar'
+              ? 'El turno fue rechazado correctamente.'
+              : 'El turno fue cancelado correctamente.';
+
+        this.cargarTurnos();
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Error al gestionar el turno:',
+          error
+        );
+
+        this.procesandoAccionTurno = false;
+
+        this.errorAccionTurno =
+          error?.error?.mensaje ||
+          error?.error?.message ||
+          'No se pudo realizar la operación.';
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+
+
+  //========================================
+  //Comprobar si el turno permite
+  //proponer una reprogramación
+  //========================================
+  puedeReprogramarTurno(turno: Turno): boolean {
+
+    const estadoValido =
+      turno.estadoTurno === EstadoTurno.PENDIENTE ||
+      turno.estadoTurno === EstadoTurno.CONFIRMADO;
+
+    if (!estadoValido) {
+      return false;
+    }
+
+    const inicioActual = new Date(
+      turno.fechaHoraInicio
+    );
+
+    return (
+      !Number.isNaN(inicioActual.getTime()) &&
+      inicioActual.getTime() > Date.now()
+    );
+  }
+
+
+  //========================================
+  //Abrir formulario de reprogramación
+  //========================================
+  abrirFormularioReprogramacion(): void {
+
+    if (
+      !this.turnoSeleccionado ||
+      !this.puedeReprogramarTurno(this.turnoSeleccionado)
+    ) {
+      return;
+    }
+
+    this.restablecerFormularioReprogramacion();
+
+    this.mensajeReprogramacion = '';
+
+    this.mostrarFormularioReprogramacion = true;
+  }
+
+
+  //========================================
+  //Cerrar formulario de reprogramación
+  //========================================
+  cerrarFormularioReprogramacion(): void {
+
+    if (this.enviandoPropuestaReprogramacion) {
+      return;
+    }
+
+    this.restablecerFormularioReprogramacion();
+  }
+
+
+  //========================================
+  //Restablecer formulario
+  //========================================
+  private restablecerFormularioReprogramacion(): void {
+
+    this.mostrarFormularioReprogramacion = false;
+
+    this.fechaReprogramacion = '';
+
+    this.horaReprogramacion = '';
+
+    this.motivoReprogramacion = '';
+
+    this.errorReprogramacion = '';
+  }
+
+
+  //========================================
+  //Validar formulario
+  //========================================
+  formularioReprogramacionValido(): boolean {
+
+    const turno = this.turnoSeleccionado;
+
+    if (
+      !turno ||
+      this.enviandoPropuestaReprogramacion ||
+      !this.puedeReprogramarTurno(turno) ||
+      !this.fechaReprogramacion ||
+      !this.horaReprogramacion
+    ) {
+      return false;
+    }
+
+    const motivo = this.motivoReprogramacion.trim();
+
+    if (
+      motivo.length === 0 ||
+      motivo.length > 500
+    ) {
+      return false;
+    }
+
+    const nuevaFechaHora = this.obtenerNuevaFechaHora();
+
+    const nuevoInicio = new Date(nuevaFechaHora);
+
+    const inicioOriginal = new Date(
+      turno.fechaHoraInicio
+    );
+
+    if (
+      Number.isNaN(nuevoInicio.getTime()) ||
+      nuevoInicio.getTime() <= Date.now()
+    ) {
+      return false;
+    }
+
+    if (
+      nuevoInicio.getTime() === inicioOriginal.getTime()
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+
+  //========================================
+  //Construir fecha para Spring Boot
+  //========================================
+  private obtenerNuevaFechaHora(): string {
+
+    const hora = this.horaReprogramacion.substring(0, 5);
+
+    return `${this.fechaReprogramacion}T${hora}:00`;
+  }
+
+
+  //========================================
+  //Enviar propuesta de reprogramación
+  //========================================
+  proponerReprogramacion(): void {
+
+    if (
+      !this.formularioReprogramacionValido() ||
+      !this.turnoSeleccionado
+    ) {
+      this.errorReprogramacion =
+        'Verificá la nueva fecha, la hora y el motivo.';
+
+      return;
+    }
+
+    const idTurno = this.turnoSeleccionado.id;
+
+    const datos: ReprogramarTurno = {
+
+      nuevaFechaHoraInicio: this.obtenerNuevaFechaHora(),
+
+      motivo: this.motivoReprogramacion.trim()
+
+    };
+
+    this.enviandoPropuestaReprogramacion = true;
+
+    this.errorReprogramacion = '';
+
+    this.mensajeReprogramacion = '';
+
+    this.turnoService
+      .proponerReprogramacionAdmin(idTurno, datos)
+      .subscribe({
+
+        next: () => {
+
+          this.enviandoPropuestaReprogramacion = false;
+
+          this.restablecerFormularioReprogramacion();
+
+          this.mensajeReprogramacion =
+            'La propuesta de reprogramación fue enviada correctamente. ' +
+            'El turno conservará su horario original hasta que la clienta acepte.';
+
+          this.cargarTurnos();
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error al proponer reprogramación:',
+            error
+          );
+
+          this.enviandoPropuestaReprogramacion = false;
+
+          this.errorReprogramacion =
+            this.obtenerErrorReprogramacion(
+              error
+            );
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  //========================================
+  //Obtener mensaje de error
+  //========================================
+  private obtenerErrorReprogramacion(error: any): string {
+
+    const respuesta = error?.error;
+
+    if (
+      typeof respuesta?.mensaje === 'string' &&
+      respuesta.mensaje.trim()
+    ) {
+      return respuesta.mensaje;
+    }
+
+    if (
+      typeof respuesta?.message === 'string' &&
+      respuesta.message.trim()
+    ) {
+      return respuesta.message;
+    }
+
+    return 'No se pudo enviar la propuesta de reprogramación.';
+  }
+
 
   mostrarEstado(turno: Turno): void {
     this.hoverTurno = turno;
@@ -692,19 +1190,217 @@ export class AgendaAdmin implements OnInit {
   }
 
   abrirNuevoTurno(): void {
+
+    this.nuevoTurno = {
+      idCliente: 0,
+      idEmpleado: 0,
+      serviciosIds: [],
+      fechaHoraInicio: ''
+    };
+
+    this.fechaNuevoTurno = '';
+
+    this.horaNuevoTurno = '';
+
+    this.duracionTotalFormulario = 0;
+
+    this.horariosDisponibles = [];
+
+    this.clientes = [];
+
+    this.empleados = [];
+
+    this.servicios = [];
+
+    this.asignacionesReserva = [];
+
+    this.errorDisponibilidadReserva = '';
+
+    this.errorReserva = '';
+
+    this.creandoReserva = false;
+
     this.mostrarFormularioNuevoTurno = true;
+
+    this.agregarServicioReserva();
+
+    this.cargarClientes();
+
+    this.cargarServicios();
+  }
+
+  agregarServicioReserva(): void {
+
+    this.asignacionesReserva.push({
+
+      idLocal: this.siguienteIdAsignacion++,
+
+      idServicio: 0,
+
+      idEmpleado: 0,
+
+      fechaHoraInicio: '',
+
+      empleadosDisponibles: [],
+
+      cargandoDisponibilidad: false,
+
+      numeroConsulta: 0
+    });
+  }
+
+  quitarServicioReserva(idLocal: number): void {
+
+    if(this.asignacionesReserva.length <= 1){
+      return;
+    }
+
+    this.asignacionesReserva = this.asignacionesReserva.filter(asignacion => asignacion.idLocal !== idLocal);
+  }
+
+  cambiarServicioReserva(asignacion: AsignacionReserva): void {
+
+    asignacion.idEmpleado = 0;
+
+    asignacion.fechaHoraInicio = '';
+
+    asignacion.empleadosDisponibles = [];
+
+    this.consultarEmpleadosReserva(asignacion);
+  }
+
+  cambiarFechaReserva(): void {
+
+    this.errorDisponibilidadReserva = '';
+
+    this.asignacionesReserva.forEach(asignacion => {
+
+      asignacion.idEmpleado = 0;
+
+      asignacion.fechaHoraInicio = '';
+
+      asignacion.empleadosDisponibles = [];
+
+      this.consultarEmpleadosReserva(asignacion);
+    });
+  }
+
+  consultarEmpleadosReserva(asignacion: AsignacionReserva): void {
+
+    const numeroConsulta = ++asignacion.numeroConsulta;
+
+    asignacion.empleadosDisponibles = [];
+
+    asignacion.cargandoDisponibilidad = false;
+
+    if(!asignacion.idServicio || !this.fechaNuevoTurno){
+      return;
+    }
+
+    this.errorDisponibilidadReserva = '';
+
+    asignacion.cargandoDisponibilidad = true;
+
+    this.agendaService.obtenerEmpleadosDisponibles([asignacion.idServicio], this.fechaNuevoTurno).subscribe({
+
+      next: (empleados) => {
+
+        if(numeroConsulta !== asignacion.numeroConsulta){
+          return;
+        }
+
+        asignacion.empleadosDisponibles = this.ordenarPorNombreYApellido(empleados);
+
+        asignacion.cargandoDisponibilidad = false;
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        if(numeroConsulta !== asignacion.numeroConsulta){
+          return;
+        }
+
+        console.error('Error al consultar empleados disponibles:', error);
+
+        asignacion.empleadosDisponibles = [];
+
+        asignacion.cargandoDisponibilidad = false;
+
+        this.errorDisponibilidadReserva =
+        'No se pudo consultar la disponibilidad de los empleados.';
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cambiarEmpleadoReserva(asignacion: AsignacionReserva): void {
+
+    asignacion.fechaHoraInicio = '';
+  }
+
+  obtenerHorariosAsignacion(asignacion: AsignacionReserva): string[] {
+
+    const empleado = asignacion.empleadosDisponibles.find(empleado => empleado.idEmpleado === asignacion.idEmpleado);
+
+    if(!empleado){
+      return [];
+    }
+
+    const servicio = this.servicios.find(servicio => servicio.id === asignacion.idServicio);
+
+    if(!servicio){
+      return [];
+    }
+
+    const duracion = servicio.duracionMinutos;
+
+    return empleado.horariosDisponibles.filter(horario => {
+
+      const inicio = new Date(horario).getTime();
+
+      const fin = inicio + duracion * 60000;
+
+      return this.asignacionesReserva.every(otraAsignacion => {
+
+        if(otraAsignacion.idLocal === asignacion.idLocal || !otraAsignacion.fechaHoraInicio){
+          return true;
+        }
+
+        const otroServicio = this.servicios.find(servicio => servicio.id === otraAsignacion.idServicio);
+
+        if(!otroServicio){
+          return true;
+        }
+
+        const otroInicio = new Date(otraAsignacion.fechaHoraInicio).getTime();
+
+        const otroFin = otroInicio + otroServicio.  duracionMinutos * 60000;
+
+        return fin <= otroInicio || inicio >= otroFin;
+
+      });
+
+    }).sort();
   }
 
   cerrarNuevoTurno(): void {
+    
+    if(this.creandoReserva){
+      return;
+    }
+
     this.mostrarFormularioNuevoTurno = false;
   }
 
   abrirServicios(): void {
-    console.log('Abrir servicios');
+    this.router.navigate(['/admin/servicios']);
   }
 
   abrirCategorias(): void {
-    console.log('Abrir categorias');
+    this.router.navigate(['/admin/categorias']);
   }
 
   seleccionarServicio(idServicio: number, evento: Event): void {
@@ -738,6 +1434,8 @@ export class AgendaAdmin implements OnInit {
 
       next: (duracion) => {
         this.duracionTotalFormulario = duracion;
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
@@ -745,19 +1443,214 @@ export class AgendaAdmin implements OnInit {
         console.error('Error al calcular la duracion total:', error);
 
         this.duracionTotalFormulario = 0;
+
+        this.cdr.detectChanges();
       }
     });
   }
 
-  obtenerPrecioTotalFormulario(): number {
-    return this.servicios.filter(servicio => this.nuevoTurno.serviciosIds.includes(servicio.id)).reduce((total, servicio) => total + (servicio.precio ?? 0), 0);
+  servicioYaSeleccionado(idServicio: number, idLocal: number): boolean {
+
+    return this.asignacionesReserva.some(asignacion => asignacion.idLocal !== idLocal && asignacion.idServicio === idServicio);
   }
+
+  obtenerDuracionTotalReserva(): number {
+
+    return this.asignacionesReserva.reduce((total, asignacion) => {
+
+      const servicio = this.servicios.find(servicio => servicio.id === asignacion.idServicio);
+
+      return total + (servicio?.duracionMinutos ?? 0);
+
+    }, 0);
+  }
+
+  obtenerPrecioTotalFormulario(): number {
+    return this.asignacionesReserva.reduce((total, asignacion) => {
+
+      const servicio = this.servicios.find(servicio => servicio.id === asignacion.idServicio);
+
+      return total + Number(servicio?.precio ?? 0);
+
+    }, 0);
+  }
+
+  private haySuperposicionesReserva(): boolean {
+
+  for(let i = 0; i < this.asignacionesReserva.length; i++){
+
+    const actual = this.asignacionesReserva[i];
+
+    const servicioActual = this.servicios.find(
+      servicio => servicio.id === actual.idServicio
+    );
+
+    if(!servicioActual || !actual.fechaHoraInicio){
+      continue;
+    }
+
+    const inicioActual = new Date(actual.fechaHoraInicio).getTime();
+
+    const finActual = inicioActual + servicioActual.duracionMinutos * 60000;
+
+    for(let j = i + 1; j < this.asignacionesReserva.length; j++){
+
+      const siguiente = this.asignacionesReserva[j];
+
+      const servicioSiguiente = this.servicios.find(
+        servicio => servicio.id === siguiente.idServicio
+      );
+
+      if(!servicioSiguiente || !siguiente.fechaHoraInicio){
+        continue;
+      }
+
+      const inicioSiguiente = new Date(
+        siguiente.fechaHoraInicio
+      ).getTime();
+
+      const finSiguiente =
+        inicioSiguiente + servicioSiguiente.duracionMinutos * 60000;
+
+      if(inicioActual < finSiguiente && finActual > inicioSiguiente){
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
 
   formularioNuevoTurnoValido(): boolean {
-    return(this.nuevoTurno.idCliente > 0 && this.nuevoTurno.idEmpleado > 0 && this.nuevoTurno.serviciosIds.length > 0 && this.fechaNuevoTurno !== '' && this.horaNuevoTurno !== '');
+
+    if(
+    this.creandoReserva ||
+    this.nuevoTurno.idCliente <= 0 ||
+    !this.fechaNuevoTurno ||
+    this.asignacionesReserva.length === 0
+  ){
+    return false;
   }
 
+  const idsServicios = this.asignacionesReserva.map(
+    asignacion => asignacion.idServicio
+  );
+
+  if(new Set(idsServicios).size !== idsServicios.length){
+    return false;
+  }
+
+  const asignacionesValidas = this.asignacionesReserva.every(asignacion => {
+
+    if(
+      asignacion.idServicio <= 0 ||
+      asignacion.idEmpleado <= 0 ||
+      !asignacion.fechaHoraInicio ||
+      asignacion.cargandoDisponibilidad
+    ){
+      return false;
+    }
+
+    if(!asignacion.fechaHoraInicio.startsWith(`${this.fechaNuevoTurno}T`)){
+      return false;
+    }
+
+    const empleado = asignacion.empleadosDisponibles.find(
+      empleado => empleado.idEmpleado === asignacion.idEmpleado
+    );
+
+    return !!empleado &&
+      empleado.horariosDisponibles.includes(asignacion.fechaHoraInicio);
+  });
+
+  return asignacionesValidas && !this.haySuperposicionesReserva();
+  }
+
+
+  //========================================
+  //Explicar por qué no se puede crear
+  //la reserva desde ADMIN
+  //========================================
+  obtenerMotivoBloqueoReserva(): string {
+
+    if (this.creandoReserva) {
+      return 'La reserva se está procesando.';
+    }
+
+    if (this.nuevoTurno.idCliente <= 0) {
+      return 'Seleccioná una clienta.';
+    }
+
+    if (!this.fechaNuevoTurno) {
+      return 'Seleccioná la fecha de la reserva.';
+    }
+
+    if (this.asignacionesReserva.length === 0) {
+      return 'Agregá al menos un servicio.';
+    }
+
+    const idsServicios = this.asignacionesReserva.map(
+      asignacion => asignacion.idServicio
+    );
+
+    if (new Set(idsServicios).size !== idsServicios.length) {
+      return 'No podés seleccionar el mismo servicio dos veces.';
+    }
+
+    for (const asignacion of this.asignacionesReserva) {
+
+      if (asignacion.idServicio <= 0) {
+        return 'Seleccioná un servicio en cada sección.';
+      }
+
+      if (asignacion.cargandoDisponibilidad) {
+        return 'Se está consultando la disponibilidad de las empleadas.';
+      }
+
+      if (asignacion.idEmpleado <= 0) {
+        return 'Seleccioná una empleada para cada servicio.';
+      }
+
+      if (!asignacion.fechaHoraInicio) {
+        return 'Seleccioná un horario disponible para cada servicio.';
+      }
+
+      if (
+        !asignacion.fechaHoraInicio.startsWith(
+          `${this.fechaNuevoTurno}T`
+        )
+      ) {
+        return 'Uno de los horarios no corresponde a la fecha seleccionada.';
+      }
+
+      const empleado = asignacion.empleadosDisponibles.find(
+        empleado => empleado.idEmpleado === asignacion.idEmpleado
+      );
+
+      if (!empleado) {
+        return 'La empleada seleccionada ya no figura entre las disponibles.';
+      }
+
+      if (
+        !empleado.horariosDisponibles.includes(
+          asignacion.fechaHoraInicio
+        )
+      ) {
+        return 'El horario seleccionado ya no figura entre los disponibles.';
+      }
+    }
+
+    if (this.haySuperposicionesReserva()) {
+      return 'Los horarios de los servicios se superponen.';
+    }
+
+    return '';
+  }
+
+
   cargarHorariosDisponibles(): void {
+
+    this.horaNuevoTurno = '';
 
     if(!this.nuevoTurno.idEmpleado || this.nuevoTurno.serviciosIds.length === 0 || !this.fechaNuevoTurno){
 
@@ -766,13 +1659,31 @@ export class AgendaAdmin implements OnInit {
       return;
     }
 
+    this.horariosDisponibles = [];
+
     this.agendaService.obtenerDisponibilidad(this.nuevoTurno.idEmpleado, this.nuevoTurno.serviciosIds, this.fechaNuevoTurno).subscribe({
+
       next: (horarios) => {
-        this.horariosDisponibles = horarios;
+
+        this.horariosDisponibles = [...new Set(
+          horarios.map(horario => {
+
+            const hora = horario.includes('T') ? horario.split('T')[1] : horario;
+
+            return hora.substring(0, 5);
+          })
+        )].sort();
+
+        this.cdr.detectChanges();
       },
+
       error: (error) => {
+
         console.error('Error al cargar horarios disponibles:', error);
-        this.horariosDisponibles = []
+
+        this.horariosDisponibles = [];
+
+        this.cdr.detectChanges();
       }
     });
   }
@@ -780,20 +1691,55 @@ export class AgendaAdmin implements OnInit {
   crearNuevoTurno(): void {
 
     if(!this.formularioNuevoTurnoValido()){
-      return;
+    return;
+  }
+
+  const reserva: CrearReserva = {
+
+    idCliente: this.nuevoTurno.idCliente,
+
+    turnos: this.asignacionesReserva.map(asignacion => ({
+
+      idEmpleado: asignacion.idEmpleado,
+
+      serviciosIds: [asignacion.idServicio],
+
+      fechaHoraInicio: asignacion.fechaHoraInicio
+    }))
+  };
+
+  this.creandoReserva = true;
+
+  this.errorReserva = '';
+
+  this.reservaService.crearReserva(reserva).subscribe({
+
+    next: (idReserva) => {
+
+      console.log('Reserva creada correctamente:', idReserva);
+
+      this.creandoReserva = false;
+
+      this.cerrarNuevoTurno();
+
+      this.cargarTurnos();
+
+      this.cdr.detectChanges();
+    },
+
+    error: (error) => {
+
+      console.error('Error al crear la reserva:', error);
+
+      this.creandoReserva = false;
+
+      this.errorReserva =
+        typeof error.error?.message === 'string'
+          ? error.error.message
+          : 'No se pudo crear la reserva. Verificá los datos seleccionados.';
+
+      this.cdr.detectChanges();
     }
-
-    this.nuevoTurno.fechaHoraInicio = `${this.fechaNuevoTurno}T${this.horaNuevoTurno}:00`;
-
-    this.turnoService.crearTurnoAdmin(this.nuevoTurno).subscribe({
-      next: () => {
-        this.cerrarNuevoTurno();
-
-        this.cargarTurnos();
-      },
-      error: (error) => {
-        console.error('Error al crear el turno:', error);
-      }
-    });
+  });
   }
 }

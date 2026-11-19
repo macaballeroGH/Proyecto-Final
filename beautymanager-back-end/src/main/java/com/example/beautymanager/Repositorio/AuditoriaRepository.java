@@ -4,24 +4,58 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.example.beautymanager.Modelo.Entidad.AuditoriaEntity;
 import com.example.beautymanager.Modelo.Entidad.UsuarioEntity;
+public interface AuditoriaRepository
+    extends JpaRepository<AuditoriaEntity, Long>,
+            JpaSpecificationExecutor<AuditoriaEntity> {
 
-public interface AuditoriaRepository extends JpaRepository<AuditoriaEntity, Long> {
-    List<AuditoriaEntity> findByUsuario(UsuarioEntity usuario);
+    List<AuditoriaEntity> findByUsuario(
+        UsuarioEntity usuario
+    );
 
-    List<AuditoriaEntity> findByUsuarioId(Long idUsuario);
+    List<AuditoriaEntity>
+        findByUsuarioIdOrderByFechaHoraDescIdDesc(
+            Long idUsuario
+        );
 
-    List<AuditoriaEntity> findByAccion(String accion);
+    List<AuditoriaEntity> findByUsuarioId(
+        Long idUsuario
+    );
 
-    List<AuditoriaEntity> findByTablaAfectada(String tablaAfectada);
+    List<AuditoriaEntity> findByAccion(
+        String accion
+    );
 
-    List<AuditoriaEntity> findByIdRegistro(Long idRegistro);
+    List<AuditoriaEntity> findByTablaAfectada(
+        String tablaAfectada
+    );
 
-    List<AuditoriaEntity> findByFechaHora(LocalDateTime fechaHora);
+    List<AuditoriaEntity> findByIdRegistro(
+        Long idRegistro
+    );
 
-    List<AuditoriaEntity> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<AuditoriaEntity> findByFechaHora(
+        LocalDateTime fechaHora
+    );
 
-    List<AuditoriaEntity> findTop20ByOrderByFechaHoraDesc();
+    List<AuditoriaEntity> findByFechaHoraBetween(
+        LocalDateTime inicio,
+        LocalDateTime fin
+    );
+
+    List<AuditoriaEntity>
+        findTop20ByOrderByFechaHoraDesc();
+
+    List<AuditoriaEntity>
+        findAllByOrderByFechaHoraDescIdDesc();
+
+    List<AuditoriaEntity>
+        findByTablaAfectadaAndIdRegistroAndAccionOrderByFechaHoraDescIdDesc(
+            String tablaAfectada,
+            Long idRegistro,
+            String accion
+        );
 }

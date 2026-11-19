@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Turno } from '../models/turno';
+import { ObtenerDisponibilidadReserva } from '../models/obtener-disponibilidad-reserva';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,17 @@ export class AgendaService {
     serviciosIds.forEach(id => {params = params.append('serviciosIds', id);});
 
     return this.http.get<string[]>(`${this.apiUrl}/disponibilidad/${idEmpleado}`, { params });
+  }
+
+  obtenerEmpleadosDisponibles(serviciosIds: number[], fecha: string): Observable<ObtenerDisponibilidadReserva[]> {
+
+    let params = new HttpParams().set('fecha', fecha);
+
+    serviciosIds.forEach(id => {
+      params = params.append('serviciosIds', id);
+    });
+
+    return this.http.get<ObtenerDisponibilidadReserva[]>(`${this.apiUrl}/empleados-disponibles`, { params });
   }
 
   obtenerDisponibilidadRango(idEmpleado: number, serviciosIds: number[], inicio: string, fin: string): Observable<string[]> {

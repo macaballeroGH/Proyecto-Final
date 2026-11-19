@@ -1,0 +1,1006 @@
+<div class="categorias-container" (click)="cerrarMenuAcciones()">
+
+    <!-- ======================================== -->
+    <!-- ENCABEZADO                               -->
+    <!-- ======================================== -->
+
+    <header class="categorias-header">
+
+        <div class="categorias-header-info">
+
+            <button
+                type="button"
+                class="btn-volver"
+                (click)="volverAgenda()"
+                aria-label="Volver a la agenda">
+
+                <mat-icon>arrow_back</mat-icon>
+
+            </button>
+
+            <div class="categorias-titulo">
+
+                <h1>Servicios</h1>
+
+                <p>Gestioná los servicios del centro estético</p>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-nueva-categoria"
+            (click)="abrirNuevoServicio()">
+
+            <mat-icon>add</mat-icon>
+
+            Nuevo servicio
+
+        </button>
+
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- TARJETAS DE ESTADISTICAS                 -->
+    <!-- ======================================== -->
+
+    <section class="categorias-estadisticas servicios-estadisticas">
+
+        <!-- TOTAL -->
+        <button
+            type="button"
+            class="estadistica-card"
+            [class.seleccionada]="estadoFiltro === ''"
+            [attr.aria-pressed]="estadoFiltro === ''"
+            (click)="filtrarPorEstado('')">
+
+            <div class="estadistica-icono total">
+
+                <mat-icon>spa</mat-icon>
+
+            </div>
+
+            <div class="estadistica-informacion">
+
+                <span>Total de servicios</span>
+
+                <strong>{{ servicios.length }}</strong>
+
+            </div>
+
+        </button>
+
+
+        <!-- SERVICIOS POR ESTADO -->
+        @for (estado of estadosServicio; track estado.valor) {
+
+            <button
+                type="button"
+                class="estadistica-card"
+                [class.seleccionada]="estadoFiltro === estado.valor"
+                [attr.aria-pressed]="estadoFiltro === estado.valor"
+                (click)="filtrarPorEstado(estado.valor)">
+
+                <div
+                    class="estadistica-icono"
+                    [class.activa]="estado.valor === estadosServicio[0].valor"
+                    [class.inactiva]="estado.valor === estadosServicio[1].valor">
+
+                    <mat-icon>
+                        {{ estado.valor === estadosServicio[0].valor
+                            ? 'check_circle'
+                            : 'remove_circle' }}
+                    </mat-icon>
+
+                </div>
+
+                <div class="estadistica-informacion">
+
+                    <span>
+                        {{ estado.etiqueta === 'Activo' ? 'Activos' : 'Inactivos' }}
+                    </span>
+
+                    <strong>
+                        {{ contarPorEstado(estado.valor) }}
+                    </strong>
+
+                </div>
+
+            </button>
+
+        }
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- PANEL PRINCIPAL                          -->
+    <!-- ======================================== -->
+
+    <section class="categorias-panel">
+
+        <!-- ENCABEZADO DEL LISTADO -->
+        <div class="categorias-panel-header">
+
+            <div class="categorias-panel-titulo">
+
+                <h2>Listado de servicios</h2>
+
+                <p>
+                    {{ serviciosFiltrados.length }}
+                    servicios encontrados
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn-actualizar"
+                (click)="cargarServicios()"
+                [disabled]="cargandoServicios">
+
+                <mat-icon>refresh</mat-icon>
+
+                Actualizar
+
+            </button>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- BUSQUEDA Y FILTROS                       -->
+        <!-- ======================================== -->
+
+        <div class="categorias-controles servicios-controles">
+
+            <!-- BUSCADOR -->
+            <div class="categorias-busqueda">
+
+                <mat-icon>search</mat-icon>
+
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre, descripción o categoría..."
+                    aria-label="Buscar servicios"
+                    [(ngModel)]="textoBusqueda"
+                    (ngModelChange)="aplicarFiltros()">
+
+            </div>
+
+
+            <!-- FILTRO POR CATEGORIA -->
+            <div class="categorias-filtro">
+
+                <mat-icon>category</mat-icon>
+
+                <select
+                    aria-label="Filtrar por categoría"
+                    [(ngModel)]="categoriaFiltro"
+                    (ngModelChange)="aplicarFiltros()">
+
+                    <option [ngValue]="''">
+                        Todas las categorías
+                    </option>
+
+                    @for (categoria of categorias; track categoria.idCategoria) {
+
+                        <option [ngValue]="categoria.idCategoria">
+
+                            {{ categoria.nombreCategoria }}
+
+                        </option>
+
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- FILTRO POR ESTADO -->
+            <div class="categorias-filtro">
+
+                <mat-icon>filter_list</mat-icon>
+
+                <select
+                    aria-label="Filtrar por estado"
+                    [(ngModel)]="estadoFiltro"
+                    (ngModelChange)="aplicarFiltros()">
+
+                    <option [ngValue]="''">
+                        Todos los estados
+                    </option>
+
+                    @for (estado of estadosServicio; track estado.valor) {
+
+                        <option [ngValue]="estado.valor">
+
+                            {{ estado.etiqueta }}
+
+                        </option>
+
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- LIMPIAR FILTROS -->
+            <button
+                type="button"
+                class="btn-limpiar-filtros"
+                (click)="limpiarFiltros()">
+
+                <mat-icon>filter_alt_off</mat-icon>
+
+                Limpiar
+
+            </button>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- CONTENIDO DEL LISTADO                    -->
+        <!-- ======================================== -->
+
+        @if (cargandoServicios) {
+
+            <div class="categorias-mensaje">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <h3>Cargando servicios</h3>
+
+                <p>Consultando los servicios registrados...</p>
+
+            </div>
+
+        }
+        @else if (errorCarga) {
+
+            <div class="categorias-mensaje error">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <h3>No se pudieron cargar los servicios</h3>
+
+                <p>{{ errorCarga }}</p>
+
+                <button
+                    type="button"
+                    class="btn-reintentar"
+                    (click)="cargarServicios()">
+
+                    Reintentar
+
+                </button>
+
+            </div>
+
+        }
+        @else if (serviciosFiltrados.length === 0) {
+
+            <div class="categorias-mensaje">
+
+                <mat-icon>spa</mat-icon>
+
+                <h3>No se encontraron servicios</h3>
+
+                <p>
+                    No hay servicios que coincidan con los filtros seleccionados.
+                </p>
+
+            </div>
+
+        }
+        @else {
+
+            <!-- ======================================== -->
+            <!-- TABLA DE SERVICIOS                       -->
+            <!-- ======================================== -->
+
+            <div class="categorias-tabla-contenedor servicios-tabla-contenedor">
+
+                <table class="categorias-tabla servicios-tabla">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Servicio</th>
+
+                            <th>Descripción</th>
+
+                            <th>Precio</th>
+
+                            <th>Duración</th>
+
+                            <th>Estado</th>
+
+                            <th class="columna-acciones">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @for (servicio of serviciosPaginados; track servicio.id) {
+
+                            <tr>
+
+                                <!-- NOMBRE Y CATEGORIA -->
+                                <td>
+
+                                    <div class="categoria-nombre">
+
+                                        <div class="categoria-icono">
+
+                                            <mat-icon>spa</mat-icon>
+
+                                        </div>
+
+                                        <div class="servicios-nombre-informacion">
+
+                                            <span>
+                                                {{ servicio.nombre }}
+                                            </span>
+
+                                            <small class="servicios-categoria">
+
+                                                <mat-icon>category</mat-icon>
+
+                                                {{ servicio.nombreCategoria || 'Sin categoría' }}
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- DESCRIPCION -->
+                                <td class="categoria-descripcion">
+
+                                    {{ servicio.descripcion || 'Sin descripción' }}
+
+                                </td>
+
+
+                                <!-- PRECIO -->
+                                <td class="servicio-precio">
+
+                                    $ {{ servicio.precio | number:'1.2-2' }}
+
+                                </td>
+
+
+                                <!-- DURACION -->
+                                <td class="servicio-duracion">
+
+                                    <mat-icon>schedule</mat-icon>
+
+                                    {{ servicio.duracionMinutos }} min
+
+                                </td>
+
+
+                                <!-- ESTADO -->
+                                <td>
+
+                                    <span
+                                        class="categoria-estado"
+                                        [class.activa]="servicio.estado === estadosServicio[0].valor"
+                                        [class.inactiva]="servicio.estado === estadosServicio[1].valor">
+
+                                        <span class="estado-indicador"></span>
+
+                                        {{ obtenerNombreEstado(servicio.estado) }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACCIONES -->
+                                <td class="columna-acciones">
+
+                                    <div
+                                        class="acciones-contenedor"
+                                        (click)="$event.stopPropagation()">
+
+                                        <button
+                                            type="button"
+                                            class="btn-acciones"
+                                            [attr.aria-label]="'Acciones de ' + servicio.nombre"
+                                            [attr.aria-expanded]="menuAccionesId === servicio.id"
+                                            (click)="alternarMenuAcciones(servicio.id)">
+
+                                            <mat-icon>more_vert</mat-icon>
+
+                                        </button>
+
+
+                                        @if (menuAccionesId === servicio.id) {
+
+                                            <div class="menu-acciones">
+
+                                                <!-- EDITAR -->
+                                                <button
+                                                    type="button"
+                                                    class="menu-accion"
+                                                    (click)="abrirEditarServicio(servicio)">
+
+                                                    <mat-icon>edit</mat-icon>
+
+                                                    Editar servicio
+
+                                                </button>
+
+
+                                                <div class="menu-separador"></div>
+
+                                                <div class="menu-subtitulo">
+                                                    Cambiar estado
+                                                </div>
+
+
+                                                <!-- OPCIONES DE ESTADO -->
+                                                @for (estado of estadosServicio; track estado.valor) {
+
+                                                    <button
+                                                        type="button"
+                                                        class="menu-accion"
+                                                        [disabled]="servicio.estado === estado.valor"
+                                                        (click)="solicitarCambioEstado(servicio, estado.valor)">
+
+                                                        <mat-icon>
+                                                            {{ estado.valor === estadosServicio[0].valor
+                                                                ? 'check_circle'
+                                                                : 'remove_circle' }}
+                                                        </mat-icon>
+
+                                                        {{ estado.etiqueta }}
+
+                                                        @if (servicio.estado === estado.valor) {
+
+                                                            <mat-icon class="icono-estado-actual">
+                                                                check
+                                                            </mat-icon>
+
+                                                        }
+
+                                                    </button>
+
+                                                }
+
+                                            </div>
+
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ======================================== -->
+            <!-- PAGINACION                               -->
+            <!-- ======================================== -->
+
+            <div class="categorias-paginacion">
+
+                <span class="paginacion-informacion">
+
+                    {{ serviciosFiltrados.length }}
+                    resultados en total
+
+                </span>
+
+                @if (totalPaginas > 1) {
+
+                    <div class="paginacion-controles">
+
+                        <button
+                            type="button"
+                            class="btn-paginacion"
+                            (click)="cambiarPagina(paginaActual - 1)"
+                            [disabled]="paginaActual === 1"
+                            aria-label="Página anterior">
+
+                            <mat-icon>chevron_left</mat-icon>
+
+                        </button>
+
+                        <span class="paginacion-pagina">
+
+                            Página {{ paginaActual }} de {{ totalPaginas }}
+
+                        </span>
+
+                        <button
+                            type="button"
+                            class="btn-paginacion"
+                            (click)="cambiarPagina(paginaActual + 1)"
+                            [disabled]="paginaActual === totalPaginas"
+                            aria-label="Página siguiente">
+
+                            <mat-icon>chevron_right</mat-icon>
+
+                        </button>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- MENSAJE DE EXITO                         -->
+    <!-- ======================================== -->
+
+    @if (mensajeExito) {
+
+        <div class="categorias-exito" role="status">
+
+            <mat-icon>check_circle</mat-icon>
+
+            <span>{{ mensajeExito }}</span>
+
+            <button
+                type="button"
+                (click)="mensajeExito = ''"
+                aria-label="Cerrar mensaje">
+
+                <mat-icon>close</mat-icon>
+
+            </button>
+
+        </div>
+
+    }
+
+</div>
+
+
+<!-- ======================================== -->
+<!-- MODAL CREAR / EDITAR SERVICIO            -->
+<!-- ======================================== -->
+
+@if (mostrarFormulario) {
+
+    <div
+        class="categoria-modal-overlay"
+        (click)="cerrarFormulario()">
+
+        <div
+            class="categoria-modal servicios-modal"
+            role="dialog"
+            aria-modal="true"
+            [attr.aria-label]="modoEdicion ? 'Editar servicio' : 'Nuevo servicio'"
+            (click)="$event.stopPropagation()">
+
+
+            <!-- ENCABEZADO -->
+            <div class="categoria-modal-header">
+
+                <div>
+
+                    <h2>
+                        {{ modoEdicion ? 'Editar servicio' : 'Nuevo servicio' }}
+                    </h2>
+
+                    <p>
+                        {{ modoEdicion
+                            ? 'Modificá la información del servicio'
+                            : 'Completá los datos para registrar un servicio' }}
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-cerrar-modal"
+                    (click)="cerrarFormulario()"
+                    [disabled]="guardandoServicio"
+                    aria-label="Cerrar formulario">
+
+                    <mat-icon>close</mat-icon>
+
+                </button>
+
+            </div>
+
+
+            <!-- FORMULARIO -->
+            <form (ngSubmit)="guardarServicio()">
+
+                <div class="categoria-modal-body">
+
+                    <!-- NOMBRE -->
+                    <div class="categoria-campo">
+
+                        <label for="nombreServicio">
+                            Nombre del servicio
+                            <span class="campo-obligatorio">*</span>
+                        </label>
+
+                        <input
+                            id="nombreServicio"
+                            name="nombre"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Ej. Corte de cabello"
+                            [(ngModel)]="formularioServicio.nombre"
+                            [disabled]="guardandoServicio"
+                            required>
+
+                    </div>
+
+
+                    <!-- DESCRIPCION -->
+                    <div class="categoria-campo">
+
+                        <label for="descripcionServicio">
+                            Descripción
+                        </label>
+
+                        <textarea
+                            id="descripcionServicio"
+                            name="descripcion"
+                            rows="3"
+                            placeholder="Describí en qué consiste este servicio..."
+                            [(ngModel)]="formularioServicio.descripcion"
+                            [disabled]="guardandoServicio">
+                        </textarea>
+
+                    </div>
+
+
+                    <!-- CATEGORIA -->
+                    <div class="categoria-campo">
+
+                        <label for="categoriaServicio">
+                            Categoría
+                            <span class="campo-obligatorio">*</span>
+                        </label>
+
+                        <select
+                            id="categoriaServicio"
+                            name="idCategoria"
+                            [(ngModel)]="formularioServicio.idCategoria"
+                            [disabled]="guardandoServicio || cargandoCategorias"
+                            required>
+
+                            <option [ngValue]="0">
+                                Seleccionar categoría
+                            </option>
+
+                            @for (categoria of categoriasDisponibles; track categoria.idCategoria) {
+
+                                <option [ngValue]="categoria.idCategoria">
+
+                                    {{ categoria.nombreCategoria }}
+
+                                </option>
+
+                            }
+
+                        </select>
+
+                        @if (cargandoCategorias) {
+
+                            <p class="campo-ayuda">
+                                Cargando categorías...
+                            </p>
+
+                        }
+                        @else if (errorCategorias) {
+
+                            <div class="categoria-formulario-error" role="alert">
+
+                                <mat-icon>error_outline</mat-icon>
+
+                                <span>{{ errorCategorias }}</span>
+
+                            </div>
+
+                        }
+                        @else if (categoriasDisponibles.length === 0) {
+
+                            <p class="campo-ayuda">
+                                No hay categorías activas disponibles.
+                                Primero debés crear o activar una categoría.
+                            </p>
+
+                        }
+                        @else {
+
+                            <p class="campo-ayuda">
+                                Cada servicio debe pertenecer a una categoría.
+                            </p>
+
+                        }
+
+                    </div>
+
+
+                    <!-- PRECIO Y DURACION -->
+                    <div class="servicios-formulario-fila">
+
+                        <!-- PRECIO -->
+                        <div class="categoria-campo">
+
+                            <label for="precioServicio">
+                                Precio
+                                <span class="campo-obligatorio">*</span>
+                            </label>
+
+                            <div class="servicios-input-precio">
+
+                                <span>$</span>
+
+                                <input
+                                    id="precioServicio"
+                                    name="precio"
+                                    type="number"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    [(ngModel)]="formularioServicio.precio"
+                                    [disabled]="guardandoServicio"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DURACION -->
+                        <div class="categoria-campo">
+
+                            <label for="duracionServicio">
+                                Duración (minutos)
+                                <span class="campo-obligatorio">*</span>
+                            </label>
+
+                            <input
+                                id="duracionServicio"
+                                name="duracionMinutos"
+                                type="number"
+                                min="1"
+                                step="1"
+                                placeholder="Ej. 60"
+                                [(ngModel)]="formularioServicio.duracionMinutos"
+                                [disabled]="guardandoServicio"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+                    <div class="categoria-campo">
+
+                        <label for="estadoServicio">
+                            Estado
+                        </label>
+
+                        <select
+                            id="estadoServicio"
+                            name="estado"
+                            [(ngModel)]="formularioServicio.estado"
+                            [disabled]="guardandoServicio">
+
+                            @for (estado of estadosServicio; track estado.valor) {
+
+                                <option [ngValue]="estado.valor">
+
+                                    {{ estado.etiqueta }}
+
+                                </option>
+
+                            }
+
+                        </select>
+
+                        <p class="campo-ayuda">
+                            Los servicios inactivos no estarán disponibles
+                            para nuevas reservas.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ERROR -->
+                    @if (errorFormulario) {
+
+                        <div class="categoria-formulario-error" role="alert">
+
+                            <mat-icon>error_outline</mat-icon>
+
+                            <span>{{ errorFormulario }}</span>
+
+                        </div>
+
+                    }
+
+                </div>
+
+
+                <!-- BOTONES -->
+                <div class="categoria-modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn-modal-cancelar"
+                        (click)="cerrarFormulario()"
+                        [disabled]="guardandoServicio">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-modal-guardar"
+                        [disabled]="!formularioValido()">
+
+                        <mat-icon>
+                            {{ modoEdicion ? 'save' : 'add' }}
+                        </mat-icon>
+
+                        {{ guardandoServicio
+                            ? 'Guardando...'
+                            : modoEdicion
+                                ? 'Guardar cambios'
+                                : 'Crear servicio' }}
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+}
+
+
+<!-- ======================================== -->
+<!-- MODAL CONFIRMAR CAMBIO DE ESTADO         -->
+<!-- ======================================== -->
+
+@if (mostrarConfirmacionEstado && servicioCambioEstado) {
+
+    <div
+        class="categoria-modal-overlay"
+        (click)="cancelarCambioEstado()">
+
+        <div
+            class="categoria-modal categoria-modal-confirmacion"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirmar cambio de estado"
+            (click)="$event.stopPropagation()">
+
+
+            <!-- ICONO -->
+            <div class="confirmacion-icono">
+
+                <mat-icon>help_outline</mat-icon>
+
+            </div>
+
+
+            <h2>Confirmar cambio de estado</h2>
+
+            <p class="confirmacion-descripcion">
+
+                ¿Querés cambiar el estado del servicio
+
+                <strong>{{ servicioCambioEstado.nombre }}</strong>
+
+                a
+
+                <strong>{{ obtenerNombreEstado(nuevoEstado) }}</strong>?
+
+            </p>
+
+
+            <!-- ESTADO ANTERIOR Y NUEVO -->
+            <div class="confirmacion-estados">
+
+                <span
+                    class="categoria-estado"
+                    [class.activa]="servicioCambioEstado.estado === estadosServicio[0].valor"
+                    [class.inactiva]="servicioCambioEstado.estado === estadosServicio[1].valor">
+
+                    {{ obtenerNombreEstado(servicioCambioEstado.estado) }}
+
+                </span>
+
+                <mat-icon>arrow_forward</mat-icon>
+
+                <span
+                    class="categoria-estado"
+                    [class.activa]="nuevoEstado === estadosServicio[0].valor"
+                    [class.inactiva]="nuevoEstado === estadosServicio[1].valor">
+
+                    {{ obtenerNombreEstado(nuevoEstado) }}
+
+                </span>
+
+            </div>
+
+
+            <!-- ERROR -->
+            @if (errorEstado) {
+
+                <div class="categoria-formulario-error" role="alert">
+
+                    <mat-icon>error_outline</mat-icon>
+
+                    <span>{{ errorEstado }}</span>
+
+                </div>
+
+            }
+
+
+            <!-- BOTONES -->
+            <div class="categoria-modal-footer">
+
+                <button
+                    type="button"
+                    class="btn-modal-cancelar"
+                    (click)="cancelarCambioEstado()"
+                    [disabled]="cambiandoEstado">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-modal-guardar"
+                    (click)="confirmarCambioEstado()"
+                    [disabled]="cambiandoEstado">
+
+                    <mat-icon>check</mat-icon>
+
+                    {{ cambiandoEstado
+                        ? 'Actualizando...'
+                        : 'Confirmar cambio' }}
+
+                </button>
+            </div>
+        </div>
+    </div>
+}

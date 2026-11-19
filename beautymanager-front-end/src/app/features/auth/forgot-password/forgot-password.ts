@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Auth } from '../../../core/services/auth';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
@@ -13,7 +14,8 @@ import { Auth } from '../../../core/services/auth';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css',
@@ -23,36 +25,72 @@ export class ForgotPassword {
   email = '';
 
   mensaje = '';
-
   error = '';
 
+  enviando = false;
+
   constructor(
-    private auth: Auth,
+    private auth: Auth
   ) {}
 
-  solicitarRecuperacion() {
+  solicitarRecuperacion(formulario: NgForm): void {
+
+    if (this.enviando) {
+      return;
+    }
+
+    this.mensaje = '';
+    this.error = '';
+
+    // Eliminar espacios accidentales del correo.
+    this.email = this.email.trim();
+
+    formulario.controls['email']?.setValue(this.email);
+
+    // Mostrar errores y evitar solicitudes inválidas.
+    if (formulario.invalid) {
+      formulario.form.markAllAsTouched();
+      return;
+    }
+
+    this.enviando = true;
 
     this.auth.solicitarRecuperacionPassword({
-
       email: this.email
-
     }).subscribe({
 
       next: (respuesta) => {
 
-        console.log('Recuperación solicitada:', respuesta);
+        this.enviando = false;
 
-        window.location.href = respuesta.linkRecuperacion;
+        // Conservar la redirección existente.
+        if (respuesta?.linkRecuperacion) {
+
+          window.location.href = respuesta.linkRecuperacion;
+          return;
+
+        }
+
+        this.mensaje =
+          'La solicitud de recuperación fue procesada.';
 
       },
 
       error: (error) => {
 
-        this.error = 'No se pudo generar el enlace de recuperación.';
+        this.enviando = false;
 
-        console.error('Error al solicitar recuperación:', error);
+        this.error =
+          'No se pudo completar la solicitud de recuperación. Intentá nuevamente.';
+
+        console.error(
+          'Error al solicitar recuperación:',
+          error
+        );
 
       }
+
     });
+
   }
 }

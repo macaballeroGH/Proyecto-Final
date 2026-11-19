@@ -1,0 +1,669 @@
+<div class="categorias-container" (click)="cerrarMenuAcciones()">
+
+    <header class="categorias-header">
+
+        <div class="categorias-header-info">
+
+            <button
+                type="button"
+                class="btn-volver"
+                (click)="volverAgenda()"
+                aria-label="Volver a la agenda">
+
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="categorias-titulo">
+
+                <h1>Categorías de servicios</h1>
+
+                <p>Gestioná las categorías de los servicios del centro estético</p>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-nueva-categoria"
+            (click)="abrirNuevaCategoria()">
+
+            <mat-icon>add</mat-icon>
+
+            Nueva categoría
+
+        </button>
+
+    </header>
+
+    <section class="categorias-estadisticas">
+
+        <button
+            type="button"
+            class="estadistica-card"
+            [class.seleccionada]="estadoFiltro === ''"
+            [attr.aria-pressed]="estadoFiltro === ''"
+            (click)="filtrarPorEstado('')">
+
+            <div class="estadistica-icono total">
+                <mat-icon>category</mat-icon>
+            </div>
+
+            <div class="estadistica-informacion">
+
+                <span>Total de categorías</span>
+
+                <strong>{{ categorias.length }}</strong>
+
+            </div>
+
+        </button>
+
+        @for (estado of estadosCategoria; track estado.valor) {
+
+            <button
+                type="button"
+                class="estadistica-card"
+                [class.seleccionada]="estadoFiltro === estado.valor"
+                [attr.aria-pressed]="estadoFiltro === estado.valor"
+                (click)="filtrarPorEstado(estado.valor)">
+
+                <div
+                    class="estadistica-icono"
+                    [ngClass]="estado.valor.toLowerCase()">
+
+                    @switch (estado.valor) {
+
+                        @case ('ACTIVA') {
+                            <mat-icon>check_circle</mat-icon>
+                        }
+
+                        @case ('INACTIVA') {
+                            <mat-icon>remove_circle</mat-icon>
+                        }
+
+                        @case ('OCULTA') {
+                            <mat-icon>visibility_off</mat-icon>
+                        }
+
+                        @case ('ARCHIVADA') {
+                            <mat-icon>inventory_2</mat-icon>
+                        }
+                    }
+
+                </div>
+
+                <div class="estadistica-informacion">
+
+                    <span>{{ estado.etiqueta }}s</span>
+
+                    <strong>
+                        {{ contarPorEstado(estado.valor) }}
+                    </strong>
+
+                </div>
+
+            </button>
+
+        }
+
+    </section>
+
+    <section class="categorias-panel">
+
+        <div class="categorias-panel-header">
+
+            <div class="categorias-panel-titulo">
+
+                <h2>Listado de categorías</h2>
+
+                <p>
+                    {{ categoriasFiltradas.length }}
+                    categorías encontradas
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn-actualizar"
+                (click)="cargarCategorias()"
+                [disabled]="cargandoCategorias">
+
+                <mat-icon>refresh</mat-icon>
+
+                Actualizar
+
+            </button>
+
+        </div>
+
+        <div class="categorias-controles">
+
+            <div class="categorias-busqueda">
+
+                <mat-icon>search</mat-icon>
+
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre o descripción..."
+                    aria-label="Buscar categorías"
+                    [(ngModel)]="textoBusqueda"
+                    (ngModelChange)="aplicarFiltros()">
+
+            </div>
+
+            <div class="categorias-filtro">
+
+                <mat-icon>filter_list</mat-icon>
+
+                <select
+                    aria-label="Filtrar categorías por estado"
+                    [(ngModel)]="estadoFiltro"
+                    (ngModelChange)="aplicarFiltros()">
+
+                    <option [ngValue]="''">
+                        Todos los estados
+                    </option>
+
+                    @for (estado of estadosCategoria; track estado.valor) {
+
+                        <option [ngValue]="estado.valor">
+
+                            {{ estado.etiqueta }}
+
+                        </option>
+
+                    }
+
+                </select>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn-limpiar-filtros"
+                (click)="limpiarFiltros()">
+
+                <mat-icon>filter_alt_off</mat-icon>
+
+                Limpiar
+
+            </button>
+
+        </div>
+
+        @if (cargandoCategorias) {
+
+            <div class="categorias-mensaje">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <h3>Cargando categorías</h3>
+
+                <p>Consultando las categorías registradas...</p>
+
+            </div>
+
+        }
+        @else if (errorCarga) {
+
+            <div class="categorias-mensaje error">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <h3>No se pudieron cargar las categorías</h3>
+
+                <p>{{ errorCarga }}</p>
+
+                <button
+                    type="button"
+                    class="btn-reintentar"
+                    (click)="cargarCategorias()">
+
+                    Reintentar
+
+                </button>
+
+            </div>
+
+        }
+        @else if (categoriasFiltradas.length === 0) {
+
+            <div class="categorias-mensaje">
+
+                <mat-icon>category</mat-icon>
+
+                <h3>No se encontraron categorías</h3>
+
+                <p>
+                    No hay categorías que coincidan con los filtros seleccionados.
+                </p>
+
+            </div>
+
+        }
+        @else {
+
+            <div class="categorias-tabla-contenedor">
+
+                <table class="categorias-tabla">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nombre</th>
+
+                            <th>Descripción</th>
+
+                            <th>Estado</th>
+
+                            <th class="columna-acciones">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @for (categoria of categoriasPaginadas; track categoria.idCategoria) {
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="categoria-nombre">
+
+                                        <div class="categoria-icono">
+
+                                            <mat-icon>category</mat-icon>
+
+                                        </div>
+
+                                        <span>
+                                            {{ categoria.nombreCategoria }}
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                                <td class="categoria-descripcion">
+
+                                    {{ categoria.descripcion || 'Sin descripción' }}
+
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="categoria-estado"
+                                        [ngClass]="categoria.estado.toLowerCase()">
+
+                                        <span class="estado-indicador"></span>
+
+                                        {{ obtenerNombreEstado(categoria.estado) }}
+
+                                    </span>
+
+                                </td>
+
+                                <td class="columna-acciones">
+
+                                    <div
+                                        class="acciones-contenedor"
+                                        (click)="$event.stopPropagation()">
+
+                                        <button
+                                            type="button"
+                                            class="btn-acciones"
+                                            [attr.aria-label]="'Acciones de ' + categoria.nombreCategoria"
+                                            [attr.aria-expanded]="menuAccionesId === categoria.idCategoria"
+                                            (click)="alternarMenuAcciones(categoria.idCategoria)">
+
+                                            <mat-icon>more_vert</mat-icon>
+
+                                        </button>
+
+
+                                        @if (menuAccionesId === categoria.idCategoria) {
+
+                                            <div class="menu-acciones">
+
+                                                <button
+                                                    type="button"
+                                                    class="menu-accion"
+                                                    (click)="abrirEditarCategoria(categoria)">
+
+                                                    <mat-icon>edit</mat-icon>
+
+                                                    Editar categoría
+
+                                                </button>
+
+
+                                                <div class="menu-separador"></div>
+
+                                                <div class="menu-subtitulo">
+                                                    Cambiar estado
+                                                </div>
+
+                                                @for (estado of estadosCategoria; track estado.valor) {
+
+                                                    <button
+                                                        type="button"
+                                                        class="menu-accion"
+                                                        [disabled]="categoria.estado === estado.valor"
+                                                        (click)="solicitarCambioEstado(categoria, estado.valor)">
+
+                                                        @switch (estado.valor) {
+
+                                                            @case ('ACTIVA') {
+                                                                <mat-icon>check_circle</mat-icon>
+                                                            }
+
+                                                            @case ('INACTIVA') {
+                                                                <mat-icon>remove_circle</mat-icon>
+                                                            }
+
+                                                            @case ('OCULTA') {
+                                                                <mat-icon>visibility_off</mat-icon>
+                                                            }
+
+                                                            @case ('ARCHIVADA') {
+                                                                <mat-icon>inventory_2</mat-icon>
+                                                            }
+                                                        }
+
+                                                        {{ estado.etiqueta }}
+
+                                                        @if (categoria.estado === estado.valor) {
+
+                                                            <mat-icon class="icono-estado-actual">
+                                                                check
+                                                            </mat-icon>
+
+                                                        }
+
+                                                    </button>
+
+                                                }
+
+                                            </div>
+
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="categorias-paginacion">
+
+                <span class="paginacion-informacion">
+
+                    {{ categoriasFiltradas.length }}
+                    resultados en total
+
+                </span>
+
+                @if (totalPaginas > 1) {
+
+                    <div class="paginacion-controles">
+
+                        <button
+                            type="button"
+                            class="btn-paginacion"
+                            (click)="cambiarPagina(paginaActual - 1)"
+                            [disabled]="paginaActual === 1"
+                            aria-label="Página anterior">
+
+                            <mat-icon>chevron_left</mat-icon>
+
+                        </button>
+
+                        <span class="paginacion-pagina">
+
+                            Página {{ paginaActual }} de {{ totalPaginas }}
+
+                        </span>
+
+                        <button
+                            type="button"
+                            class="btn-paginacion"
+                            (click)="cambiarPagina(paginaActual + 1)"
+                            [disabled]="paginaActual === totalPaginas"
+                            aria-label="Página siguiente">
+
+                            <mat-icon>chevron_right</mat-icon>
+
+                        </button>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </section>
+
+    @if (mensajeExito) {
+
+        <div class="categorias-exito" role="status">
+
+            <mat-icon>check_circle</mat-icon>
+
+            <span>{{ mensajeExito }}</span>
+
+            <button
+                type="button"
+                (click)="mensajeExito = ''"
+                aria-label="Cerrar mensaje">
+
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    }
+</div>
+
+@if (mostrarFormulario) {
+
+    <div
+        class="categoria-modal-overlay"
+        (click)="cerrarFormulario()">
+
+        <div
+            class="categoria-modal"
+            role="dialog"
+            aria-modal="true"
+            [attr.aria-label]="modoEdicion ? 'Editar categoría' : 'Nueva categoría'"
+            (click)="$event.stopPropagation()">
+
+            <div class="categoria-modal-header">
+
+                <div>
+
+                    <h2>
+                        {{ modoEdicion ? 'Editar categoría' : 'Nueva categoría' }}
+                    </h2>
+
+                    <p>
+                        {{ modoEdicion
+                            ? 'Modificá la información de la categoría'
+                            : 'Completá los datos para registrar una categoría' }}
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-cerrar-modal"
+                    (click)="cerrarFormulario()"
+                    [disabled]="guardandoCategoria"
+                    aria-label="Cerrar formulario">
+
+                    <mat-icon>close</mat-icon>
+
+                </button>
+
+            </div>
+
+
+            <!-- FORMULARIO -->
+            <form (ngSubmit)="guardarCategoria()">
+
+                <div class="categoria-modal-body">
+
+                    <!-- NOMBRE -->
+                    <div class="categoria-campo">
+
+                        <label for="nombreCategoria">
+                            Nombre de la categoría
+                            <span class="campo-obligatorio">*</span>
+                        </label>
+
+                        <input
+                            id="nombreCategoria"
+                            name="nombreCategoria"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Ej. Peluquería"
+                            [(ngModel)]="formularioCategoria.nombreCategoria"
+                            [disabled]="guardandoCategoria"
+                            required>
+
+                    </div>
+
+                    <div class="categoria-campo">
+
+                        <label for="descripcionCategoria">
+                            Descripción
+                        </label>
+
+                        <textarea id="descripcionCategoria" name="descripcion" rows="4" placeholder="Describí los servicios que incluye esta categoría..." [(ngModel)]="formularioCategoria.descripcion" [disabled]="guardandoCategoria"></textarea>
+                    </div>
+
+                    <div class="categoria-campo">
+
+                        <label for="estadoCategoria">
+                            Estado
+                        </label>
+
+                        <select id="estadoCategoria" name="estado" [(ngModel)]="formularioCategoria.estado" [disabled]="guardandoCategoria">
+
+                            @for (estado of estadosCategoria; track estado.valor) {
+
+                                <option [ngValue]="estado.valor">
+                                    {{ estado.etiqueta }}
+                                </option>
+                            }
+                        </select>
+
+                        <p class="campo-ayuda">
+                            El estado determina la disponibilidad y visibilidad
+                            de la categoría según las reglas del sistema.
+                        </p>
+                    </div>
+
+                    @if (errorFormulario) {
+
+                        <div class="categoria-formulario-error" role="alert">
+
+                            <mat-icon>error_outline</mat-icon>
+
+                            <span>{{ errorFormulario }}</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="categoria-modal-footer">
+
+                    <button type="button" class="btn-modal-cancelar" (click)="cerrarFormulario()" [disabled]="guardandoCategoria">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-modal-guardar" [disabled]="!formularioValido()">
+
+                        <mat-icon>{{ modoEdicion ? 'save' : 'add' }}</mat-icon>
+
+                        {{ guardandoCategoria ? 'Guardando...' : modoEdicion ? 'Guardar cambios' : 'Crear categoría' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (mostrarConfirmacionEstado && categoriaCambioEstado) {
+
+    <div class="categoria-modal-overlay" (click)="cancelarCambioEstado()">
+
+        <div class="categoria-modal categoria-modal-confirmacion" role="dialog" aria-modal="true" aria-label="Confirmar cambio de estado" (click)="$event.stopPropagation()">
+
+            <div class="confirmacion-icono">
+                <mat-icon>help_outline</mat-icon>
+            </div>
+
+            <h2>Confirmar cambio de estado</h2>
+
+            <p class="confirmacion-descripcion">
+
+                ¿Querés cambiar el estado de la categoría
+                <strong>{{ categoriaCambioEstado.nombreCategoria }}</strong>
+                a
+                <strong>{{ obtenerNombreEstado(nuevoEstado) }}</strong>?
+            </p>
+
+            <div class="confirmacion-estados">
+
+                <span class="categoria-estado" [ngClass]="categoriaCambioEstado.estado.toLowerCase()">
+                    {{ obtenerNombreEstado(categoriaCambioEstado.estado) }}
+                </span>
+
+                <mat-icon>arrow_forward</mat-icon>
+
+                <span class="categoria-estado" [ngClass]="nuevoEstado.toLowerCase()">
+                    {{ obtenerNombreEstado(nuevoEstado) }}
+                </span>
+            </div>
+
+            @if (errorEstado) {
+                <div class="categoria-formulario-error" role="alert">
+
+                    <mat-icon>error_outline</mat-icon>
+
+                    <span>{{ errorEstado }}</span>
+
+                </div>
+            }
+
+            <div class="categoria-modal-footer">
+
+                <button type="button" class="btn-modal-cancelar" (click)="cancelarCambioEstado()" [disabled]="cambiandoEstado">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn-modal-guardar" (click)="confirmarCambioEstado()" [disabled]="cambiandoEstado">
+
+                    <mat-icon>check</mat-icon>
+
+                    {{ cambiandoEstado ? 'Actualizando...' : 'Confirmar cambio' }}
+                </button>
+            </div>
+        </div>
+    </div>
+}

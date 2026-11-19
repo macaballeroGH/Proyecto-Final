@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { UserSession } from '../models/user-session';
+import { Router } from '@angular/router';
+import { Auth } from './auth';
+import { finalize } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -30,5 +33,18 @@ export class Session {
 
   cerrarSesion(): void {
     localStorage.removeItem(this.key);
+  }
+
+  cerrarSesionYRedirigir(router: Router): void {
+    this.cerrarSesion();
+    router.navigate(['']);
+  }
+
+  cerrarSesionCompleta(auth: Auth, router: Router): void {
+    auth.logout().pipe(
+      finalize(() => {
+        this.cerrarSesionYRedirigir(router);
+      })
+    ).subscribe();
   }
 }

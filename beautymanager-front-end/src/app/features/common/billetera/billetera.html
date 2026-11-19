@@ -1,120 +1,266 @@
 <div class="billetera-container">
 
+    <!-- =====================================
+         ENCABEZADO
+    ====================================== -->
+
     <section class="billetera-header">
+
+        <button
+            type="button"
+            class="boton-volver"
+            (click)="volver()"
+            aria-label="Volver a la página anterior">
+
+            <mat-icon>arrow_back</mat-icon>
+
+            <span>Volver</span>
+
+        </button>
+
         <h1>Mi billetera</h1>
+
     </section>
 
+    <!-- =====================================
+         RESUMEN DE BILLETERA
+    ====================================== -->
+
     <section class="resumen-billetera">
+
+        <!-- SALDO DISPONIBLE -->
 
         <article class="tarjeta saldo-card">
 
             <div class="tarjeta-contenido">
 
-                <span class="tarjeta-titulo">SALDO DISPONIBLE</span>
+                <span class="tarjeta-titulo">
+                    SALDO DISPONIBLE
+                </span>
 
                 @if (cargandoBilletera()) {
 
                     <div class="estado-carga">
-                        Cargando...
+                        Cargando saldo...
                     </div>
+
                 } @else if (errorBilletera()) {
 
                     <div class="estado-error">
                         No se pudo cargar el saldo.
                     </div>
+
                 } @else {
 
-                    <span class="saldo">
-                        {{ billetera()?.saldo | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
-                    </span>
+                    <div class="saldo-contenedor">
+
+                        @if (mostrarSaldo()) {
+
+                            <span class="saldo">
+                                {{
+                                    billetera()?.saldo
+                                    | currency:'ARS':'symbol':'1.2-2':'es-AR'
+                                }}
+                            </span>
+
+                        } @else {
+
+                            <span class="saldo saldo-oculto">
+                                ••••••••
+                            </span>
+
+                        }
+
+                        <button
+                            type="button"
+                            class="boton-visibilidad"
+                            (click)="alternarVisibilidadSaldo()"
+                            [attr.aria-label]="
+                                mostrarSaldo()
+                                ? 'Ocultar saldo'
+                                : 'Mostrar saldo'
+                            ">
+
+                            <mat-icon>
+                                @if (mostrarSaldo()) {
+                                    visibility
+                                } @else {
+                                    visibility_off
+                                }
+                            </mat-icon>
+
+                        </button>
+
+                    </div>
+
                 }
+
             </div>
 
-            <button type="button" class="boton-agregar" (click)="abrirModalRecarga()">
+            <button
+                type="button"
+                class="boton-agregar"
+                (click)="abrirModalRecarga()">
 
                 <mat-icon>add</mat-icon>
 
                 Agregar saldo
+
             </button>
+
         </article>
+
+        <!-- MOVIMIENTOS -->
 
         <article class="tarjeta movimientos-card">
 
             <div class="tarjeta-contenido">
 
-                <span class="tarjeta-titulo">MOVIMIENTOS</span>
+                <span class="tarjeta-titulo">
+                    MOVIMIENTOS
+                </span>
 
                 @if (cargandoMovimientos()) {
 
                     <div class="estado-carga">
-                        Cargando...
+                        Cargando movimientos...
                     </div>
+
                 } @else if (errorMovimientos()) {
 
                     <div class="estado-error">
                         No se pudieron cargar los movimientos.
                     </div>
+
                 } @else {
 
                     <span class="cantidad-movimientos">
+
                         {{ billetera()?.cantidadMovimientos ?? 0 }}
 
-                        @if ((billetera()?.cantidadMovimientos ?? 0) === 1) {
+                        @if (
+                            (billetera()?.cantidadMovimientos ?? 0) === 1
+                        ) {
+
                             movimiento
+
                         } @else {
+
                             movimientos
+
                         }
+
                     </span>
+
                 }
+
             </div>
 
-            <button type="button" class="boton-ver-todos" (click)="verTodosLosMovimientos()">
+            <button
+                type="button"
+                class="boton-ver-todos"
+                (click)="verTodosLosMovimientos()">
+
                 Ver todos
+
+                <mat-icon>arrow_forward</mat-icon>
+
             </button>
+
         </article>
+
     </section>
+
+    <!-- =====================================
+         ÚLTIMOS MOVIMIENTOS
+    ====================================== -->
 
     <section class="ultimos-movimientos">
 
         <div class="seccion-header">
-            <h2>Ultimos movimientos</h2>
+
+            <h2>Últimos movimientos</h2>
+
+            <span class="seccion-descripcion">
+                Actividad reciente de tu billetera
+            </span>
+
         </div>
 
         @if (cargandoMovimientos()) {
 
             <div class="mensaje">
+
                 <p>Cargando movimientos...</p>
+
             </div>
+
         } @else if (errorMovimientos()) {
 
             <div class="mensaje mensaje-error">
 
-                <p>No se pudieron cargar los movimientos.</p>
+                <p>
+                    No se pudieron cargar los movimientos.
+                </p>
 
-                <button type="button" (click)="cargarMovimientos()">
+                <button
+                    type="button"
+                    class="boton-reintentar"
+                    (click)="cargarMovimientos()">
+
                     Reintentar
+
                 </button>
+
             </div>
+
         } @else if (!hayMovimientos()) {
 
             <div class="mensaje mensaje-vacio">
-                <p>Todavia no hay movimientos en su billetera.</p>
+
+                <mat-icon>receipt_long</mat-icon>
+
+                <p>
+                    Todavía no hay movimientos en tu billetera.
+                </p>
+
             </div>
+
         } @else {
 
             <div class="lista-movimientos">
 
-                @for (movimiento of ultimosMovimientos(); track movimiento.idMovimiento) {
+                @for (
+                    movimiento of ultimosMovimientos();
+                    track movimiento.idMovimiento
+                ) {
 
-                    <article class="movimiento" [class.movimiento-credito]="movimiento.tipoMovimiento === MovimientoBilletera.CREDITO" [class.movimiento-debito]="movimiento.tipoMovimiento === MovimientoBilletera.DEBITO">
+                    <article
+                        class="movimiento"
+                        [class.movimiento-credito]="
+                            movimiento.tipoMovimiento ===
+                            MovimientoBilletera.CREDITO
+                        "
+                        [class.movimiento-debito]="
+                            movimiento.tipoMovimiento ===
+                            MovimientoBilletera.DEBITO
+                        ">
 
                         <div class="movimiento-icono">
 
-                            @if (movimiento.tipoMovimiento === MovimientoBilletera.CREDITO) {
-                                <mat-icon>arrow_upward</mat-icon>
-                            } @else {
+                            @if (
+                                movimiento.tipoMovimiento ===
+                                MovimientoBilletera.CREDITO
+                            ) {
+
                                 <mat-icon>arrow_downward</mat-icon>
+
+                            } @else {
+
+                                <mat-icon>arrow_upward</mat-icon>
+
                             }
+
                         </div>
 
                         <div class="movimiento-info">
@@ -124,79 +270,364 @@
                             </span>
 
                             <span class="movimiento-fecha">
-                                {{ movimiento.fecha | date:'dd MMM . HH:mm':'es-AR' }}
+                                {{
+                                    movimiento.fecha
+                                    | date:'dd MMM · HH:mm':'es-AR'
+                                }}
                             </span>
+
                         </div>
 
                         <div class="movimiento-monto">
 
-                            @if (movimiento.tipoMovimiento === MovimientoBilletera.CREDITO) {
+                            @if (
+                                movimiento.tipoMovimiento ===
+                                MovimientoBilletera.CREDITO
+                            ) {
+
                                 <span class="monto-credito">
+
                                     +
-                                    {{ movimiento.monto | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
+                                    {{
+                                        movimiento.monto
+                                        | currency:'ARS':'symbol':'1.2-2':'es-AR'
+                                    }}
+
                                 </span>
+
                             } @else {
+
                                 <span class="monto-debito">
+
                                     -
-                                    {{ movimiento.monto | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
+                                    {{
+                                        movimiento.monto
+                                        | currency:'ARS':'symbol':'1.2-2':'es-AR'
+                                    }}
+
                                 </span>
+
                             }
+
                         </div>
+
                     </article>
+
                 }
+
             </div>
+
         }
+
     </section>
+
 </div>
+
+<!-- =========================================
+     MODAL DE RECARGA
+========================================== -->
 
 @if (mostrarModalRecarga) {
 
-    <div class="modal-overlay" (click)="cerrarModalRecarga()">
+    <div
+        class="modal-overlay"
+        (click)="cerrarModalRecarga()">
 
-        <div class="modal-recarga" (click)="$event.stopPropagation()">
+        <div
+            class="modal-recarga"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-recarga"
+            (click)="$event.stopPropagation()">
 
             <div class="modal-header">
 
-                <h2>Agregar saldo</h2>
+                <div>
 
-                <button type="button" class="boton-cerrar" (click)="cerrarModalRecarga()" [disabled]="recargandoSaldo" aria-label="Cerrar">
+                    <span class="modal-etiqueta">
+                        MI BILLETERA
+                    </span>
+
+                    <h2 id="titulo-recarga">
+                        Agregar saldo
+                    </h2>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="boton-cerrar"
+                    (click)="cerrarModalRecarga()"
+                    [disabled]="recargandoSaldo"
+                    aria-label="Cerrar">
+
                     <mat-icon>close</mat-icon>
+
                 </button>
+
             </div>
 
             <div class="modal-body">
 
-                <label for="montoRecarga">¿Cuanto desea agregar?</label>
+                <label for="montoRecarga">
+                    ¿Cuánto querés agregar?
+                </label>
 
                 <div class="input-monto">
 
                     <span>$</span>
 
-                    <input id="montoRecarga" type="number" min="1" max="1000000" step="0.01" [(ngModel)]="montoRecarga" [disabled]="recargandoSaldo" placeholder="0,00">
+                    <input
+                        id="montoRecarga"
+                        type="number"
+                        min="1"
+                        max="1000000"
+                        step="0.01"
+                        [(ngModel)]="montoRecarga"
+                        [disabled]="recargandoSaldo"
+                        placeholder="0,00">
+
                 </div>
 
                 <span class="ayuda-monto">
-                    Minimo $1 . Maximo $1.000.000
+                    Mínimo $1 · Máximo $1.000.000
                 </span>
 
                 @if (errorRecarga) {
-                    <p class="error-recarga">{{ errorRecarga }}</p>
+
+                    <p
+                        class="error-recarga"
+                        role="alert">
+
+                        {{ errorRecarga }}
+
+                    </p>
+
                 }
+
             </div>
 
             <div class="modal-acciones">
 
-                <button type="button" class="boton-cancelar" (click)="cerrarModalRecarga()" [disabled]="recargandoSaldo">Cancelar</button>
+                <button
+                    type="button"
+                    class="boton-cancelar"
+                    (click)="cerrarModalRecarga()"
+                    [disabled]="recargandoSaldo">
 
-                <button type="button" class="boton-confirmar" (click)="recargarSaldo()" [disabled]="recargandoSaldo">
+                    Cancelar
+
+                </button>
+
+                <button
+                    type="button"
+                    class="boton-confirmar"
+                    (click)="recargarSaldo()"
+                    [disabled]="recargandoSaldo">
 
                     @if (recargandoSaldo) {
+
                         Procesando...
+
                     } @else {
+
                         Agregar saldo
+
                     }
+
                 </button>
+
             </div>
+
         </div>
+
     </div>
+
+}
+
+<!-- =========================================
+     MODAL DE TODOS LOS MOVIMIENTOS
+========================================== -->
+
+@if (mostrarModalMovimientos()) {
+
+    <div
+        class="modal-overlay"
+        (click)="cerrarModalMovimientos()">
+
+        <div
+            class="modal-movimientos"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-movimientos"
+            (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <span class="modal-etiqueta">
+                        HISTORIAL DE BILLETERA
+                    </span>
+
+                    <h2 id="titulo-movimientos">
+                        Todos los movimientos
+                    </h2>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="boton-cerrar"
+                    (click)="cerrarModalMovimientos()"
+                    aria-label="Cerrar">
+
+                    <mat-icon>close</mat-icon>
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                @if (cargandoMovimientos()) {
+
+                    <div class="mensaje">
+                        <p>Cargando movimientos...</p>
+                    </div>
+
+                } @else if (errorMovimientos()) {
+
+                    <div class="mensaje mensaje-error">
+
+                        <p>
+                            No se pudieron cargar los movimientos.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="boton-reintentar"
+                            (click)="cargarMovimientos()">
+
+                            Reintentar
+
+                        </button>
+
+                    </div>
+
+                } @else if (!hayMovimientos()) {
+
+                    <div class="mensaje mensaje-vacio">
+
+                        <mat-icon>receipt_long</mat-icon>
+
+                        <p>
+                            Todavía no hay movimientos registrados.
+                        </p>
+
+                    </div>
+
+                } @else {
+
+                    <div class="modal-lista-movimientos">
+
+                        @for (
+                            movimiento of movimientos();
+                            track movimiento.idMovimiento
+                        ) {
+
+                            <article
+                                class="movimiento"
+                                [class.movimiento-credito]="
+                                    movimiento.tipoMovimiento ===
+                                    MovimientoBilletera.CREDITO
+                                "
+                                [class.movimiento-debito]="
+                                    movimiento.tipoMovimiento ===
+                                    MovimientoBilletera.DEBITO
+                                ">
+
+                                <div class="movimiento-icono">
+
+                                    @if (
+                                        movimiento.tipoMovimiento ===
+                                        MovimientoBilletera.CREDITO
+                                    ) {
+
+                                        <mat-icon>
+                                            arrow_downward
+                                        </mat-icon>
+
+                                    } @else {
+
+                                        <mat-icon>
+                                            arrow_upward
+                                        </mat-icon>
+
+                                    }
+
+                                </div>
+
+                                <div class="movimiento-info">
+
+                                    <span class="movimiento-descripcion">
+                                        {{ movimiento.descripcion }}
+                                    </span>
+
+                                    <span class="movimiento-fecha">
+                                        {{
+                                            movimiento.fecha
+                                            | date:'dd MMM yyyy · HH:mm':'es-AR'
+                                        }}
+                                    </span>
+
+                                </div>
+
+                                <div class="movimiento-monto">
+
+                                    @if (
+                                        movimiento.tipoMovimiento ===
+                                        MovimientoBilletera.CREDITO
+                                    ) {
+
+                                        <span class="monto-credito">
+
+                                            +
+                                            {{
+                                                movimiento.monto
+                                                | currency:'ARS':'symbol':'1.2-2':'es-AR'
+                                            }}
+
+                                        </span>
+
+                                    } @else {
+
+                                        <span class="monto-debito">
+
+                                            -
+                                            {{
+                                                movimiento.monto
+                                                | currency:'ARS':'symbol':'1.2-2':'es-AR'
+                                            }}
+
+                                        </span>
+
+                                    }
+
+                                </div>
+
+                            </article>
+
+                        }
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
 }

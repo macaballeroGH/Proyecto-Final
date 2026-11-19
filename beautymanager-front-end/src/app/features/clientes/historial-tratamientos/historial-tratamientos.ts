@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HistorialTratamientoService } from '../../../core/services/historial-tratamiento';
@@ -29,7 +29,7 @@ export class HistorialTratamientos implements OnInit {
 
   errorCarga = '';
 
-  constructor(private historialTratamientoService: HistorialTratamientoService) {}
+  constructor(private historialTratamientoService: HistorialTratamientoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarTratamientos();
@@ -50,6 +50,8 @@ export class HistorialTratamientos implements OnInit {
         this.aplicarFiltros();
 
         this.cargando = false;
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
@@ -63,6 +65,8 @@ export class HistorialTratamientos implements OnInit {
         this.tratamientosFiltrados = [];
 
         this.cargando = false;
+
+        this.cdr.detectChanges();
       },
     });
   }

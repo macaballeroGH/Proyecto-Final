@@ -2,7 +2,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.CrearBilleteraDTO;
@@ -26,14 +25,20 @@ import jakarta.transaction.Transactional;
 @Service
 public class BilleteraServiceImpl implements BilleteraService {
 
-    @Autowired
-    private BilleteraRepository billeteraRepository;
+    private final BilleteraRepository billeteraRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private MovimientoBilleteraRepository movimientoBilleteraRepository;
+    private final MovimientoBilleteraRepository movimientoBilleteraRepository;
+
+    public BilleteraServiceImpl(BilleteraRepository billeteraRepository, UsuarioRepository usuarioRepository, MovimientoBilleteraRepository movimientoBilleteraRepository){
+
+        this.billeteraRepository = billeteraRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.movimientoBilleteraRepository = movimientoBilleteraRepository;
+    }
 
     //==================
     //Crear Billetera
@@ -84,6 +89,22 @@ public class BilleteraServiceImpl implements BilleteraService {
             .orElseThrow(() -> new BusinessException("Billetera no encontrada"));
     }
 
+    //==========================
+    //Obtener billetera bloqueada
+    //==========================
+
+    private BilleteraEntity obtenerBilleteraBloqueada(Long idUsuario){
+
+        BilleteraEntity billetera = billeteraRepository.buscarPorUsuarioConBloqueo(idUsuario)
+            .orElseThrow(() -> new BusinessException("Billetera no encontrada para el usuario con ID: " + idUsuario));
+
+        if(billetera.getUsuario().getEstadoUsuario() !=  EstadoUsuarioEnums.ACTIVO){
+            throw new BusinessException("El usuario no esta activo");
+        }
+
+        return billetera;
+    }
+
     //=======================
     //Obtener por usuario
     //=======================
@@ -101,12 +122,12 @@ public class BilleteraServiceImpl implements BilleteraService {
             throw new BusinessException("El monto no puede ser nulo");
         } 
 
-        if (monto.compareTo(BilleteraConstantes.Monto_Minimo) < 0){
-            throw new BusinessException("El monto minimo es: " + BilleteraConstantes.Monto_Minimo);
+        if (monto.compareTo(BilleteraConstantes.MONTO_MINIMO) < 0){
+            throw new BusinessException("El monto minimo es: " + BilleteraConstantes.MONTO_MINIMO);
         }
 
-        if (monto.compareTo(BilleteraConstantes.Monto_Maximo) > 0){
-            throw new BusinessException("El monto maximo es: " + BilleteraConstantes.Monto_Maximo);
+        if (monto.compareTo(BilleteraConstantes.MONTO_MAXIMO) > 0){
+            throw new BusinessException("El monto maximo es: " + BilleteraConstantes.MONTO_MAXIMO);
         }
     }
 
@@ -150,7 +171,7 @@ public class BilleteraServiceImpl implements BilleteraService {
 
         validarMonto(recargarSaldo.getMonto());
 
-        BilleteraEntity billetera = obtenerBilleteraEntity(recargarSaldo.getIdUsuario());
+        BilleteraEntity billetera = obtenerBilleteraBloqueada(recargarSaldo.getIdUsuario());
 
         billetera.setSaldo(billetera.getSaldo().add(recargarSaldo.getMonto()));
 
@@ -178,7 +199,7 @@ public class BilleteraServiceImpl implements BilleteraService {
 
         validarMonto(debitarSaldo.getMonto());
 
-        BilleteraEntity billetera = obtenerBilleteraEntity(debitarSaldo.getIdUsuario());
+        BilleteraEntity billetera = obtenerBilleteraBloqueada(debitarSaldo.getIdUsuario());
 
         if(billetera.getSaldo().compareTo(debitarSaldo.getMonto()) < 0){
             throw new BusinessException("Saldo insuficiente");
@@ -192,6 +213,102 @@ public class BilleteraServiceImpl implements BilleteraService {
 
         return toMap(billetera);
     }
+
+    
+    //==========================
+    //Transferir saldo
+    //==========================
+    @Override
+    @Transactional
+    public void transferirSaldo(Long idUsuarioOrigen, Long idUsuarioDestino, BigDecimal monto, String descripcion) {
+
+        //==========================
+        //Validar datos
+        //==========================
+        if(idUsuarioOrigen == null || idUsuarioDestino == null){
+            throw new BusinessException("Los usuarios de la transferencia son obligatorios");
+        }
+
+        if(idUsuarioOrigen.equals(idUsuarioDestino)){
+            throw new BusinessException("No se puede transferir saldo a la misma billetera");
+        }
+
+        validarMonto(monto);
+
+        if(descripcion == null || descripcion.isBlank()){
+            throw new BusinessException("La descripcion de la transferencia es obligatoria");
+        }
+
+        //==========================
+        //Bloquear billeteras
+        //==========================
+        //Se bloquean en orden de ID para
+        //reducir el riesgo de interbloqueos.
+
+        Long primerId = Math.min(idUsuarioOrigen, idUsuarioDestino);
+
+        Long segundoId = Math.max(idUsuarioOrigen, idUsuarioDestino);
+
+        BilleteraEntity primeraBilletera = obtenerBilleteraBloqueada(primerId);
+
+        BilleteraEntity segundaBilletera = obtenerBilleteraBloqueada(segundoId);
+
+        BilleteraEntity billeteraOrigen =
+            idUsuarioOrigen.equals(primerId)
+                ? primeraBilletera
+                : segundaBilletera;
+
+        BilleteraEntity billeteraDestino =
+            idUsuarioDestino.equals(primerId)
+                ? primeraBilletera
+                : segundaBilletera;
+
+        //==========================
+        //Validar saldo
+        //==========================
+        if(billeteraOrigen.getSaldo().compareTo(monto) < 0){
+            throw new BusinessException("Saldo insuficiente para realizar el pago");
+        }
+
+        //==========================
+        //Descontar saldo de origen
+        //==========================
+        billeteraOrigen.setSaldo(
+            billeteraOrigen.getSaldo().subtract(monto)
+        );
+
+        //==========================
+        //Acreditar saldo de destino
+        //==========================
+        billeteraDestino.setSaldo(
+            billeteraDestino.getSaldo().add(monto)
+        );
+
+        billeteraRepository.save(billeteraOrigen);
+
+        billeteraRepository.save(billeteraDestino);
+
+        //==========================
+        //Registrar movimiento origen
+        //==========================
+        registrarMovimiento(
+            billeteraOrigen,
+            monto,
+            MovimientoBilleteraEnums.DEBITO,
+            "Pago: " + descripcion
+        );
+
+        //==========================
+        //Registrar movimiento destino
+        //==========================
+        registrarMovimiento(
+            billeteraDestino,
+            monto,
+            MovimientoBilleteraEnums.CREDITO,
+            "Ingreso: " + descripcion
+        );
+    }
+
 
     @Override
     public ObtenerBilleteraDTO toMap(BilleteraEntity billetera) {

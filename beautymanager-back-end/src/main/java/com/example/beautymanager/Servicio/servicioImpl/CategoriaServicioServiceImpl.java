@@ -2,7 +2,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarCategoriaServicioDTO;
@@ -17,8 +16,11 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class CategoriaServicioServiceImpl implements CategoriaServicioService {
 
-    @Autowired
-    private CategoriaServicioRepository categoriaServicioRepository;
+    private final CategoriaServicioRepository categoriaServicioRepository;
+
+    public CategoriaServicioServiceImpl(CategoriaServicioRepository categoriaServicioRepository){
+        this.categoriaServicioRepository = categoriaServicioRepository;
+    }
 
     //=======================
     //Crear categoria

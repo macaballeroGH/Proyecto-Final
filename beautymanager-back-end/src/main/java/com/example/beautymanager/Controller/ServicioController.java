@@ -3,7 +3,6 @@ package com.example.beautymanager.Controller;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,8 +24,11 @@ import com.example.beautymanager.Servicio.ServicioService;
 @RequestMapping("/servicio")
 public class ServicioController {
 
-    @Autowired
-    private ServicioService servicioService;
+    private final ServicioService servicioService;
+
+    public ServicioController(ServicioService servicioService){
+        this.servicioService = servicioService;
+    }
 
     //=======================
     //Crear servicio

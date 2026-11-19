@@ -1,0 +1,2030 @@
+
+/* ======================================== */
+/* CONTENEDOR PRINCIPAL                     */
+/* ======================================== */
+
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+}
+
+.reserva-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+    max-width: 1450px;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background: #F8F6F4;
+    color: #343A45;
+}
+
+
+/* ======================================== */
+/* ENCABEZADO                               */
+/* ======================================== */
+
+.reserva-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.reserva-header-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.reserva-titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reserva-titulo h1 {
+    margin: 0;
+    color: #343A45;
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.reserva-titulo p {
+    margin: 0;
+    color: #929BA9;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ======================================== */
+/* BOTON VOLVER                             */
+/* ======================================== */
+
+.btn-volver {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    padding: 0;
+    border: 1px solid #E7DED7;
+    border-radius: 11px;
+    background: #FFFFFF;
+    color: #8E7565;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+    border-color: #C9A58A;
+    background: #FBF5F0;
+}
+
+.btn-volver mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+}
+
+
+/* ======================================== */
+/* INDICADOR DE PASOS                       */
+/* ======================================== */
+
+.reserva-pasos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 25px;
+    border: 1px solid #EBE1DB;
+    border-radius: 14px;
+    background: #FFFFFF;
+}
+
+.reserva-paso {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    opacity: 0.55;
+}
+
+.paso-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #E4E6EA;
+    border-radius: 50%;
+    background: #F4F5F7;
+    color: #7D8795;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.paso-informacion {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.paso-informacion strong {
+    color: #343A45;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.paso-informacion small {
+    color: #929BA9;
+    font-size: 11px;
+}
+
+.paso-conector {
+    flex: 1;
+    max-width: 100px;
+    height: 1px;
+    background: #E4E6EA;
+}
+
+
+/* ======================================== */
+/* PASO ACTIVO Y COMPLETADO                 */
+/* ======================================== */
+
+.reserva-paso.activo,
+.reserva-paso.completado {
+    opacity: 1;
+}
+
+.reserva-paso.activo .paso-numero {
+    border-color: #B78F74;
+    background: #B78F74;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(183, 143, 116, 0.18);
+}
+
+.reserva-paso.completado .paso-numero {
+    border-color: #D8BFAE;
+    background: #F7EDE5;
+    color: #A37D63;
+}
+
+.reserva-paso.activo .paso-informacion strong {
+    color: #A37D63;
+}
+
+
+/* ======================================== */
+/* HORARIO SELECCIONADO                     */
+/* ======================================== */
+
+.reserva-horario {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    padding: 21px 24px;
+    border: 1px solid #E8D8CA;
+    border-radius: 13px;
+    background: #FCF5EF;
+}
+
+.reserva-horario-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 51px;
+    height: 51px;
+    border-radius: 12px;
+    background: #F0DFD1;
+    color: #A87E61;
+}
+
+.reserva-horario-icono mat-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+}
+
+.reserva-horario-informacion {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.reserva-horario-informacion > span {
+    color: #A18470;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.reserva-horario-informacion strong {
+    color: #57493F;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reserva-horario-informacion p {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    color: #86705E;
+    font-size: 12px;
+}
+
+.reserva-horario-informacion p mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.reserva-horario-etiqueta {
+    margin-left: auto;
+    padding: 8px 12px;
+    border: 1px solid #E8D4C4;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #A37D63;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* ======================================== */
+/* DISTRIBUCION PRINCIPAL                   */
+/* ======================================== */
+
+.reserva-contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.85fr);
+    align-items: start;
+    gap: 22px;
+    min-width: 0;
+}
+
+.reserva-servicios-panel,
+.reserva-resumen-panel,
+.reserva-paso-panel {
+    min-width: 0;
+    border: 1px solid #EBE4DF;
+    border-radius: 14px;
+    background: #FFFFFF;
+    box-shadow: 0 3px 14px rgba(52, 58, 69, 0.025);
+}
+
+
+/* ======================================== */
+/* CATALOGO DE SERVICIOS                    */
+/* ======================================== */
+
+.reserva-servicios-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 25px;
+}
+
+.reserva-seccion-header h2 {
+    margin: 0;
+    color: #343A45;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.reserva-seccion-header p {
+    margin: 8px 0 0;
+    color: #929BA9;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ======================================== */
+/* BUSCADOR DE SERVICIOS                    */
+/* ======================================== */
+
+.reserva-buscador {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    height: 45px;
+    padding: 0 14px;
+    border: 1px solid #E3E5E9;
+    border-radius: 10px;
+    background: #FDFDFD;
+    transition: border-color 0.2s ease;
+}
+
+.reserva-buscador:focus-within {
+    border-color: #C9A58A;
+}
+
+.reserva-buscador mat-icon {
+    flex-shrink: 0;
+    width: 21px;
+    height: 21px;
+    color: #A0A8B3;
+    font-size: 21px;
+}
+
+.reserva-buscador input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #343A45;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.reserva-buscador input::placeholder {
+    color: #A6ADB7;
+}
+
+
+/* ======================================== */
+/* CATEGORIAS DE SERVICIOS                  */
+/* ======================================== */
+
+.reserva-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.reserva-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.reserva-grupo-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #F0EBE7;
+}
+
+.reserva-grupo-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 39px;
+    height: 39px;
+    border-radius: 10px;
+    background: #F7EEE7;
+    color: #B18B71;
+}
+
+.reserva-grupo-icono mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+}
+
+.reserva-grupo-header h3 {
+    margin: 0;
+    color: #414751;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reserva-grupo-header span {
+    display: block;
+    margin-top: 4px;
+    color: #929BA9;
+    font-size: 11px;
+}
+
+
+/* ======================================== */
+/* LISTA DE SERVICIOS                       */
+/* ======================================== */
+
+.reserva-servicios-lista {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 11px;
+}
+
+.reserva-servicio-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    padding: 18px;
+    border: 1px solid #E7E8EC;
+    border-radius: 11px;
+    background: #FFFFFF;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.reserva-servicio-card:hover {
+    border-color: #D7B49B;
+    background: #FFFCF9;
+    transform: translateY(-1px);
+}
+
+.reserva-servicio-card.seleccionado {
+    border-color: #C9A58A;
+    background: #FCF5EF;
+    box-shadow: 0 0 0 1px rgba(201, 165, 138, 0.12);
+}
+
+
+/* ======================================== */
+/* INFORMACION DEL SERVICIO                 */
+/* ======================================== */
+
+.servicio-card-informacion {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    flex: 1;
+    min-width: 0;
+}
+
+.servicio-card-informacion > strong {
+    color: #414751;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.servicio-card-informacion > p {
+    margin: 0;
+    color: #8D96A4;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.servicio-card-detalles {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 3px;
+}
+
+.servicio-card-detalles span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #7D8795;
+    font-size: 12px;
+}
+
+.servicio-card-detalles mat-icon {
+    width: 16px;
+    height: 16px;
+    color: #A9A0A0;
+    font-size: 16px;
+}
+
+.servicio-card-detalles .servicio-card-precio {
+    color: #A37D63;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ======================================== */
+/* ICONO DE SELECCION                       */
+/* ======================================== */
+
+.servicio-card-seleccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #BFC5CD;
+}
+
+.servicio-card-seleccion mat-icon {
+    width: 27px;
+    height: 27px;
+    font-size: 27px;
+}
+
+.reserva-servicio-card.seleccionado .servicio-card-seleccion {
+    color: #B78F74;
+}
+
+
+/* ======================================== */
+/* PANEL RESUMEN DE LA RESERVA              */
+/* ======================================== */
+
+.reserva-resumen-panel {
+    position: sticky;
+    top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+}
+
+.reserva-resumen-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.reserva-resumen-header mat-icon {
+    color: #B58A6D;
+}
+
+.reserva-resumen-header h2 {
+    margin: 0;
+    color: #343A45;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+
+/* ======================================== */
+/* FECHA EN EL RESUMEN                      */
+/* ======================================== */
+
+.reserva-resumen-fecha {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 15px;
+    border: 1px solid #F0E3D8;
+    border-radius: 10px;
+    background: #FCF6F1;
+}
+
+.reserva-resumen-fecha > span {
+    color: #A18C7B;
+    font-size: 11px;
+}
+
+.reserva-resumen-fecha strong {
+    color: #594A40;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-resumen-fecha p {
+    margin: 0;
+    color: #9D806D;
+    font-size: 12px;
+}
+
+.reserva-resumen-divisor {
+    width: 100%;
+    height: 1px;
+    background: #EBEDF0;
+}
+
+
+/* ======================================== */
+/* SERVICIOS DEL RESUMEN                    */
+/* ======================================== */
+
+.reserva-resumen-servicios {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.reserva-resumen-servicios h3 {
+    margin: 0;
+    color: #4D5664;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-resumen-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 25px 10px;
+    text-align: center;
+}
+
+.reserva-resumen-vacio mat-icon {
+    width: 28px;
+    height: 28px;
+    color: #C5B5AA;
+    font-size: 28px;
+}
+
+.reserva-resumen-vacio p {
+    max-width: 200px;
+    margin: 0;
+    color: #9AA2AE;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.reserva-resumen-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.reserva-resumen-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.reserva-resumen-item strong {
+    color: #505966;
+    font-size: 12px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.reserva-resumen-item small {
+    color: #9AA2AE;
+    font-size: 11px;
+}
+
+.reserva-resumen-item > span {
+    flex-shrink: 0;
+    color: #7B6759;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* ======================================== */
+/* TOTALES DEL RESUMEN                      */
+/* ======================================== */
+
+.reserva-resumen-totales {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.reserva-resumen-totales > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.reserva-resumen-totales span {
+    color: #8B94A2;
+    font-size: 12px;
+}
+
+.reserva-resumen-totales strong {
+    color: #505966;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reserva-resumen-precio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 0 0;
+    border-top: 1px solid #EBEDF0;
+}
+
+.reserva-resumen-precio span {
+    color: #505966;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-resumen-precio strong {
+    color: #A37D63;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ======================================== */
+/* BOTON CONTINUAR                          */
+/* ======================================== */
+
+.btn-continuar-reserva {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 45px;
+    padding: 11px 17px;
+    border: 1px solid #B78F74;
+    border-radius: 10px;
+    background: #B78F74;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-continuar-reserva:hover:not(:disabled) {
+    border-color: #A77E63;
+    background: #A77E63;
+}
+
+.btn-continuar-reserva mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.btn-continuar-reserva:disabled {
+    border-color: #DDD6D0;
+    background: #DDD6D0;
+    color: #FFFFFF;
+    cursor: not-allowed;
+}
+
+
+/* ======================================== */
+/* PANTALLA DEL SEGUNDO PASO                */
+/* ======================================== */
+
+.reserva-paso-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 28px;
+}
+
+.reserva-paso-servicios {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.reserva-paso-servicio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px 19px;
+    border: 1px solid #EAE5E0;
+    border-radius: 11px;
+    background: #FCFAF8;
+}
+
+.reserva-paso-servicio > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reserva-paso-servicio strong {
+    color: #444C58;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-paso-servicio p {
+    margin: 0;
+    color: #929BA9;
+    font-size: 12px;
+}
+
+.reserva-paso-servicio > span {
+    color: #A37D63;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* ======================================== */
+/* AVISO DEL SEGUNDO PASO                   */
+/* ======================================== */
+
+.reserva-paso-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #E9E0D5;
+    border-radius: 10px;
+    background: #FAF6F0;
+}
+
+.reserva-paso-aviso mat-icon {
+    flex-shrink: 0;
+    color: #B58A6D;
+}
+
+.reserva-paso-aviso p {
+    margin: 0;
+    color: #827365;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* ======================================== */
+/* ACCIONES DEL SEGUNDO PASO                */
+/* ======================================== */
+
+.reserva-paso-acciones {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-volver-servicios,
+.btn-volver-agenda,
+.btn-reintentar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 41px;
+    padding: 9px 17px;
+    border: 1px solid #D8B9A3;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #A37D63;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-volver-servicios:hover,
+.btn-volver-agenda:hover,
+.btn-reintentar:hover {
+    background: #FCF5EF;
+}
+
+.btn-volver-servicios mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+
+/* ======================================== */
+/* ESTADOS DE CARGA Y SIN RESULTADOS        */
+/* ======================================== */
+
+.reserva-estado-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 220px;
+    padding: 30px 15px;
+    text-align: center;
+}
+
+.reserva-estado-vacio > mat-icon {
+    width: 40px;
+    height: 40px;
+    color: #C4A58F;
+    font-size: 40px;
+}
+
+.reserva-estado-vacio h3 {
+    margin: 0;
+    color: #505966;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reserva-estado-vacio p {
+    max-width: 350px;
+    margin: 0;
+    color: #929BA9;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.reserva-estado-vacio.error > mat-icon {
+    color: #C97575;
+}
+
+
+/* ======================================== */
+/* ERROR DE FECHA U HORARIO                 */
+/* ======================================== */
+
+.reserva-mensaje-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    border: 1px solid #EECFCF;
+    border-radius: 13px;
+    background: #FFF5F5;
+}
+
+.reserva-mensaje-error > mat-icon {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    color: #C97575;
+    font-size: 30px;
+}
+
+.reserva-mensaje-error h3 {
+    margin: 0;
+    color: #A85656;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reserva-mensaje-error p {
+    margin: 8px 0 17px;
+    color: #AD7373;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* ======================================== */
+/* ACCESIBILIDAD                            */
+/* ======================================== */
+
+.btn-volver:focus-visible,
+.reserva-servicio-card:focus-visible,
+.btn-continuar-reserva:focus-visible,
+.btn-volver-servicios:focus-visible,
+.btn-volver-agenda:focus-visible,
+.btn-reintentar:focus-visible {
+    outline: 2px solid #A37D63;
+    outline-offset: 3px;
+}
+
+
+/* ======================================== */
+/* ASIGNACION DE EMPLEADAS Y HORARIOS       */
+/* ======================================== */
+
+.reserva-asignaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.reserva-asignacion-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 22px;
+    border: 1px solid #E9DED5;
+    border-radius: 12px;
+    background: #FFFCFA;
+}
+
+.reserva-asignacion-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #EEE6DF;
+}
+
+.reserva-asignacion-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 37px;
+    height: 37px;
+    border-radius: 10px;
+    background: #F2E4D9;
+    color: #A77F65;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reserva-asignacion-titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reserva-asignacion-titulo h3 {
+    margin: 0;
+    color: #414751;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reserva-asignacion-titulo p {
+    margin: 0;
+    color: #929BA9;
+    font-size: 12px;
+}
+
+
+/* ======================================== */
+/* SELECTORES DE EMPLEADAS Y HORARIOS       */
+/* ======================================== */
+
+.reserva-asignacion-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.reserva-asignacion-campo label {
+    color: #505966;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reserva-asignacion-campo select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 1px solid #E3DED9;
+    border-radius: 9px;
+    outline: none;
+    background: #FFFFFF;
+    color: #414751;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s ease;
+}
+
+.reserva-asignacion-campo select:focus {
+    border-color: #C9A58A;
+}
+
+.reserva-asignacion-campo select:disabled {
+    background: #F5F3F1;
+    color: #A0A5AE;
+    cursor: not-allowed;
+}
+
+.reserva-campo-ayuda,
+.reserva-campo-aviso {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.reserva-campo-ayuda {
+    color: #929BA9;
+}
+
+.reserva-campo-aviso {
+    color: #B67F59;
+}
+
+
+/* ======================================== */
+/* HORARIO INICIAL SELECCIONADO             */
+/* ======================================== */
+
+.reserva-horario-fijo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 13px;
+    box-sizing: border-box;
+    border: 1px solid #E6D6C8;
+    border-radius: 9px;
+    background: #F8EFE7;
+    color: #9E795E;
+}
+
+.reserva-horario-fijo mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+}
+
+.reserva-horario-fijo span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-horario-fijo small {
+    margin-left: auto;
+    color: #A89282;
+    font-size: 11px;
+}
+
+
+/* ======================================== */
+/* BOTONES DE NAVEGACION ENTRE PASOS        */
+/* ======================================== */
+
+.reserva-paso-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.btn-continuar-paso {
+    width: auto;
+    min-width: 180px;
+}
+
+
+/* ======================================== */
+/* CONFIRMACION - FECHA                     */
+/* ======================================== */
+
+.reserva-confirmacion-fecha {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #E8D8CA;
+    border-radius: 11px;
+    background: #FCF5EF;
+}
+
+.reserva-confirmacion-fecha > mat-icon {
+    width: 27px;
+    height: 27px;
+    color: #B58A6D;
+    font-size: 27px;
+}
+
+.reserva-confirmacion-fecha > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.reserva-confirmacion-fecha span {
+    color: #A18C7B;
+    font-size: 11px;
+}
+
+.reserva-confirmacion-fecha strong {
+    color: #594A40;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* ======================================== */
+/* CONFIRMACION - SERVICIOS                 */
+/* ======================================== */
+
+.reserva-confirmacion-servicios {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reserva-confirmacion-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 19px;
+    border: 1px solid #EAE5E0;
+    border-radius: 11px;
+    background: #FFFCFA;
+}
+
+.reserva-confirmacion-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reserva-confirmacion-item h3 {
+    margin: 0;
+    color: #414751;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reserva-confirmacion-item p {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: #8D96A4;
+    font-size: 12px;
+}
+
+.reserva-confirmacion-item p mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+.reserva-confirmacion-item > strong {
+    color: #A37D63;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* ======================================== */
+/* CONFIRMACION - TOTALES                   */
+/* ======================================== */
+
+.reserva-confirmacion-total {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #E8D8CA;
+    border-radius: 11px;
+    background: #F8F0E9;
+}
+
+.reserva-confirmacion-total > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.reserva-confirmacion-total span {
+    color: #8D7969;
+    font-size: 12px;
+}
+
+.reserva-confirmacion-total strong {
+    color: #8E6B54;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reserva-confirmacion-total > div:last-child strong {
+    font-size: 21px;
+}
+
+
+/* ======================================== */
+/* PAGO CON BILLETERA                       */
+/* ======================================== */
+
+.reserva-pago-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 25px;
+    border: 1px solid #E7D8CC;
+    border-radius: 13px;
+    background: #FFFCFA;
+}
+
+
+/* ======================================== */
+/* ENCABEZADO DEL PAGO                      */
+/* ======================================== */
+
+.reserva-pago-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 19px;
+    border-bottom: 1px solid #EFE5DD;
+}
+
+.reserva-pago-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #F3E5D9;
+    color: #A47D62;
+}
+
+.reserva-pago-icono mat-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+}
+
+.reserva-pago-header > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reserva-pago-header h3 {
+    margin: 0;
+    color: #414751;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.reserva-pago-header p {
+    margin: 0;
+    color: #929BA9;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ======================================== */
+/* CARGANDO SALDO                           */
+/* ======================================== */
+
+.reserva-pago-cargando {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 100px;
+    padding: 20px;
+    color: #9A8574;
+}
+
+.reserva-pago-cargando mat-icon {
+    width: 23px;
+    height: 23px;
+    font-size: 23px;
+    animation: reserva-pago-girar 1.5s linear infinite;
+}
+
+.reserva-pago-cargando span {
+    font-size: 12px;
+}
+
+@keyframes reserva-pago-girar {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ======================================== */
+/* ERROR AL CONSULTAR LA BILLETERA          */
+/* ======================================== */
+
+.reserva-pago-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 17px;
+    border: 1px solid #EFCFCF;
+    border-radius: 10px;
+    background: #FFF5F5;
+}
+
+.reserva-pago-error > mat-icon {
+    flex-shrink: 0;
+    width: 23px;
+    height: 23px;
+    color: #C97575;
+    font-size: 23px;
+}
+
+.reserva-pago-error > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.reserva-pago-error strong {
+    color: #AD6060;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-pago-error p {
+    margin: 0;
+    color: #B67F7F;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.reserva-pago-panel .btn-reintentar {
+    align-self: flex-start;
+}
+
+.reserva-pago-panel .btn-reintentar mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+
+/* ======================================== */
+/* DETALLES DE LA BILLETERA                 */
+/* ======================================== */
+
+.reserva-pago-detalles {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid #EFE5DD;
+    border-radius: 11px;
+    background: #FFFFFF;
+}
+
+.reserva-pago-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.reserva-pago-fila > span {
+    color: #818B99;
+    font-size: 13px;
+}
+
+.reserva-pago-fila > strong {
+    color: #47505D;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.reserva-pago-fila .reserva-pago-descuento {
+    color: #C47C7C;
+}
+
+
+/* ======================================== */
+/* SEPARADOR DEL PAGO                       */
+/* ======================================== */
+
+.reserva-pago-separador {
+    width: 100%;
+    height: 1px;
+    background: #EBE4DE;
+}
+
+
+/* ======================================== */
+/* SALDO DESPUES DEL PAGO                   */
+/* ======================================== */
+
+.reserva-pago-resultado {
+    padding-top: 3px;
+}
+
+.reserva-pago-resultado > span {
+    color: #62564C;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-pago-resultado > strong {
+    color: #A37D63;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+
+/* ======================================== */
+/* SALDO SUFICIENTE                         */
+/* ======================================== */
+
+.reserva-pago-exito {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid #CFE3D6;
+    border-radius: 10px;
+    background: #F3FAF5;
+}
+
+.reserva-pago-exito mat-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    color: #629779;
+    font-size: 22px;
+}
+
+.reserva-pago-exito p {
+    margin: 0;
+    color: #60876C;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* ======================================== */
+/* SALDO INSUFICIENTE                       */
+/* ======================================== */
+
+.reserva-pago-insuficiente {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 18px;
+    border: 1px solid #EBCFBB;
+    border-radius: 10px;
+    background: #FFF5ED;
+}
+
+.reserva-pago-insuficiente > mat-icon {
+    flex-shrink: 0;
+    width: 23px;
+    height: 23px;
+    color: #C08B58;
+    font-size: 23px;
+}
+
+.reserva-pago-insuficiente > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.reserva-pago-insuficiente strong {
+    color: #A57549;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.reserva-pago-insuficiente p {
+    margin: 0;
+    color: #A98263;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* ======================================== */
+/* ACCIONES DEL PAGO                        */
+/* ======================================== */
+
+.reserva-pago-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding-top: 5px;
+}
+
+
+/* ======================================== */
+/* BOTON CONFIRMAR Y PAGAR                  */
+/* ======================================== */
+
+.btn-confirmar-pago {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    width: 100%;
+    min-height: 49px;
+    padding: 13px 22px;
+    border: 1px solid #B78F74;
+    border-radius: 11px;
+    background: #B78F74;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-confirmar-pago mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+}
+
+.btn-confirmar-pago:hover:not(:disabled) {
+    border-color: #A57A5F;
+    background: #A57A5F;
+    box-shadow: 0 4px 12px rgba(183, 143, 116, 0.18);
+}
+
+.btn-confirmar-pago:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.btn-confirmar-pago:disabled {
+    border-color: #DAD5D1;
+    background: #DAD5D1;
+    color: #FFFFFF;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* ======================================== */
+/* NOTA DE CONFIRMACION                     */
+/* ======================================== */
+
+.reserva-pago-nota {
+    max-width: 440px;
+    margin: 0;
+    color: #9AA2AD;
+    font-size: 11px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+
+/* ======================================== */
+/* ACCESIBILIDAD                            */
+/* ======================================== */
+
+.btn-confirmar-pago:focus-visible {
+    outline: 2px solid #A37D63;
+    outline-offset: 3px;
+}
+
+
+/* ======================================== */
+/* RESPONSIVE - TABLET                      */
+/* ======================================== */
+
+@media (max-width: 850px) {
+
+    .reserva-pago-panel {
+        padding: 22px;
+    }
+
+    .reserva-pago-detalles {
+        padding: 19px;
+    }
+}
+
+
+/* ======================================== */
+/* RESPONSIVE - MOVIL                       */
+/* ======================================== */
+
+@media (max-width: 650px) {
+
+    .reserva-pago-panel {
+        gap: 19px;
+        padding: 18px;
+    }
+
+    .reserva-pago-header {
+        gap: 12px;
+        padding-bottom: 16px;
+    }
+
+    .reserva-pago-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+    .reserva-pago-icono mat-icon {
+        width: 23px;
+        height: 23px;
+        font-size: 23px;
+    }
+
+    .reserva-pago-header h3 {
+        font-size: 14px;
+    }
+
+    .reserva-pago-header p {
+        font-size: 11px;
+    }
+
+    .reserva-pago-detalles {
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .reserva-pago-fila > span {
+        font-size: 12px;
+    }
+
+    .reserva-pago-fila > strong {
+        font-size: 13px;
+    }
+
+    .reserva-pago-resultado > strong {
+        font-size: 19px;
+    }
+
+    .btn-confirmar-pago {
+        min-height: 46px;
+        font-size: 13px;
+    }
+}
+
+
+/* ======================================== */
+/* RESPONSIVE - MOVILES PEQUEÑOS            */
+/* ======================================== */
+
+@media (max-width: 420px) {
+
+    .reserva-pago-fila {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .reserva-pago-fila > span {
+        max-width: 55%;
+    }
+
+    .reserva-pago-resultado > strong {
+        font-size: 18px;
+    }
+
+    .reserva-pago-exito,
+    .reserva-pago-insuficiente,
+    .reserva-pago-error {
+        padding: 14px;
+    }
+}
+
+
+/* ======================================== */
+/* PREFERENCIAS DE MOVIMIENTO               */
+/* ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .reserva-pago-cargando mat-icon {
+        animation: none;
+    }
+
+    .btn-confirmar-pago {
+        transition: none;
+    }
+}
+
+
+
+/* ======================================== */
+/* RESPONSIVE                               */
+/* ======================================== */
+
+@media (max-width: 650px) {
+
+    .reserva-asignacion-card {
+        padding: 17px;
+        gap: 17px;
+    }
+
+    .reserva-asignacion-titulo h3 {
+        font-size: 13px;
+    }
+
+    .reserva-horario-fijo {
+        flex-wrap: wrap;
+    }
+
+    .reserva-horario-fijo small {
+        margin-left: 0;
+    }
+
+    .reserva-paso-acciones {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reserva-paso-acciones button {
+        width: 100%;
+    }
+
+    .reserva-confirmacion-item {
+        padding: 15px;
+    }
+
+    .reserva-confirmacion-total {
+        padding: 16px;
+    }
+}
+
+
+
+/* ======================================== */
+/* DISEÑO RESPONSIVE - TABLET               */
+/* ======================================== */
+
+@media (max-width: 1100px) {
+
+    .reserva-contenido {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 16px;
+    }
+
+    .reserva-container {
+        padding: 22px;
+    }
+
+    .reserva-servicios-panel,
+    .reserva-resumen-panel {
+        padding: 20px;
+    }
+
+    .reserva-pasos {
+        gap: 12px;
+        padding: 20px;
+    }
+
+    .paso-informacion small {
+        font-size: 10px;
+    }
+}
+
+
+/* ======================================== */
+/* DISEÑO RESPONSIVE - PANTALLAS MEDIANAS   */
+/* ======================================== */
+
+@media (max-width: 850px) {
+
+    .reserva-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .reserva-resumen-panel {
+        position: static;
+    }
+
+    .reserva-pasos {
+        justify-content: space-between;
+    }
+
+    .paso-conector {
+        max-width: 50px;
+    }
+
+    .reserva-horario-etiqueta {
+        display: none;
+    }
+}
+
+
+/* ======================================== */
+/* DISEÑO RESPONSIVE - MOVIL                */
+/* ======================================== */
+
+@media (max-width: 650px) {
+
+    .reserva-container {
+        gap: 18px;
+        padding: 15px;
+    }
+
+    .reserva-header-info {
+        gap: 12px;
+    }
+
+    .reserva-titulo h1 {
+        font-size: 22px;
+    }
+
+    .reserva-titulo p {
+        font-size: 12px;
+    }
+
+    .reserva-pasos {
+        gap: 8px;
+        padding: 15px 10px;
+    }
+
+    .reserva-paso {
+        flex: 1;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        text-align: center;
+    }
+
+    .paso-numero {
+        width: 35px;
+        height: 35px;
+    }
+
+    .paso-informacion {
+        align-items: center;
+    }
+
+    .paso-informacion strong {
+        font-size: 11px;
+    }
+
+    .paso-informacion small {
+        display: none;
+    }
+
+    .paso-conector {
+        flex: 0 1 25px;
+        margin-bottom: 18px;
+    }
+
+    .reserva-horario {
+        padding: 17px;
+    }
+
+    .reserva-horario-icono {
+        width: 43px;
+        height: 43px;
+    }
+
+    .reserva-horario-informacion strong {
+        font-size: 13px;
+    }
+
+    .reserva-servicios-panel,
+    .reserva-resumen-panel,
+    .reserva-paso-panel {
+        padding: 18px;
+    }
+
+    .reserva-servicio-card {
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .servicio-card-informacion > strong {
+        font-size: 13px;
+    }
+
+    .servicio-card-detalles {
+        gap: 10px;
+    }
+
+    .reserva-paso-servicio {
+        gap: 12px;
+        padding: 14px;
+    }
+}
+
+
+/* ======================================== */
+/* DISEÑO RESPONSIVE - MOVILES PEQUEÑOS     */
+/* ======================================== */
+
+@media (max-width: 420px) {
+
+    .reserva-titulo h1 {
+        font-size: 20px;
+    }
+
+    .reserva-horario {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .reserva-horario-icono {
+        width: 39px;
+        height: 39px;
+    }
+
+    .reserva-resumen-precio strong {
+        font-size: 20px;
+    }
+
+    .reserva-paso-servicio {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reserva-mensaje-error {
+        padding: 17px;
+    }
+}

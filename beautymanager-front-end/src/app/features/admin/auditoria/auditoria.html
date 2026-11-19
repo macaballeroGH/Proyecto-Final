@@ -1,0 +1,580 @@
+<main class="auditoria-container">
+
+    <!-- ENCABEZADO -->
+    <header class="auditoria-header">
+
+        <div class="auditoria-header-info">
+
+            <a
+                class="btn-volver"
+                routerLink="/admin/perfil"
+                aria-label="Volver al perfil">
+
+                <mat-icon>arrow_back</mat-icon>
+            </a>
+
+            <div>
+                <h1>Auditoría del sistema</h1>
+
+                <p>
+                    Consultá los movimientos y las modificaciones
+                    registrados en BeautyManager.
+                </p>
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-actualizar"
+            [disabled]="cargando"
+            (click)="cargarAuditorias()">
+
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+        </button>
+
+    </header>
+
+    <!-- FILTROS -->
+    <section class="auditoria-panel panel-filtros">
+
+        <div class="panel-encabezado">
+            <h2>Filtros de búsqueda</h2>
+            <p>
+                Buscá eventos por fecha, responsable,
+                operación o módulo.
+            </p>
+        </div>
+
+        <div class="filtros-grid">
+
+            <div class="campo">
+                <label for="auditoriaFechaDesde">
+                    Fecha desde
+                </label>
+
+                <input
+                    id="auditoriaFechaDesde"
+                    type="date"
+                    [(ngModel)]="filtro.fechaDesde">
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaFechaHasta">
+                    Fecha hasta
+                </label>
+
+                <input
+                    id="auditoriaFechaHasta"
+                    type="date"
+                    [(ngModel)]="filtro.fechaHasta">
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaUsuario">
+                    ID de usuaria
+                </label>
+
+                <input
+                    id="auditoriaUsuario"
+                    type="number"
+                    min="1"
+                    placeholder="Todos"
+                    [(ngModel)]="filtro.idUsuario">
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaAccion">
+                    Acción
+                </label>
+
+                <input
+                    id="auditoriaAccion"
+                    type="text"
+                    placeholder="Ej. MODIFICAR"
+                    [(ngModel)]="filtro.accion">
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaModulo">
+                    Tabla o módulo
+                </label>
+
+                <input
+                    id="auditoriaModulo"
+                    type="text"
+                    placeholder="Ej. servicio"
+                    [(ngModel)]="filtro.tablaAfectada">
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaTipo">
+                    Tipo de evento
+                </label>
+
+                <select
+                    id="auditoriaTipo"
+                    [(ngModel)]="filtro.tipoEvento">
+
+                    <option value="">Todos</option>
+                    <option value="CREACION">Creación</option>
+                    <option value="MODIFICACION">Modificación</option>
+                    <option value="CAMBIO_ESTADO">Cambio de estado</option>
+                    <option value="ELIMINACION">Eliminación</option>
+                    <option value="OPERACION">Operación</option>
+                    <option value="SEGURIDAD">Seguridad</option>
+                    <option value="SISTEMA">Sistema</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="auditoriaResultado">
+                    Resultado
+                </label>
+
+                <select
+                    id="auditoriaResultado"
+                    [(ngModel)]="filtro.resultado">
+
+                    <option value="">Todos</option>
+                    <option value="EXITO">Éxito</option>
+                    <option value="ERROR">Error</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="filtros-acciones">
+
+            <button
+                type="button"
+                class="btn-secundario"
+                [disabled]="cargando"
+                (click)="limpiarFiltros()">
+
+                <mat-icon>filter_alt_off</mat-icon>
+                Limpiar
+            </button>
+
+            <button
+                type="button"
+                class="btn-principal"
+                [disabled]="cargando"
+                (click)="aplicarFiltros()">
+
+                <mat-icon>search</mat-icon>
+                Aplicar filtros
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- LISTADO -->
+    <section class="auditoria-panel panel-listado">
+
+        <div class="panel-encabezado listado-encabezado">
+
+            <div>
+                <h2>Historial de actividad</h2>
+                <p>Eventos registrados por el sistema.</p>
+            </div>
+
+            <span class="contador-registros">
+                {{ totalRegistros }} registros
+            </span>
+
+        </div>
+
+        @if (error) {
+
+            <div class="estado-listado estado-error">
+                <mat-icon>error_outline</mat-icon>
+                <p>{{ error }}</p>
+            </div>
+
+        } @else if (cargando) {
+
+            <div class="estado-listado">
+                <mat-icon>hourglass_empty</mat-icon>
+                <p>Cargando registros...</p>
+            </div>
+
+        } @else if (registros.length === 0) {
+
+            <div class="estado-listado">
+                <mat-icon>history</mat-icon>
+
+                <h3>No hay registros para mostrar</h3>
+
+                <p>
+                    Todavía no se registraron eventos
+                    o no coinciden con los filtros.
+                </p>
+            </div>
+
+        } @else {
+
+            <div class="tabla-contenedor">
+
+                <table class="tabla-auditoria">
+
+                    <thead>
+                        <tr>
+                            <th>Fecha y hora</th>
+                            <th>Acción</th>
+                            <th>Módulo</th>
+                            <th>Responsable</th>
+                            <th>Resultado</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @for (
+                            registro of registros;
+                            track registro.idAuditoria
+                        ) {
+
+                            <tr>
+
+                                <td class="fecha-evento">
+                                    {{
+                                        registro.fechaHora
+                                            | date:'dd/MM/yyyy HH:mm:ss'
+                                    }}
+                                </td>
+
+                                <td>
+                                    <div class="accion-evento">
+
+                                        <strong>
+                                            {{
+                                                formatearAccion(
+                                                    registro.accion
+                                                )
+                                            }}
+                                        </strong>
+
+                                        <small>
+                                            {{ registro.tipoEvento }}
+                                        </small>
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="modulo-evento">
+                                        {{ registro.tablaAfectada }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="responsable-evento">
+
+                                        <strong>
+                                            {{
+                                                obtenerResponsable(
+                                                    registro
+                                                )
+                                            }}
+                                        </strong>
+
+                                        @if (registro.idUsuario) {
+                                            <small>
+                                                ID {{ registro.idUsuario }}
+                                            </small>
+                                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="estado-evento"
+                                        [class.exito]="registro.resultado === 'EXITO'"
+                                        [class.error]="registro.resultado === 'ERROR'">
+
+                                        {{ registro.resultado }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="btn-ver"
+                                        (click)="verDetalle(registro)">
+
+                                        <mat-icon>visibility</mat-icon>
+                                        Ver
+                                    </button>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <footer class="auditoria-paginacion">
+
+                <span>
+                    Página {{ paginaActual + 1 }}
+                    de {{ totalPaginas }}
+                </span>
+
+                <div class="paginacion-controles">
+
+                    <button
+                        type="button"
+                        class="btn-pagina"
+                        aria-label="Página anterior"
+                        [disabled]="paginaActual === 0 || cargando"
+                        (click)="cambiarPagina(paginaActual - 1)">
+
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+
+                    @for (pagina of paginas; track pagina) {
+
+                        <button
+                            type="button"
+                            class="btn-pagina"
+                            [class.activa]="paginaActual === pagina"
+                            [disabled]="cargando"
+                            (click)="cambiarPagina(pagina)">
+
+                            {{ pagina + 1 }}
+                        </button>
+                    }
+
+                    <button
+                        type="button"
+                        class="btn-pagina"
+                        aria-label="Página siguiente"
+                        [disabled]="paginaActual >= totalPaginas - 1 || cargando"
+                        (click)="cambiarPagina(paginaActual + 1)">
+
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+
+                </div>
+
+            </footer>
+
+        }
+
+    </section>
+
+    <!-- DETALLE DEL EVENTO -->
+    @if (registroSeleccionado; as registro) {
+
+        <div
+            class="auditoria-modal-overlay"
+            (click)="cerrarDetalle()">
+
+            <section
+                class="auditoria-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="tituloDetalleAuditoria"
+                (click)="$event.stopPropagation()">
+
+                <header class="modal-header">
+
+                    <div>
+                        <h2 id="tituloDetalleAuditoria">
+                            Detalle de auditoría
+                        </h2>
+
+                        <p>
+                            Registro #{{ registro.idAuditoria }}
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-cerrar"
+                        aria-label="Cerrar detalle"
+                        (click)="cerrarDetalle()">
+
+                        <mat-icon>close</mat-icon>
+                    </button>
+
+                </header>
+
+                <div class="modal-body">
+
+                    <div class="detalle-grid">
+
+                        <div class="detalle-campo">
+                            <span>Acción</span>
+                            <strong>{{ registro.accion }}</strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Fecha y hora</span>
+                            <strong>
+                                {{
+                                    registro.fechaHora
+                                        | date:'dd/MM/yyyy HH:mm:ss'
+                                }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Módulo</span>
+                            <strong>
+                                {{ registro.tablaAfectada }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>ID del registro afectado</span>
+                            <strong>
+                                {{ registro.idRegistro ?? '—' }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Responsable</span>
+                            <strong>
+                                {{ obtenerResponsable(registro) }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Rol registrado</span>
+                            <strong>
+                                {{ registro.rolUsuario || '—' }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Correo registrado</span>
+                            <strong>
+                                {{ registro.emailUsuario || '—' }}
+                            </strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Origen</span>
+                            <strong>{{ registro.origen }}</strong>
+                        </div>
+
+                        <div class="detalle-campo">
+                            <span>Resultado</span>
+                            <strong>{{ registro.resultado }}</strong>
+                        </div>
+
+                    </div>
+
+                    @if (registro.detalle) {
+
+                        <div class="detalle-descripcion">
+
+                            <h3>Descripción del evento</h3>
+
+                            <p>{{ registro.detalle }}</p>
+                        </div>
+
+                    }
+
+                    @if (cambiosSeleccionados.length > 0) {
+
+                        <section class="detalle-cambios">
+
+                            <h3>Modificaciones realizadas</h3>
+
+                            @for (
+                                cambio of cambiosSeleccionados;
+                                track cambio.campo
+                            ) {
+
+                                <div class="cambio-card">
+
+                                    <h4>{{ cambio.campo }}</h4>
+
+                                    <div class="comparacion-valores">
+
+                                        <div class="valor-anterior">
+                                            <span>Valor anterior</span>
+
+                                            <strong>
+                                                {{
+                                                    formatearValor(
+                                                        cambio.anterior
+                                                    )
+                                                }}
+                                            </strong>
+                                        </div>
+
+                                        <div class="valor-nuevo">
+                                            <span>Valor nuevo</span>
+
+                                            <strong>
+                                                {{
+                                                    formatearValor(
+                                                        cambio.nuevo
+                                                    )
+                                                }}
+                                            </strong>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            }
+
+                        </section>
+
+                    }
+
+                    @if (contextoSeleccionado.length > 0) {
+
+    <section class="detalle-cambios">
+
+        <h3>Información registrada</h3>
+
+        @for (
+            dato of contextoSeleccionado;
+            track dato.campo
+        ) {
+
+            <div class="cambio-card">
+
+                <h4>{{ dato.campo }}</h4>
+
+                <p>
+                    {{ formatearValor(dato.nuevo) }}
+                </p>
+
+            </div>
+        }
+
+    </section>
+}
+
+                </div>
+
+                <footer class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn-secundario"
+                        (click)="cerrarDetalle()">
+
+                        Cerrar
+                    </button>
+
+                </footer>
+
+            </section>
+        </div>
+
+    }
+
+</main>

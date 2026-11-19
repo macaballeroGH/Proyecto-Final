@@ -14,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ComparacionEstadisticaDTO;
@@ -41,20 +40,28 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class EstadisticasServiceImpl implements EstadisticasService {
 
-    @Autowired
-    private MovimientoFinanzasRepository movimientoFinanzasRepository;
+    private final MovimientoFinanzasRepository movimientoFinanzasRepository;
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    private final TurnoRepository turnoRepository;
 
-    @Autowired
-    private TurnoServicioRepository turnoServicioRepository;
+    private final TurnoServicioRepository turnoServicioRepository;
 
-    @Autowired
-    private CompraRepository compraRepository;
+    private final CompraRepository compraRepository;
 
-    @Autowired
-    private DetalleCompraRepository detalleCompraRepository;
+    private final DetalleCompraRepository detalleCompraRepository;
+
+    public EstadisticasServiceImpl(MovimientoFinanzasRepository movimientoFinanzasRepository, TurnoRepository turnoRepository,TurnoServicioRepository turnoServicioRepository, CompraRepository compraRepository, DetalleCompraRepository detalleCompraRepository){
+
+        this.movimientoFinanzasRepository = movimientoFinanzasRepository;
+
+        this.turnoRepository = turnoRepository;
+
+        this.turnoServicioRepository = turnoServicioRepository;
+
+        this.compraRepository = compraRepository;
+
+        this.detalleCompraRepository = detalleCompraRepository;
+    }
 
 
     //=======================
@@ -87,7 +94,7 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
         LocalDateTime fechaFin = fin.atTime(LocalTime.MAX);
 
-        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByFechaBetween(fechaInicio, fechaFin);
+        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByFechaGastoBetween(fechaInicio, fechaFin);
 
         BigDecimal total = BigDecimal.ZERO;
 
@@ -256,28 +263,13 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
         LocalDate fecha = filtro.getFechaInicio();
 
-        switch (filtro.getTipoPeriodo()) {
-
-            case SEMANA:
-
-                return fecha.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-            case MES:
-
-                return fecha.withDayOfMonth(1);
-
-            case ANIO:
-
-                return fecha.withDayOfYear(1);
-
-            case PERSONALIZADO:
-
-                return fecha;
-
-            default:
-
-                return fecha;
-        }
+        return switch (filtro.getTipoPeriodo()) {
+            case SEMANA -> fecha.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            case MES -> fecha.withDayOfMonth(1);
+            case ANIO -> fecha.withDayOfYear(1);
+            case PERSONALIZADO -> fecha;
+            default -> fecha;
+        };
     }
 
     //==========================
@@ -288,28 +280,13 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
         LocalDate fecha = filtro.getFechaInicio();
 
-        switch (filtro.getTipoPeriodo()) {
-
-            case SEMANA:
-
-                return fecha.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-
-            case MES:
-
-                return fecha.withDayOfMonth(fecha.lengthOfMonth());
-
-            case ANIO:
-
-                return fecha.withDayOfYear(fecha.lengthOfYear());
-
-            case PERSONALIZADO:
-
-                return filtro.getFechaFin();
-
-            default:
-
-                return filtro.getFechaFin();
-        }
+        return switch (filtro.getTipoPeriodo()) {
+            case SEMANA -> fecha.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+            case MES -> fecha.withDayOfMonth(fecha.lengthOfMonth());
+            case ANIO -> fecha.withDayOfYear(fecha.lengthOfYear());
+            case PERSONALIZADO -> filtro.getFechaFin();
+            default -> filtro.getFechaFin();
+        };
     }
 
     //==========================
@@ -342,17 +319,17 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
         LocalDateTime fechaFin = fin.atTime(LocalTime.MAX);
 
-        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByTipoMovimientoAndEstadoAndFechaBetween(TipoMovimientoEnums.INGRESO, EstadoMovimientoEnums.CONFIRMADO, fechaInicio, fechaFin);
+        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByTipoMovimientoAndEstadoAndFechaGastoBetween(TipoMovimientoEnums.INGRESO, EstadoMovimientoEnums.CONFIRMADO, fechaInicio, fechaFin);
 
         Map<String, BigDecimal> agrupados = inicializarPeriodos(inicio, fin, agruparPorMes);
 
         for (MovimientoFinanzasEntity movimiento : movimientos) {
 
-            if (movimiento.getFecha() == null || movimiento.getMonto() == null) {
+            if (movimiento.getFechaGasto() == null || movimiento.getMonto() == null) {
                 continue;
             }
 
-            String clave = obtenerClavePeriodo(movimiento.getFecha().toLocalDate(), agruparPorMes);
+            String clave = obtenerClavePeriodo(movimiento.getFechaGasto().toLocalDate(), agruparPorMes);
 
             if (agrupados.containsKey(clave)) {
 
@@ -534,27 +511,27 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
         switch (tipoPeriodo) {
 
-            case SEMANA:
-
+            case SEMANA -> {
                 return inicio.minusWeeks(1);
+            }
 
-            case MES:
-
+            case MES -> {
                 return inicio.minusMonths(1);
+            }
 
-            case ANIO:
-
+            case ANIO -> {
                 return inicio.minusYears(1);
+            }
 
-            case PERSONALIZADO:
-
+            case PERSONALIZADO -> {
                 long cantidadDias = ChronoUnit.DAYS.between(inicio, fin) + 1;
 
                 return inicio.minusDays(cantidadDias);
+            }
 
-            default:
-
+            default -> {
                 return inicio;
+            }
         }
     }
 
@@ -567,28 +544,13 @@ public class EstadisticasServiceImpl implements EstadisticasService {
             LocalDate fin,
             TipoPeriodoEstadisticaEnums tipoPeriodo) {
 
-        switch (tipoPeriodo) {
-
-            case SEMANA:
-
-                return fin.minusWeeks(1);
-
-            case MES:
-
-                return inicio.minusDays(1);
-
-            case ANIO:
-
-                return inicio.minusDays(1);
-
-            case PERSONALIZADO:
-
-                return inicio.minusDays(1);
-
-            default:
-
-                return fin;
-        }
+        return switch (tipoPeriodo) {
+            case SEMANA -> fin.minusWeeks(1);
+            case MES -> inicio.minusDays(1);
+            case ANIO -> inicio.minusDays(1);
+            case PERSONALIZADO -> inicio.minusDays(1);
+            default -> fin;
+        };
     }
 
     //==========================
@@ -623,7 +585,7 @@ public class EstadisticasServiceImpl implements EstadisticasService {
 
     private BigDecimal obtenerIngresosConfirmados(LocalDate inicio, LocalDate fin) {
 
-        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByTipoMovimientoAndEstadoAndFechaBetween(TipoMovimientoEnums.INGRESO, EstadoMovimientoEnums.CONFIRMADO, inicio.atStartOfDay(), fin.atTime(LocalTime.MAX));
+        List<MovimientoFinanzasEntity> movimientos = movimientoFinanzasRepository.findByTipoMovimientoAndEstadoAndFechaGastoBetween(TipoMovimientoEnums.INGRESO, EstadoMovimientoEnums.CONFIRMADO, inicio.atStartOfDay(), fin.atTime(LocalTime.MAX));
 
         BigDecimal total = BigDecimal.ZERO;
 

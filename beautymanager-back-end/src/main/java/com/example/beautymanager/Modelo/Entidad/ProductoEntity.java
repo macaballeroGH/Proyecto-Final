@@ -32,6 +32,9 @@ public class ProductoEntity {
     @Column(name = "descripcion", length = 1500)
     private String descripcion;
 
+    @Column(name = "foto", length = 225)
+    private String foto;
+
     @Column(name = "precio", nullable = false)
     private BigDecimal precio;
 

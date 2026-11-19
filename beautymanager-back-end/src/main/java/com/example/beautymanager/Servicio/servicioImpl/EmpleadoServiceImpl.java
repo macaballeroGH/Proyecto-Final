@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ import com.example.beautymanager.Modelo.DTO.ObtenerEmpleadoDTO;
 import com.example.beautymanager.Modelo.Entidad.EmpleadoEntity;
 import com.example.beautymanager.Modelo.Entidad.RolEntity;
 import com.example.beautymanager.Modelo.Entidad.UsuarioEntity;
+import com.example.beautymanager.Modelo.Enums.CarpetaArchivoEnums;
 import com.example.beautymanager.Modelo.Enums.EspecialidadEmpleadoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoEmpleadoEnums;
 import com.example.beautymanager.Modelo.Enums.EstadoUsuarioEnums;
@@ -21,6 +21,7 @@ import com.example.beautymanager.Modelo.Enums.RolesEnums;
 import com.example.beautymanager.Repositorio.EmpleadoRepository;
 import com.example.beautymanager.Repositorio.RolRepository;
 import com.example.beautymanager.Repositorio.UsuarioRepository;
+import com.example.beautymanager.Servicio.ArchivoService;
 import com.example.beautymanager.Servicio.EmpleadoService;
 import com.example.beautymanager.Servicio.HorarioEmpleadoService;
 import com.example.beautymanager.exception.BusinessException;
@@ -30,20 +31,32 @@ import jakarta.transaction.Transactional;
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepository empleadoRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private RolRepository rolRepository;
+    private final RolRepository rolRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private HorarioEmpleadoService horarioEmpleadoService;
+    private final HorarioEmpleadoService horarioEmpleadoService;
+
+    private final ArchivoService archivoService;
+
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder, HorarioEmpleadoService horarioEmpleadoService, ArchivoService archivoService){
+
+        this.empleadoRepository = empleadoRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.rolRepository = rolRepository;
+
+        this.passwordEncoder = passwordEncoder;
+
+        this.horarioEmpleadoService = horarioEmpleadoService;
+
+        this.archivoService = archivoService;
+    }
 
     //======================
     //Crear empleado
@@ -129,6 +142,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //Actualizar empleado
     //=======================
     @Override
+    @Transactional 
     public ObtenerEmpleadoDTO actualizarEmpleado(Long id, ActualizarEmpleadoDTO actualizarEmpleado) {
         
         EmpleadoEntity existente = empleadoRepository.findById(id)
@@ -143,21 +157,40 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         }
 
         if(actualizarEmpleado.getEstadoEmpleado() != null){
-            existente.setEstadoEmpleado(actualizarEmpleado.getEstadoEmpleado());
+            actualizarEstadoLaboral(existente, actualizarEmpleado.getEstadoEmpleado());
         }
 
         return toMap(empleadoRepository.save(existente));
+    }
+
+    private void actualizarEstadoLaboral(EmpleadoEntity empleado, EstadoEmpleadoEnums nuevoEstado){
+
+        if(empleado.getFechaBaja() != null){
+            throw new BusinessException("No se puede modificar el estado de un empleado dado de baja");
+        }
+
+        empleado.setEstadoEmpleado(nuevoEstado);
+
+        UsuarioEntity usuario = empleado.getUsuario();
+
+        if(nuevoEstado == EstadoEmpleadoEnums.INACTIVO){
+            usuario.setEstadoUsuario(EstadoUsuarioEnums.INACTIVO);
+        } else {
+            usuario.setEstadoUsuario(EstadoUsuarioEnums.ACTIVO);
+        }
     }
 
     //=======================
     //Eliminar empleado
     //=======================
     @Override
+    @Transactional 
     public void eliminarEmpleado(Long id){
+        
         EmpleadoEntity empleado = empleadoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+            .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
 
-        empleadoRepository.delete(empleado);
+        ejecutarBajaLogica(empleado);
     }
 
     //===========================
@@ -176,7 +209,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Override
     public List<ObtenerEmpleadoDTO> listarTodos(){
         
-        return empleadoRepository.findAll().stream().map(this::toMap).toList();
+        return empleadoRepository.findByFechaBajaIsNull().stream().map(this::toMap).toList();
     }
 
     //======================================
@@ -184,7 +217,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //======================================
     @Override
     public List<ObtenerEmpleadoDTO> buscarPorEspecialidad(EspecialidadEmpleadoEnums especialidad){
-        return empleadoRepository.findByEspecialidad(especialidad).stream().map(this::toMap).toList();
+        return empleadoRepository.findByEspecialidad(especialidad).stream().filter(empleado -> empleado.getFechaBaja() == null).map(this::toMap).toList();
     }
 
     //=============================
@@ -192,7 +225,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //=============================
     @Override
     public List<ObtenerEmpleadoDTO> buscarPorEstado(EstadoEmpleadoEnums estadoEmpleado){
-        return empleadoRepository.findByEstadoEmpleado(estadoEmpleado).stream().map(this::toMap).toList();
+        return empleadoRepository.findByEstadoEmpleado(estadoEmpleado).stream().filter(empleado -> empleado.getFechaBaja() == null).map(this::toMap).toList();
     }
 
     //===============================================
@@ -200,7 +233,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //===============================================
     @Override
     public List<ObtenerEmpleadoDTO> buscarPorEspecialidadAndEstado(EspecialidadEmpleadoEnums especialidad, EstadoEmpleadoEnums estadoEmpleado){
-        return empleadoRepository.findByEspecialidadAndEstadoEmpleado(especialidad, estadoEmpleado).stream().map(this::toMap).toList();
+        return empleadoRepository.findByEspecialidadAndEstadoEmpleado(especialidad, estadoEmpleado).stream().filter(empleado -> empleado.getFechaBaja() == null).map(this::toMap).toList();
     }
 
     //==============================
@@ -233,12 +266,17 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //Cambiar estado
     //=======================
     @Override
+    @Transactional 
     public ObtenerEmpleadoDTO cambiarEstado(Long idEmpleado, EstadoEmpleadoEnums nuevoEstado){
-        
+
+        if(nuevoEstado == null){
+            throw new BusinessException("El estado es obligatorio");
+        }
+
         EmpleadoEntity empleado = empleadoRepository.findById(idEmpleado)
-                .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
-        
-        empleado.setEstadoEmpleado(nuevoEstado);
+            .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+
+        actualizarEstadoLaboral(empleado, nuevoEstado);
 
         return toMap(empleadoRepository.save(empleado));
     }
@@ -246,18 +284,26 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //=============================
     //Dar de baja a un empleado
     //=============================
-    @Override 
+    @Override
+    @Transactional 
     public ObtenerEmpleadoDTO darDeBaja(Long idEmpleado){
 
         EmpleadoEntity empleado = empleadoRepository.findById(idEmpleado)
-                .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+            .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
+
+        return ejecutarBajaLogica(empleado);
+    }
+
+    private ObtenerEmpleadoDTO ejecutarBajaLogica(EmpleadoEntity empleado){
 
         empleado.setEstadoEmpleado(EstadoEmpleadoEnums.INACTIVO);
 
-        empleado.setFechaBaja(LocalDateTime.now());
+        if(empleado.getFechaBaja() == null){
+            empleado.setFechaBaja(LocalDateTime.now());
+        }
 
         UsuarioEntity usuario = empleado.getUsuario();
-        
+
         usuario.setEstadoUsuario(EstadoUsuarioEnums.INACTIVO);
 
         return toMap(empleadoRepository.save(empleado));
@@ -267,6 +313,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     //Reactivar un empleado
     //===========================
     @Override
+    @Transactional 
     public ObtenerEmpleadoDTO reactivarEmpleado(Long idEmpleado){
 
         EmpleadoEntity empleado = empleadoRepository.findById(idEmpleado)
@@ -287,7 +334,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Override
     public List<ObtenerEmpleadoDTO> empleadosActivos(){
 
-        return empleadoRepository.findByEstadoEmpleado(EstadoEmpleadoEnums.ACTIVO).stream().map(this::toMap).toList();
+         return empleadoRepository.findByEstadoEmpleado(EstadoEmpleadoEnums.ACTIVO).stream().filter(empleado -> empleado.getFechaBaja() == null).map(this::toMap).toList();
     }
 
     //==============================
@@ -332,6 +379,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         obtenerEmpleadoDTO.setApellido(empleado.getUsuario().getApellido());
         obtenerEmpleadoDTO.setEmail(empleado.getUsuario().getEmail());
         obtenerEmpleadoDTO.setTelefono(empleado.getUsuario().getTelefono());
+
+        String fotoPerfil = empleado.getUsuario().getFotoPerfil();
+
+        obtenerEmpleadoDTO.setFotoPerfil(fotoPerfil == null || fotoPerfil.isBlank() ? null : archivoService.obtenerRutaArchivo(fotoPerfil, CarpetaArchivoEnums.PERFILES));
+
         obtenerEmpleadoDTO.setEstadoUsuario(empleado.getUsuario().getEstadoUsuario());
 
         //===================

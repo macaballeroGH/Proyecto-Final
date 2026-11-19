@@ -2,7 +2,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,14 +20,20 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class UsuarioServiceImpl implements UsuarioService{
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ArchivoService archivoService;
+    private final ArchivoService archivoService;
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder, ArchivoService archivoService){
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.passwordEncoder = passwordEncoder;
+
+        this.archivoService = archivoService;
+    }
 
     @Override
     public List<ObtenerUsuarioDTO> findAllUsuario() {

@@ -9,7 +9,7 @@ public interface AuthService {
 
     LoginResponseDTO login(LoginDTO login);
 
-    ResponseDTO logout();
+    ResponseDTO logout(String token);
 
     UsuarioAutenticadoDTO obtenerUsuarioPorId(Long idUsuario);
 

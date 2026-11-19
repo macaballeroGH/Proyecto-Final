@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +20,20 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class RecuperacionPasswordServiceImpl implements RecuperacionPasswordService {
 
-    @Autowired
-    private RecuperacionPasswordRepository recuperacionPasswordRepository;
+    private final RecuperacionPasswordRepository recuperacionPasswordRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public RecuperacionPasswordServiceImpl(RecuperacionPasswordRepository recuperacionPasswordRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder){
+
+        this.recuperacionPasswordRepository = recuperacionPasswordRepository;
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.passwordEncoder = passwordEncoder;
+    }
 
     //========================================
     //Solicitar recuperacion de contraseña

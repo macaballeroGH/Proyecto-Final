@@ -3,7 +3,6 @@ package com.example.beautymanager.Controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,8 +26,11 @@ import com.example.beautymanager.Servicio.BloqueoAgendaService;
 @PreAuthorize("hasRole('ADMIN')")
 public class BloqueoAgendaController {
 
-    @Autowired
-    private BloqueoAgendaService bloqueoAgendaService;
+    private final BloqueoAgendaService bloqueoAgendaService;
+
+    public BloqueoAgendaController(BloqueoAgendaService bloqueoAgendaService){
+        this.bloqueoAgendaService = bloqueoAgendaService;
+    }
 
     //=======================
     //Crear bloqueo

@@ -2,9 +2,20 @@
     <nav>
         <ul>
             <li *ngFor="let item of menuItems">
-                <a [routerLink]="item.ruta">
+
+                <a
+                    *ngIf="item.ruta"
+                    [routerLink]="item.ruta">
                     {{ item.nombre }}
                 </a>
+
+                <button
+                    *ngIf="item.accion === 'logout'"
+                    type="button"
+                    (click)="cerrarSesion()">
+                    {{ item.nombre }}
+                </button>
+
             </li>
         </ul>
     </nav>

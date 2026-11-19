@@ -1,128 +1,241 @@
-<mat-card class="perfil-admin">
 
-    <div class="bienvenida">
-        <h1>Bienvenida, {{ usuario()?.nombre }}</h1>
-    </div>
+<main class="perfil-admin">
 
-    <div class="cabecera">
+    <header class="perfil-encabezado">
 
-        <div class="foto-card">
+        <div class="bienvenida">
+            <span class="perfil-sobretitulo">
+                BEAUTYMANAGER · ADMINISTRACIÓN
+            </span>
 
-            <img [src]="usuario()?.fotoPerfil ? 'http://localhost:8080/' + usuario()?.fotoPerfil : '/img/default-profile.jpg'" alt="Foto de perfil">
-
-            <input 
-                type="file" 
-                #archivoInput
-                hidden
-                accept="image/*"
-                (change)="cambiarFoto($event)"
-            >
-
-            <button mat-raised-button color="primary" (click)="archivoInput.click()">
-                Cambiar foto
-            </button>
-
-            <button
-                    mat-stroked-button
-                    color="warn"
-                    *ngIf="usuario()?.fotoPerfil"
-                    (click)="eliminarFoto()"
-            >
-                Eliminar foto
-            </button>
-        </div>
-
-        <div class="datos-card">
-
-            <h2>Datos del administrador</h2>
+            <h1>Mi perfil</h1>
 
             <p>
-                <strong>Nombre:</strong>
-                {{ usuario()?.nombre }} {{ usuario()?.apellido }}
-            </p>
-
-            <p>
-                <strong>Email:</strong>
-                {{ usuario()?.email }}
-            </p>
-
-            <p>
-                <strong>Rol:</strong>
-                {{ usuario()?.rol }}
-            </p>
-
-            <p>
-                <strong>Estado:</strong>
-                {{ usuario()?.estadoUsuario }}
-            </p>
-
-            <p>
-                <strong>Teléfono:</strong>
-                {{ usuario()?.telefono }}
+                Consultá tu información personal y accedé
+                a las herramientas de administración.
             </p>
         </div>
-    </div>
 
-    <div class="estadisticas-container">
-
-        <mat-card class="estadisticas-card">
-
-            <h3>Clientes</h3>
-
-            <span>0</span>
-        </mat-card>
-
-        <mat-card class="estadisticas-card">
-
-            <h3>Turnos</h3>
-
-            <span>0</span>
-        </mat-card>
-
-        <mat-card class="estadisticas-card">
-
-            <h3>Ventas</h3>
-
-            <span>$0</span>
-        </mat-card>
-
-        <mat-card class="estadisticas-card">
-
-            <h3>Empleados</h3>
-
-            <span>0</span>
-        </mat-card>
-    </div>
-
-    <div class="accesos">
-
-        <h2>Accesos rápidos</h2>
-
-        <div class="botones">
-
-            <button mat-raised-button>
-                Servicios
-            </button>
-
-            <button mat-raised-button>
-                Productos
-            </button>
-
-            <button mat-raised-button>
-                Empleados
-            </button>
-
-            <button mat-raised-button>
-                Compras
-            </button>
-
-            <button mat-raised-button>
-                Estadísticas
-            </button>
-
-            <button mat-raised-button>
-                Finanzas
-            </button>
+        <div class="perfil-identificador">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Administradora</span>
         </div>
-    </div>
-</mat-card>
+
+    </header>
+
+    @if (usuario(); as perfil) {
+
+        <section class="cabecera">
+
+            <!-- FOTO DE PERFIL -->
+            <mat-card class="foto-card">
+
+                <div class="foto-titulo">
+                    <h2>Foto de perfil</h2>
+                    <p>Imagen de tu cuenta</p>
+                </div>
+
+                <div class="foto-contenido">
+
+                    <div class="foto-marco">
+                        <img
+                            [src]="perfil.fotoPerfil
+                                ? 'http://localhost:8080/' + perfil.fotoPerfil
+                                : '/img/default-profile.jpg'"
+                            alt="Foto de perfil">
+                    </div>
+
+                    <h3>
+                        {{ perfil.nombre }} {{ perfil.apellido }}
+                    </h3>
+
+                    <span class="foto-rol">
+                        Administración
+                    </span>
+
+                </div>
+
+                <input
+                    type="file"
+                    #archivoInput
+                    hidden
+                    accept="image/*"
+                    (change)="cambiarFoto($event)">
+
+                <div class="foto-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-cambiar-foto"
+                        (click)="archivoInput.click()">
+
+                        <mat-icon>photo_camera</mat-icon>
+                        Cambiar foto
+                    </button>
+
+                    @if (perfil.fotoPerfil) {
+
+                        <button
+                            type="button"
+                            class="btn-eliminar-foto"
+                            (click)="eliminarFoto()">
+
+                            <mat-icon>delete_outline</mat-icon>
+                            Eliminar foto
+                        </button>
+
+                    }
+
+                </div>
+
+            </mat-card>
+
+            <!-- DATOS PERSONALES -->
+            <mat-card class="datos-card">
+
+                <div class="datos-encabezado">
+
+                    <div>
+                        <h2>Datos personales</h2>
+
+                        <p>
+                            Información asociada a tu cuenta
+                            de BeautyManager.
+                        </p>
+                    </div>
+
+                    <div class="datos-icono">
+                        <mat-icon>person_outline</mat-icon>
+                    </div>
+
+                </div>
+
+                <div class="datos-grid">
+
+                    <div class="dato-item">
+                        <span class="dato-etiqueta">
+                            Nombre completo
+                        </span>
+
+                        <strong>
+                            {{ perfil.nombre }} {{ perfil.apellido }}
+                        </strong>
+                    </div>
+
+                    <div class="dato-item">
+                        <span class="dato-etiqueta">
+                            Correo electrónico
+                        </span>
+
+                        <strong>
+                            {{ perfil.email }}
+                        </strong>
+                    </div>
+
+                    <div class="dato-item">
+                        <span class="dato-etiqueta">
+                            Teléfono
+                        </span>
+
+                        <strong>
+                            {{ perfil.telefono || 'No registrado' }}
+                        </strong>
+                    </div>
+
+                    <div class="dato-item">
+                        <span class="dato-etiqueta">
+                            Rol
+                        </span>
+
+                        <strong>
+                            {{ perfil.rol }}
+                        </strong>
+                    </div>
+
+                    <div class="dato-item dato-estado">
+                        <span class="dato-etiqueta">
+                            Estado de la cuenta
+                        </span>
+
+                        <span
+                            class="estado-cuenta"
+                            [class.estado-activo]="perfil.estadoUsuario === 'ACTIVO'"
+                            [class.estado-inactivo]="perfil.estadoUsuario === 'INACTIVO'">
+
+                            <span class="estado-punto"></span>
+
+                            {{ perfil.estadoUsuario }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </mat-card>
+
+        </section>
+
+        <!-- SEGURIDAD Y AUDITORÍA -->
+        <section
+            class="perfil-seguridad"
+            aria-labelledby="tituloSeguridad">
+
+            <div class="seguridad-encabezado">
+
+                <h2 id="tituloSeguridad">
+                    Seguridad y auditoría
+                </h2>
+
+                <p>
+                    Herramientas exclusivas de administración
+                    y control del sistema.
+                </p>
+
+            </div>
+
+            <div class="auditoria-acceso">
+
+                <div class="auditoria-icono">
+                    <mat-icon>shield</mat-icon>
+                </div>
+
+                <div class="auditoria-informacion">
+
+                    <h3>Auditoría del sistema</h3>
+
+                    <p>
+                        Consultá el historial de acciones y
+                        modificaciones registradas en BeautyManager.
+                        Un espacio exclusivo para supervisar
+                        la actividad del sistema.
+                    </p>
+
+                    <span class="auditoria-aclaracion">
+                        <mat-icon>lock_outline</mat-icon>
+                        Acceso exclusivo de administración
+                    </span>
+
+                </div>
+
+                <a
+                    class="btn-auditoria"
+                    routerLink="/admin/auditoria">
+
+                    Ver auditoría
+
+                    <mat-icon>arrow_forward</mat-icon>
+                </a>
+
+            </div>
+
+        </section>
+
+    } @else {
+
+        <div class="perfil-cargando">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Cargando información del perfil...</p>
+        </div>
+
+    }
+
+</main>

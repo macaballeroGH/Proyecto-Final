@@ -36,7 +36,10 @@ import { ClienteLayout } from "./layouts/cliente-layout/cliente-layout/cliente-l
 import { HistorialTratamientos } from "./features/clientes/historial-tratamientos/historial-tratamientos";
 import { Notificaciones } from "./features/clientes/notificaciones/notificaciones";
 import { EmpleadoLayout } from "./layouts/empleado-layout/empleado-layout/empleado-layout";
-import { Tratamientos } from "./features/empleados/tratamientos/tratamientos";
+import { TratamientosEmpleado } from "./features/empleados/tratamientos/tratamientos";
+import { CategoriaAdmin } from "./features/admin/categoria/categoria";
+import { ServiciosAdmin } from "./features/admin/servicios/servicios";
+import { AuditoriaAdmin } from "./features/admin/auditoria/auditoria";
 
 export const routes: Routes = [
     {
@@ -92,8 +95,20 @@ export const routes: Routes = [
                         component: InicioAdmin
                     },
                     {
+                        path: 'categorias',
+                        component: CategoriaAdmin
+                    },
+                    {
+                        path: 'servicios',
+                        component: ServiciosAdmin
+                    },
+                    {
                         path: 'perfil',
                         component: PerfilAdmin
+                    },
+                    {
+                        path: 'auditoria',
+                        component: AuditoriaAdmin
                     },
                     {
                         path: 'agenda',
@@ -191,7 +206,7 @@ export const routes: Routes = [
                     },
                     {
                         path: 'tratamientos',
-                        component: Tratamientos
+                        component: TratamientosEmpleado
                     }
                 ]
             }

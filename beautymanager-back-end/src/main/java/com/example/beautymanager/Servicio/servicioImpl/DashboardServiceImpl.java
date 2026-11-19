@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ObtenerDashboardDTO;
@@ -18,20 +17,28 @@ import com.example.beautymanager.Servicio.DashboardService;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepository empleadoRepository;
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
 
-    @Autowired
-    private CompraRepository compraRepository;
+    private final CompraRepository compraRepository;
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    private final TurnoRepository turnoRepository;
+
+    public DashboardServiceImpl(ClienteRepository clienteRepository, EmpleadoRepository empleadoRepository, ProductoRepository productoRepository, CompraRepository compraRepository, TurnoRepository turnoRepository){
+
+        this.clienteRepository = clienteRepository;
+
+        this.empleadoRepository = empleadoRepository;
+
+        this.productoRepository = productoRepository;
+
+        this.compraRepository = compraRepository;
+
+        this.turnoRepository = turnoRepository;
+    }
 
     @Override
     public ObtenerDashboardDTO obtenerDashboard() {

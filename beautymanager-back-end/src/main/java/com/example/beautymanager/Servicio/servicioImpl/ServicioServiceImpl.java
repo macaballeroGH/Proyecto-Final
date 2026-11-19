@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarServicioDTO;
@@ -20,11 +19,16 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class ServicioServiceImpl implements ServicioService {
 
-    @Autowired
-    private ServicioRepository servicioRepository;
+    private final ServicioRepository servicioRepository;
 
-    @Autowired
-    private CategoriaServicioRepository categoriaServicioRepository;
+    private final CategoriaServicioRepository categoriaServicioRepository;
+
+    public ServicioServiceImpl(ServicioRepository servicioRepository, CategoriaServicioRepository categoriaServicioRepository){
+
+        this.servicioRepository = servicioRepository;
+
+        this.categoriaServicioRepository = categoriaServicioRepository;
+    }
 
     //===================
     //Crear servicio

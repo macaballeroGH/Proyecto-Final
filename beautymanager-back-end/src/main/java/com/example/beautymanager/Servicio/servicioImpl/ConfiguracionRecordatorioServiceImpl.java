@@ -1,6 +1,5 @@
 package com.example.beautymanager.Servicio.servicioImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarConfiguracionRecordatorioDTO;
@@ -15,11 +14,16 @@ import com.example.beautymanager.exception.BusinessException;
 @Service
 public class ConfiguracionRecordatorioServiceImpl implements ConfiguracionRecordatorioService{
 
-    @Autowired
-    private ConfiguracionRecordatorioRepository configuracionRepository;
+    private final ConfiguracionRecordatorioRepository configuracionRepository;
 
-    @Autowired
-    private RecordatorioService recordatorioService;
+    private final RecordatorioService recordatorioService;
+
+    public ConfiguracionRecordatorioServiceImpl(ConfiguracionRecordatorioRepository configuracionRepository, RecordatorioService recordatorioService){
+
+        this.configuracionRepository = configuracionRepository;
+
+        this.recordatorioService = recordatorioService;
+    }
 
     //=======================
     //Crear Configuracion
@@ -45,7 +49,11 @@ public class ConfiguracionRecordatorioServiceImpl implements ConfiguracionRecord
         configuracion.setPrimerRecordatorioHoras(crearConfiguracion.getPrimerRecordatorioHoras());
         configuracion.setSegundoRecordatorioHoras(crearConfiguracion.getSegundoRecordatorioHoras());
 
-        return toMap(configuracionRepository.save(configuracion));
+        ConfiguracionRecordatorioEntity guardada = configuracionRepository.save(configuracion);
+
+        recordatorioService.reprogramarRecordatoriosFuturos();
+
+        return toMap(guardada);
     }
 
     //=======================

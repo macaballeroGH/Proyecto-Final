@@ -31,9 +31,43 @@ public interface TurnoRepository extends JpaRepository<TurnoEntity, Long> {
     @Query("SELECT DISTINCT t FROM TurnoEntity t JOIN t.servicios ts WHERE ts.servicio.id = :idServicio AND t.fechaHoraInicio BETWEEN :inicio AND :fin")
     List<TurnoEntity> findByServicioIdAndFechaHoraInicioBetween(@Param("idServicio") Long idServicio, @Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 
+    List<TurnoEntity> findByReservaId(Long idReserva);
+
     List<TurnoEntity> findByEstadoTurnoAndFechaHoraInicioBetween(EstadoTurnoEnums estadoTurno, LocalDateTime inicio, LocalDateTime fin);
 
     List<TurnoEntity> findByEmpleadoIdAndFechaHoraInicioLessThanAndFechaHoraFinGreaterThan(Long idEmpleado, LocalDateTime inicio, LocalDateTime fin);
 
     List<TurnoEntity> findByClienteIdAndFechaHoraInicioLessThanAndFechaHoraFinGreaterThan(Long idCliente, LocalDateTime inicio, LocalDateTime fin);
+
+    List<TurnoEntity>
+        findByEmpleadoIdAndIdNotAndFechaHoraInicioLessThanAndFechaHoraFinGreaterThan(
+            Long idEmpleado,
+            Long idTurno,
+            LocalDateTime fin,
+            LocalDateTime inicio
+        );
+
+    List<TurnoEntity>
+        findByClienteIdAndIdNotAndFechaHoraInicioLessThanAndFechaHoraFinGreaterThan(
+            Long idCliente,
+            Long idTurno,
+            LocalDateTime fin,
+            LocalDateTime inicio
+        );
+
+    @Query("""
+        SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END
+        FROM TurnoEntity t
+        WHERE t.empleado.id = :idEmpleado
+          AND t.cliente.id = :idCliente
+          AND t.estadoTurno IN :estadosPermitidos
+          AND t.fechaHoraFin >= :fechaActual
+    """)
+    boolean existeTurnoVigenteEntreEmpleadoYCliente(
+        @Param("idEmpleado") Long idEmpleado,
+        @Param("idCliente") Long idCliente,
+        @Param("estadosPermitidos") List<EstadoTurnoEnums> estadosPermitidos,
+        @Param("fechaActual") LocalDateTime fechaActual
+    );
+
 }

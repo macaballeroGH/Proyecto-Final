@@ -228,20 +228,130 @@
             </section>
 
             <section class="detalle-seccion">
+                
                 <h3>Servicios realizados</h3>
 
-                @if (tratamientoSeleccionado.servicios && tratamientoSeleccionado.servicios.length > 0) {
-                    <ul class="servicios-lista">
-                        @for (servicio of tratamientoSeleccionado.servicios; track servicio) {
-                            <li>{{ servicio }}</li>
-                        }
-                    </ul>
-                } @else {
-                    <p class="texto-secundario">
-                        No hay servicios registrados.
-                    </p>
-                }
+    @if (
+        tratamientoSeleccionado.serviciosRealizados &&
+        tratamientoSeleccionado.serviciosRealizados.length > 0
+    ) {
+
+        <ul class="servicios-lista">
+
+            @for (
+                servicio of tratamientoSeleccionado.serviciosRealizados;
+                track servicio.idHistorialServicio
+            ) {
+
+                <li>
+
+                    <strong>
+                        {{ servicio.nombreServicioRealizado }}
+                    </strong>
+
+                    <!-- Servicio adicional -->
+
+                    @if (servicio.idTurnoServicioReservado === null) {
+
+                        <p class="texto-secundario">
+                            Servicio adicional incorporado durante la atención.
+                        </p>
+
+                    }
+
+                    <!-- Servicio reemplazado -->
+
+                    @else if (
+                        servicio.idServicioReservado !==
+                        servicio.idServicioRealizado
+                    ) {
+
+                        <p class="texto-secundario">
+                            Servicio originalmente reservado:
+                            {{ servicio.nombreServicioReservado }}
+                        </p>
+
+                    }
+
+                    <!-- Motivo del cambio -->
+
+                    @if (servicio.motivoCambio) {
+
+                        <p class="detalle-texto">
+                            <strong>Motivo:</strong>
+                            {{ servicio.motivoCambio }}
+                        </p>
+
+                    }
+
+                </li>
+
+            }
+
+        </ul>
+
+    } @else {
+
+        <p class="texto-secundario">
+            No hay detalles de los servicios efectivamente realizados.
+        </p>
+
+        @if (
+            tratamientoSeleccionado.servicios &&
+            tratamientoSeleccionado.servicios.length > 0
+        ) {
+
+            <p class="texto-secundario">
+                Servicios originalmente reservados:
+                {{ tratamientoSeleccionado.servicios.join(', ') }}
+            </p>
+
+        }
+
+    }
             </section>
+
+            <section class="detalle-seccion">
+
+    <h3>Resultado del tratamiento</h3>
+
+    @switch (tratamientoSeleccionado.resultadoTratamiento) {
+
+        @case ('FINALIZADO_CON_EXITO') {
+
+            <p class="detalle-dato">
+                Finalizado con éxito
+            </p>
+
+        }
+
+        @case ('FINALIZADO_CON_OBSERVACIONES') {
+
+            <p class="detalle-dato">
+                Finalizado con observaciones
+            </p>
+
+        }
+
+        @case ('CLIENTE_NO_CONFORME') {
+
+            <p class="detalle-dato">
+                Clienta no conforme
+            </p>
+
+        }
+
+        @default {
+
+            <p class="texto-secundario">
+                Sin resultado registrado.
+            </p>
+
+        }
+
+    }
+
+</section>
 
             <section class="detalle-seccion">
                 <h3>Categorías</h3>

@@ -115,12 +115,32 @@
 
                     <article class="cliente-card" (click)="abrirHistorial(cliente)" tabindex="0" role="button"[attr.aria-label]="'Ver historial de ' + obtenerNombreCompletoCliente(cliente)">
 
-                        <div class="cliente-avatar">
+                        
+<div class="cliente-avatar">
 
-                            <div class="avatar-placeholder">
-                                {{ cliente.nombreCliente.charAt(0) }}{{ cliente.apellidoCliente.charAt(0) }}
-                            </div>
-                        </div>
+    <div class="avatar-placeholder">
+        {{ cliente.nombreCliente.charAt(0) }}{{ cliente.apellidoCliente.charAt(0) }}
+    </div>
+
+    @if (cliente.fotoPerfil && !fotosConError.has(cliente.idCliente)) {
+
+        <img
+            class="avatar-foto"
+            [src]="obtenerFotoPerfilUrl(cliente.fotoPerfil)"
+            [alt]="'Foto de perfil de ' + obtenerNombreCompletoCliente(cliente)"
+            (error)="registrarErrorFoto(cliente.idCliente)"
+        >
+
+    } @else {
+
+        <img
+            class="avatar-foto"
+            src="/img/default-profile.jpg"
+            alt="Fotografía de perfil predeterminada"
+        >
+    }
+</div>
+
 
                         <div class="cliente-info">
 
@@ -177,7 +197,7 @@
 
                         <span>Mostrando</span>
 
-                        <strong>{{ indiceInicio }}{{ indiceFin }}</strong>
+                        <strong>{{ indiceInicio }}-{{ indiceFin }}</strong>
 
                         <span>de</span>
 
@@ -336,13 +356,37 @@
 
                     <div class="cliente-modal-info">
 
-                        <div class="cliente-avatar modal-avatar">
+                        
+<div class="cliente-avatar modal-avatar">
 
-                            <div class="avatar-placeholder">
+    <div class="avatar-placeholder">
+        {{ clienteSeleccionado.nombreCliente.charAt(0) }}{{ clienteSeleccionado.apellidoCliente.charAt(0) }}
+    </div>
 
-                                {{ clienteSeleccionado.nombreCliente.charAt(0)}}{{ clienteSeleccionado.apellidoCliente.charAt(0) }}
-                            </div>
-                        </div>
+    @if (
+        clienteSeleccionado.fotoPerfil &&
+        !fotosConError.has(clienteSeleccionado.idCliente)
+    ) {
+
+        <img
+            class="avatar-foto"
+            [src]="obtenerFotoPerfilUrl(clienteSeleccionado.fotoPerfil)"
+            [alt]="'Foto de perfil de ' + obtenerNombreCompletoCliente(clienteSeleccionado)"
+            (error)="registrarErrorFoto(clienteSeleccionado.idCliente)"
+        >
+
+    } @else {
+
+        <img
+            class="avatar-foto"
+            src="/img/default-profile.jpg"
+            alt="Fotografía de perfil predeterminada"
+        >
+
+    }
+
+</div>
+
 
                         <div class="cliente-modal-datos">
 
@@ -517,6 +561,152 @@
                                         }
 
                                     </div>
+
+                                    <section class="tratamiento-observacion">
+
+                                        <div class="observacion-header">
+
+                                            <mat-icon>fact_check</mat-icon>
+
+                                            <span>Resultado del tratamiento</span>
+
+                                        </div>
+
+                                        <p>
+                                            {{
+                                                obtenerResultadoTratamiento(tratamiento.resultadoTratamiento)
+                                            }}
+                                        </p>
+
+                                    </section>
+
+
+<!-- ======================================== -->
+<!-- DETALLE DE SERVICIOS REALIZADOS         -->
+<!-- ======================================== -->
+
+@if (
+    tratamiento.serviciosRealizados &&
+    tratamiento.serviciosRealizados.length > 0
+) {
+
+    <section class="tratamiento-observacion">
+
+        <div class="observacion-header">
+
+            <mat-icon>spa</mat-icon>
+
+            <span>Detalle de servicios realizados</span>
+
+        </div>
+
+        @if (tieneCambiosServicios(tratamiento)) {
+
+            <p class="texto-secundario">
+                Durante esta atención se registraron
+                modificaciones en los servicios.
+            </p>
+
+        }
+
+        @for (
+            servicio of tratamiento.serviciosRealizados;
+            track servicio.idHistorialServicio
+        ) {
+
+            <div class="tratamiento-dato">
+
+                <div class="dato-icono">
+
+                    <mat-icon>
+                        check_circle_outline
+                    </mat-icon>
+
+                </div>
+
+                <div class="dato-contenido">
+
+                    <!-- Servicio realizado -->
+
+                    <span class="dato-label">
+                        Servicio realizado
+                    </span>
+
+                    <span class="dato-valor">
+                        {{ servicio.nombreServicioRealizado }}
+                    </span>
+
+                    <!-- Servicio adicional -->
+
+                    @if (
+                        servicio.idTurnoServicioReservado === null
+                    ) {
+
+                        <span class="dato-label">
+                            Servicio adicional incorporado
+                            durante la atención
+                        </span>
+
+                    }
+
+                    <!-- Servicio reemplazado -->
+
+                    @else if (
+                        servicio.idServicioReservado !==
+                        servicio.idServicioRealizado
+                    ) {
+
+                        <span class="dato-label">
+                            Servicio originalmente reservado
+                        </span>
+
+                        <span class="dato-valor">
+                            {{ servicio.nombreServicioReservado }}
+                        </span>
+
+                    }
+
+                    <!-- Motivo del cambio -->
+
+                    @if (servicio.motivoCambio) {
+
+                        <span class="dato-label">
+                            Motivo del cambio o incorporación
+                        </span>
+
+                        <span class="dato-valor">
+                            {{ servicio.motivoCambio }}
+                        </span>
+
+                    }
+
+                    <!-- Fecha de la modificación -->
+
+                    @if (servicio.fechaCambio) {
+
+                        <span class="dato-label">
+                            Fecha de modificación
+                        </span>
+
+                        <span class="dato-valor">
+                            {{
+                                servicio.fechaCambio
+                                    | date:'dd/MM/yyyy HH:mm'
+                            }}
+                        </span>
+
+                    }
+
+                </div>
+
+            </div>
+
+        }
+
+    </section>
+
+}
+
 
                                     @if (tieneObservacion(tratamiento)) {
 

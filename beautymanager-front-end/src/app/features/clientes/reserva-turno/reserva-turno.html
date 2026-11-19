@@ -1,1 +1,1205 @@
-<p>reserva-turno works!</p>
+<div class="reserva-container">
+
+    <!-- ======================================== -->
+    <!-- ENCABEZADO                               -->
+    <!-- ======================================== -->
+
+    <header class="reserva-header">
+
+        <div class="reserva-header-info">
+
+            <button
+                type="button"
+                class="btn-volver"
+                (click)="volverAgenda()"
+                aria-label="Volver a la agenda">
+
+                <mat-icon>arrow_back</mat-icon>
+
+            </button>
+
+            <div class="reserva-titulo">
+
+                <h1>Reservar turno</h1>
+
+                <p>Elegí tus tratamientos y organizá tu visita</p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- INDICADOR DE PASOS                       -->
+    <!-- ======================================== -->
+
+    <section class="reserva-pasos">
+
+        <div
+            class="reserva-paso"
+            [class.activo]="pasoActual === 1"
+            [class.completado]="pasoActual > 1">
+
+            <span class="paso-numero">1</span>
+
+            <div class="paso-informacion">
+
+                <strong>Servicios</strong>
+
+                <small>Elegí tus tratamientos</small>
+
+            </div>
+
+        </div>
+
+        <div class="paso-conector"></div>
+
+        <div
+            class="reserva-paso"
+            [class.activo]="pasoActual === 2"
+            [class.completado]="pasoActual > 2">
+
+            <span class="paso-numero">2</span>
+
+            <div class="paso-informacion">
+
+                <strong>Empleadas</strong>
+
+                <small>Asignación y horarios</small>
+
+            </div>
+
+        </div>
+
+        <div class="paso-conector"></div>
+
+        <div
+            class="reserva-paso"
+            [class.activo]="pasoActual === 3">
+
+            <span class="paso-numero">3</span>
+
+            <div class="paso-informacion">
+
+                <strong>Confirmación</strong>
+
+                <small>Revisá tu reserva</small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- VALIDACION DE FECHA Y HORA               -->
+    <!-- ======================================== -->
+
+    @if (errorHorario) {
+
+        <div class="reserva-mensaje-error">
+
+            <mat-icon>error_outline</mat-icon>
+
+            <div>
+
+                <h3>No se puede continuar con la reserva</h3>
+
+                <p>{{ errorHorario }}</p>
+
+                <button
+                    type="button"
+                    class="btn-volver-agenda"
+                    (click)="volverAgenda()">
+
+                    Seleccionar otro horario
+
+                </button>
+
+            </div>
+
+        </div>
+
+    }
+    @else {
+
+        <!-- ======================================== -->
+        <!-- HORARIO SELECCIONADO                     -->
+        <!-- ======================================== -->
+
+        <section class="reserva-horario">
+
+            <div class="reserva-horario-icono">
+
+                <mat-icon>event_available</mat-icon>
+
+            </div>
+
+            <div class="reserva-horario-informacion">
+
+                <span>Horario seleccionado</span>
+
+                <strong>
+                    {{ fechaLegible | titlecase }}
+                </strong>
+
+                <p>
+                    <mat-icon>schedule</mat-icon>
+
+                    {{ hora }} hs
+                </p>
+
+            </div>
+
+            <div class="reserva-horario-etiqueta">
+
+                Inicio de tu reserva
+
+            </div>
+
+        </section>
+
+
+        <!-- ======================================== -->
+        <!-- PASO 1: SELECCIONAR SERVICIOS            -->
+        <!-- ======================================== -->
+
+        @if (pasoActual === 1) {
+
+            <div class="reserva-contenido">
+
+                <!-- CATALOGO DE SERVICIOS -->
+                <section class="reserva-servicios-panel">
+
+                    <div class="reserva-seccion-header">
+
+                        <div>
+
+                            <h2>Seleccioná tus servicios</h2>
+
+                            <p>
+                                Podés elegir uno o varios tratamientos
+                                para tu visita.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUSCADOR -->
+                    <div class="reserva-buscador">
+
+                        <mat-icon>search</mat-icon>
+
+                        <input
+                            type="search"
+                            name="buscarServicio"
+                            placeholder="Buscar servicios o categorías..."
+                            aria-label="Buscar servicios"
+                            [(ngModel)]="textoBusqueda">
+
+                    </div>
+
+
+                    <!-- CARGANDO -->
+                    @if (cargandoServicios) {
+
+                        <div class="reserva-estado-vacio">
+
+                            <mat-icon>hourglass_empty</mat-icon>
+
+                            <h3>Cargando tratamientos</h3>
+
+                            <p>
+                                Estamos consultando los servicios disponibles.
+                            </p>
+
+                        </div>
+
+                    }
+                    @else if (errorCarga) {
+
+                        <div class="reserva-estado-vacio error">
+
+                            <mat-icon>error_outline</mat-icon>
+
+                            <h3>No se pudieron cargar los servicios</h3>
+
+                            <p>{{ errorCarga }}</p>
+
+                            <button
+                                type="button"
+                                class="btn-reintentar"
+                                (click)="cargarServicios()">
+
+                                Reintentar
+
+                            </button>
+
+                        </div>
+
+                    }
+                    @else if (gruposServicios.length === 0) {
+
+                        <div class="reserva-estado-vacio">
+
+                            <mat-icon>spa</mat-icon>
+
+                            <h3>No hay servicios disponibles</h3>
+
+                            <p>
+                                Actualmente no hay tratamientos activos
+                                en categorías disponibles.
+                            </p>
+
+                        </div>
+
+                    }
+                    @else {
+
+                        <!-- SERVICIOS AGRUPADOS POR CATEGORIA -->
+                        <div class="reserva-grupos">
+
+                            @for (grupo of gruposServicios; track grupo.idCategoria) {
+
+                                @if (obtenerServiciosFiltrados(grupo).length > 0) {
+
+                                    <section class="reserva-grupo">
+
+                                        <div class="reserva-grupo-header">
+
+                                            <div class="reserva-grupo-icono">
+
+                                                <mat-icon>category</mat-icon>
+
+                                            </div>
+
+                                            <div>
+
+                                                <h3>{{ grupo.nombreCategoria }}</h3>
+
+                                                <span>
+                                                    {{ obtenerServiciosFiltrados(grupo).length }}
+                                                    servicios
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- TARJETAS DE SERVICIOS -->
+                                        <div class="reserva-servicios-lista">
+
+                                            @for (
+                                                servicio of obtenerServiciosFiltrados(grupo);
+                                                track servicio.id
+                                            ) {
+
+                                                <button
+                                                    type="button"
+                                                    class="reserva-servicio-card"
+                                                    [class.seleccionado]="estaSeleccionado(servicio.id)"
+                                                    [attr.aria-pressed]="estaSeleccionado(servicio.id)"
+                                                    (click)="alternarServicio(servicio.id)">
+
+                                                    <div class="servicio-card-informacion">
+
+                                                        <strong>
+                                                            {{ servicio.nombre }}
+                                                        </strong>
+
+                                                        @if (servicio.descripcion) {
+
+                                                            <p>
+                                                                {{ servicio.descripcion }}
+                                                            </p>
+
+                                                        }
+
+                                                        <div class="servicio-card-detalles">
+
+                                                            <span>
+
+                                                                <mat-icon>schedule</mat-icon>
+
+                                                                {{ servicio.duracionMinutos }} min
+
+                                                            </span>
+
+                                                            <span class="servicio-card-precio">
+
+                                                                $ {{ servicio.precio | number:'1.2-2' }}
+
+                                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <div class="servicio-card-seleccion">
+
+                                                        <mat-icon>
+                                                            {{ estaSeleccionado(servicio.id)
+                                                                ? 'check_circle'
+                                                                : 'add_circle_outline' }}
+                                                        </mat-icon>
+
+                                                    </div>
+
+                                                </button>
+
+                                            }
+
+                                        </div>
+
+                                    </section>
+
+                                }
+
+                            }
+
+                        </div>
+
+                    }
+
+                </section>
+
+
+                <!-- ======================================== -->
+                <!-- RESUMEN DE SERVICIOS                     -->
+                <!-- ======================================== -->
+
+                <aside class="reserva-resumen-panel">
+
+                    <div class="reserva-resumen-header">
+
+                        <mat-icon>receipt_long</mat-icon>
+
+                        <h2>Tu reserva</h2>
+
+                    </div>
+
+
+                    <!-- FECHA -->
+                    <div class="reserva-resumen-fecha">
+
+                        <span>Fecha y hora</span>
+
+                        <strong>
+                            {{ fechaLegible | titlecase }}
+                        </strong>
+
+                        <p>{{ hora }} hs</p>
+
+                    </div>
+
+
+                    <div class="reserva-resumen-divisor"></div>
+
+
+                    <!-- SERVICIOS ELEGIDOS -->
+                    <div class="reserva-resumen-servicios">
+
+                        <h3>Servicios seleccionados</h3>
+
+                        @if (cantidadServicios === 0) {
+
+                            <div class="reserva-resumen-vacio">
+
+                                <mat-icon>spa</mat-icon>
+
+                                <p>
+                                    Todavía no seleccionaste ningún servicio.
+                                </p>
+
+                            </div>
+
+                        }
+                        @else {
+
+                            @for (servicio of serviciosSeleccionados; track servicio.id) {
+
+                                <div class="reserva-resumen-item">
+
+                                    <div>
+
+                                        <strong>
+                                            {{ servicio.nombre }}
+                                        </strong>
+
+                                        <small>
+                                            {{ servicio.duracionMinutos }} min
+                                        </small>
+
+                                    </div>
+
+                                    <span>
+                                        $ {{ servicio.precio | number:'1.2-2' }}
+                                    </span>
+
+                                </div>
+
+                            }
+
+                        }
+
+                    </div>
+
+
+                    <div class="reserva-resumen-divisor"></div>
+
+
+                    <!-- TOTALES -->
+                    <div class="reserva-resumen-totales">
+
+                        <div>
+
+                            <span>Servicios</span>
+
+                            <strong>{{ cantidadServicios }}</strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>Duración total</span>
+
+                            <strong>{{ duracionTotal }} min</strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="reserva-resumen-precio">
+
+                        <span>Precio total</span>
+
+                        <strong>
+                            $ {{ precioTotal | number:'1.2-2' }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- CONTINUAR -->
+                    <button
+                        type="button"
+                        class="btn-continuar-reserva"
+                        (click)="continuar()"
+                        [disabled]="!puedeContinuar()">
+
+                        Continuar
+
+                        <mat-icon>arrow_forward</mat-icon>
+
+                    </button>
+
+                </aside>
+
+            </div>
+
+        }
+
+
+        <!-- ======================================== -->
+        <!-- PASO 2: EMPLEADAS Y HORARIOS            -->
+        <!-- ======================================== -->
+
+        @if (pasoActual === 2) {
+
+            <section class="reserva-paso-panel">
+
+        <div class="reserva-seccion-header">
+
+            <h2>Seleccioná las empleadas y los horarios</h2>
+
+            <p>
+                Elegí quién realizará cada tratamiento.
+                Los servicios se organizarán consecutivamente
+                para evitar superposiciones.
+            </p>
+
+        </div>
+
+
+        <!-- CARGANDO DISPONIBILIDAD -->
+        @if (cargandoEmpleadas) {
+
+            <div class="reserva-estado-vacio">
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                <h3>Buscando empleadas disponibles</h3>
+
+                <p>
+                    Estamos comprobando la disponibilidad
+                    de los tratamientos seleccionados.
+                </p>
+
+            </div>
+
+        }
+        @else if (errorEmpleadas) {
+
+            <div class="reserva-estado-vacio error">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <h3>No se pudo consultar la disponibilidad</h3>
+
+                <p>{{ errorEmpleadas }}</p>
+
+                <button
+                    type="button"
+                    class="btn-reintentar"
+                    (click)="cargarEmpleadasDisponibles()">
+
+                    Reintentar
+
+                </button>
+
+            </div>
+
+        }
+        @else {
+
+            <div class="reserva-asignaciones">
+
+                @for (
+                    servicio of serviciosSeleccionados;
+                    track servicio.id;
+                    let i = $index
+                ) {
+
+                    @if (asignacionesReservaCliente[i]; as asignacion) {
+
+                        <article class="reserva-asignacion-card">
+
+                            <!-- SERVICIO -->
+                            <div class="reserva-asignacion-header">
+
+                                <div class="reserva-asignacion-numero">
+                                    {{ i + 1 }}
+                                </div>
+
+                                <div class="reserva-asignacion-titulo">
+
+                                    <h3>{{ servicio.nombre }}</h3>
+
+                                    <p>
+                                        {{ servicio.duracionMinutos }} min
+                                        ·
+                                        $ {{ servicio.precio | number:'1.2-2' }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- SELECCION DE EMPLEADA -->
+                            <div class="reserva-asignacion-campo">
+
+                                <label [for]="'empleada-' + i">
+                                    Empleada
+                                </label>
+
+                                <select
+                                    [id]="'empleada-' + i"
+                                    [(ngModel)]="asignacion.idEmpleado"
+                                    (ngModelChange)="cambiarEmpleadoAsignacion(i)"
+                                    [disabled]="i > 0 && !asignacionesReservaCliente[i - 1].fechaHoraInicio">
+
+                                    <option [ngValue]="0">
+                                        Seleccionar empleada
+                                    </option>
+
+                                    @for (
+                                        empleada of obtenerEmpleadasParaServicio(i);
+                                        track empleada.idEmpleado
+                                    ) {
+
+                                        <option [ngValue]="empleada.idEmpleado">
+
+                                            {{ empleada.nombre }}
+                                            {{ empleada.apellido }}
+                                            -
+                                            {{ empleada.especialidad }}
+
+                                        </option>
+
+                                    }
+
+                                </select>
+
+                                @if (
+                                    i > 0 &&
+                                    !asignacionesReservaCliente[i - 1].fechaHoraInicio
+                                ) {
+
+                                    <p class="reserva-campo-ayuda">
+                                        Primero completá el servicio anterior.
+                                    </p>
+
+                                }
+                                @else if (obtenerEmpleadasParaServicio(i).length === 0) {
+
+                                    <p class="reserva-campo-aviso">
+                                        No hay empleadas disponibles
+                                        para este tratamiento y horario.
+                                    </p>
+
+                                }
+
+                            </div>
+
+
+                            <!-- HORARIO -->
+                            <div class="reserva-asignacion-campo">
+
+                                <label>
+                                    Horario
+                                </label>
+
+                                @if (i === 0) {
+
+                                    <div class="reserva-horario-fijo">
+
+                                        <mat-icon>schedule</mat-icon>
+
+                                        <span>
+                                            {{ hora }} hs
+                                        </span>
+
+                                        <small>
+                                            Elegido en la agenda
+                                        </small>
+
+                                    </div>
+
+                                }
+                                @else {
+
+                                    <select
+                                        [(ngModel)]="asignacion.fechaHoraInicio"
+                                        (ngModelChange)="cambiarHorarioAsignacion(i)"
+                                        [disabled]="asignacion.idEmpleado <= 0">
+
+                                        <option [ngValue]="''">
+                                            Seleccionar horario
+                                        </option>
+
+                                        @for (
+                                            horarioDisponible of obtenerHorariosEmpleado(
+                                                i,
+                                                asignacion.idEmpleado
+                                            );
+                                            track horarioDisponible
+                                        ) {
+
+                                            <option [ngValue]="horarioDisponible">
+
+                                                {{ horarioDisponible.substring(11, 16) }} hs
+
+                                            </option>
+
+                                        }
+
+                                    </select>
+
+                                }
+
+                            </div>
+
+                        </article>
+
+                    }
+
+                }
+
+            </div>
+
+        }
+
+
+        <!-- ACCIONES -->
+        <div class="reserva-paso-acciones">
+
+            <button
+                type="button"
+                class="btn-volver-servicios"
+                (click)="volverAServicios()">
+
+                <mat-icon>arrow_back</mat-icon>
+
+                Volver a servicios
+
+            </button>
+
+            <button
+                type="button"
+                class="btn-continuar-reserva btn-continuar-paso"
+                (click)="continuarAConfirmacion()"
+                [disabled]="!asignacionesValidas()">
+
+                Revisar reserva
+
+                <mat-icon>arrow_forward</mat-icon>
+
+            </button>
+
+        </div>
+
+    </section>
+
+}
+
+
+<!-- ======================================== -->
+<!-- PASO 3: RESUMEN Y CONFIRMACION          -->
+<!-- ======================================== -->
+
+@if (pasoActual === 3) {
+
+    <section class="reserva-paso-panel">
+
+        <div class="reserva-seccion-header">
+
+            <h2>Revisá tu reserva</h2>
+
+            <p>
+                Comprobá los tratamientos, las empleadas
+                y los horarios antes de confirmar.
+            </p>
+
+        </div>
+
+
+        <div class="reserva-confirmacion-fecha">
+
+            <mat-icon>event</mat-icon>
+
+            <div>
+
+                <span>Fecha de la reserva</span>
+
+                <strong>
+                    {{ fechaLegible | titlecase }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="reserva-confirmacion-servicios">
+
+            @for (
+                servicio of serviciosSeleccionados;
+                track servicio.id;
+                let i = $index
+            ) {
+
+                @if (asignacionesReservaCliente[i]; as asignacion) {
+
+                    <div class="reserva-confirmacion-item">
+
+                        <div>
+
+                            <h3>{{ servicio.nombre }}</h3>
+
+                            <p>
+                                <mat-icon>person_outline</mat-icon>
+
+                                {{ obtenerNombreEmpleada(asignacion) }}
+                            </p>
+
+                            <p>
+                                <mat-icon>schedule</mat-icon>
+
+                                {{ asignacion.fechaHoraInicio.substring(11, 16) }} hs
+
+                                · {{ servicio.duracionMinutos }} minutos
+                            </p>
+
+                        </div>
+
+                        <strong>
+                            $ {{ servicio.precio | number:'1.2-2' }}
+                        </strong>
+
+                    </div>
+
+                }
+
+            }
+
+        </div>
+
+
+        <!-- TOTAL -->
+        <div class="reserva-confirmacion-total">
+
+            <div>
+
+                <span>Duración total de los tratamientos</span>
+
+                <strong>{{ duracionTotal }} min</strong>
+
+            </div>
+
+            <div>
+
+                <span>Precio total</span>
+
+                <strong>
+                    $ {{ precioTotal | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+<!-- ======================================== -->
+<!-- PAGO CON BILLETERA                      -->
+<!-- ======================================== -->
+
+<section class="reserva-pago-panel">
+
+    <div class="reserva-pago-header">
+
+        <div class="reserva-pago-icono">
+            <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+
+        <div>
+            <h3>Pago con billetera</h3>
+            <p>El importe se descontará de tu saldo disponible.</p>
+        </div>
+
+    </div>
+
+    <!-- ======================================== -->
+    <!-- CARGANDO SALDO                          -->
+    <!-- ======================================== -->
+
+    @if (cargandoSaldo) {
+
+        <div class="reserva-pago-cargando">
+
+            <mat-icon>hourglass_empty</mat-icon>
+
+            <span>Consultando el saldo de tu billetera...</span>
+
+        </div>
+
+    }
+
+    <!-- ======================================== -->
+    <!-- ERROR AL CONSULTAR SALDO                -->
+    <!-- ======================================== -->
+
+    @else if (errorSaldo) {
+
+        <div class="reserva-pago-error">
+
+            <mat-icon>error_outline</mat-icon>
+
+            <div>
+                <strong>No se pudo consultar tu billetera</strong>
+
+                <p>{{ errorSaldo }}</p>
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-reintentar"
+            (click)="cargarSaldoBilletera()">
+
+            <mat-icon>refresh</mat-icon>
+
+            Reintentar
+
+        </button>
+
+    }
+
+    <!-- ======================================== -->
+    <!-- INFORMACION DE LA BILLETERA             -->
+    <!-- ======================================== -->
+
+    @else if (saldoDisponible !== null) {
+
+        <div class="reserva-pago-detalles">
+
+            <!-- SALDO DISPONIBLE -->
+            <div class="reserva-pago-fila">
+
+                <span>Saldo disponible</span>
+
+                <strong>
+                    $ {{ saldoDisponible | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+            <!-- TOTAL DE LA RESERVA -->
+            <div class="reserva-pago-fila">
+
+                <span>Total de la reserva</span>
+
+                <strong class="reserva-pago-descuento">
+                    - $ {{ precioTotal | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+            <div class="reserva-pago-separador"></div>
+
+            <!-- SALDO RESTANTE -->
+            <div class="reserva-pago-fila reserva-pago-resultado">
+
+                <span>Saldo después del pago</span>
+
+                <strong>
+                    $ {{ saldoRestante | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- SALDO SUFICIENTE                       -->
+        <!-- ======================================== -->
+
+        @if (saldoSuficiente) {
+
+            <div class="reserva-pago-exito">
+
+                <mat-icon>check_circle</mat-icon>
+
+                <p>
+                    Tenés saldo suficiente para completar
+                    el pago de tu reserva.
+                </p>
+
+            </div>
+
+        }
+
+        <!-- ======================================== -->
+        <!-- SALDO INSUFICIENTE                     -->
+        <!-- ======================================== -->
+
+        @else {
+
+            <div class="reserva-pago-insuficiente">
+
+                <mat-icon>warning_amber</mat-icon>
+
+                <div>
+
+                    <strong>Saldo insuficiente</strong>
+
+                    <p>
+                        Necesitás agregar
+                        $ {{ dineroFaltante | number:'1.2-2' }}
+                        a tu billetera para completar la reserva.
+                    </p>
+
+                </div>
+
+            </div>
+
+        }
+
+    }
+
+</section>
+
+
+<!-- ======================================== -->
+<!-- CONFIRMAR Y PAGAR                       -->
+<!-- ======================================== -->
+
+<div class="reserva-pago-acciones">
+
+    <!-- ======================================== -->
+    <!-- RESERVA CONFIRMADA                      -->
+    <!-- ======================================== -->
+
+    @if (idReservaConfirmada !== null) {
+
+        <div class="reserva-pago-exito" role="status">
+
+            <mat-icon>check_circle</mat-icon>
+
+            <div>
+
+                <strong>¡Reserva confirmada y pagada!</strong>
+
+                <p>
+                    Tu reserva se realizó correctamente
+                    y el pago fue registrado.
+                </p>
+
+                <p>
+                    Número de reserva:
+                    <strong>{{ idReservaConfirmada }}</strong>
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-continuar-reserva"
+            (click)="volverAgenda()">
+
+            <mat-icon>event_available</mat-icon>
+
+            Volver a la agenda
+
+        </button>
+
+    }
+
+    <!-- ======================================== -->
+    <!-- RESERVA PENDIENTE DE CONFIRMACION       -->
+    <!-- ======================================== -->
+
+    @else {
+
+        <!-- ERROR DEL PAGO -->
+
+        @if (errorPago) {
+
+            <div class="reserva-pago-error" role="alert">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <div>
+
+                    <strong>
+                        No se pudo confirmar el resultado del pago
+                    </strong>
+
+                    <p>{{ errorPago }}</p>
+
+                </div>
+
+            </div>
+
+        }
+
+        <!-- BOTON CONFIRMAR Y PAGAR -->
+
+        <button
+            type="button"
+            class="btn-confirmar-pago"
+            (click)="confirmarYPagar()"
+            [disabled]="
+                procesandoPago ||
+                cargandoSaldo ||
+                saldoDisponible === null ||
+                !saldoSuficiente ||
+                !asignacionesValidas()
+            ">
+
+            @if (procesandoPago) {
+
+                <mat-icon>hourglass_empty</mat-icon>
+
+                Procesando pago...
+
+            }
+
+            @else if (errorPago) {
+
+                <mat-icon>refresh</mat-icon>
+
+                Reintentar confirmación y pago
+
+            }
+
+            @else {
+
+                <mat-icon>lock</mat-icon>
+
+                Confirmar y pagar
+
+            }
+
+        </button>
+
+        <p class="reserva-pago-nota">
+
+            @if (procesandoPago) {
+
+                Estamos procesando tu reserva.
+                No envíes otra solicitud.
+
+            }
+
+            @else {
+
+                El importe se descontará de tu billetera
+                cuando confirmes la reserva.
+
+            }
+
+        </p>
+
+    }
+
+</div>
+
+
+<!-- ======================================== -->
+<!-- VOLVER A EMPLEADAS                      -->
+<!-- ======================================== -->
+
+@if (idReservaConfirmada === null) {
+
+    <div class="reserva-paso-acciones">
+
+        <button
+            type="button"
+            class="btn-volver-servicios"
+            (click)="volverAEmpleadas()"
+            [disabled]="procesandoPago">
+
+            <mat-icon>arrow_back</mat-icon>
+
+            Volver a empleadas
+
+        </button>
+
+    </div>
+
+}
+
+<!-- Cerrar el panel de confirmacion -->
+</section>
+
+<!-- Cerrar el paso 3 -->
+}
+
+<!-- Cerrar el bloque de fecha y hora validas -->
+}
+
+<!-- Cerrar el contenedor principal -->
+</div>

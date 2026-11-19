@@ -1,6 +1,5 @@
 package com.example.beautymanager.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +16,11 @@ import com.example.beautymanager.Servicio.RegistroUsuarioService;
 @RequestMapping("/registro")
 public class RegistroController {
     
-    @Autowired
-    private RegistroUsuarioService registroService;
+    private final RegistroUsuarioService registroService;
+
+    public RegistroController(RegistroUsuarioService registroService){
+        this.registroService = registroService;
+    }
 
     @PostMapping("/nuevo")
     public ResponseEntity<ResponseDTO> nuevoUsuario(@RequestBody RegistroDTO registroDTO) throws Exception {

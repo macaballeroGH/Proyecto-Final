@@ -1,0 +1,395 @@
+/* ================================================
+   BEAUTYMANAGER - REGISTRO
+   Diseño de escritorio
+   ================================================ */
+
+.registro-page,
+.registro-page *,
+.registro-page *::before,
+.registro-page *::after {
+    box-sizing: border-box;
+}
+
+/* ================================================
+   CONTENEDOR PRINCIPAL
+   ================================================ */
+
+.registro-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    min-height: 100vh;
+
+    padding: 65px 45px;
+
+    background-color: var(--bm-fondo);
+    color: var(--bm-texto-principal);
+}
+
+/* ================================================
+   TARJETA DE REGISTRO
+   ================================================ */
+
+.registro-card {
+    display: block;
+
+    width: 100%;
+    max-width: 880px;
+
+    padding: 52px 58px;
+
+    background-color: var(--bm-tarjeta);
+    color: var(--bm-texto-principal);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 24px;
+
+    box-shadow:
+        0 18px 48px
+        color-mix(
+            in srgb,
+            var(--bm-texto-principal) 8%,
+            transparent
+        );
+}
+
+/* ================================================
+   ENCABEZADO
+   ================================================ */
+
+.registro-encabezado {
+    text-align: center;
+    margin-bottom: 42px;
+}
+
+.registro-etiqueta {
+    display: inline-block;
+
+    margin-bottom: 14px;
+
+    color: var(--bm-boton-principal);
+
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    line-height: 1.6;
+}
+
+.registro-encabezado h1 {
+    margin: 0 0 16px;
+
+    color: var(--bm-titulo);
+
+    font-size: clamp(2rem, 3vw, 2.65rem);
+    font-weight: 700;
+    letter-spacing: -.025em;
+    line-height: 1.25;
+
+    height: auto;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.registro-encabezado p {
+    max-width: 550px;
+    margin: 0 auto;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+/* ================================================
+   DISTRIBUCIÓN DEL FORMULARIO
+   ================================================ */
+
+.registro-campos {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 24px;
+    row-gap: 15px;
+
+    align-items: start;
+}
+
+.registro-campo {
+    width: 100%;
+    min-width: 0;
+}
+
+.registro-campo-completo {
+    grid-column: 1 / -1;
+}
+
+/* ================================================
+   CAMPOS ANGULAR MATERIAL
+   ================================================ */
+
+.registro-campo {
+    --mdc-outlined-text-field-outline-color:
+        var(--bm-borde);
+
+    --mdc-outlined-text-field-hover-outline-color:
+        var(--bm-interactivo);
+
+    --mdc-outlined-text-field-focus-outline-color:
+        var(--bm-boton-principal);
+
+    --mdc-outlined-text-field-label-text-color:
+        var(--bm-texto-secundario);
+
+    --mdc-outlined-text-field-focus-label-text-color:
+        var(--bm-boton-principal);
+
+    --mdc-outlined-text-field-input-text-color:
+        var(--bm-texto-principal);
+
+    --mdc-outlined-text-field-container-shape: 12px;
+}
+
+.registro-campo input {
+    color: var(--bm-texto-principal);
+    font-size: .98rem;
+}
+
+/* ================================================
+   MENSAJES DE VALIDACIÓN
+   ================================================ */
+
+.registro-campo mat-error {
+    color: var(
+        --bm-error,
+        var(--bm-boton-principal)
+    );
+
+    font-size: .78rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.registro-error-general {
+    margin-top: 20px;
+    padding: 15px 18px;
+
+    color: var(
+        --bm-error,
+        var(--bm-boton-principal)
+    );
+
+    background-color: var(--bm-fondo-secundario);
+
+    border: 1px solid var(--bm-borde);
+    border-radius: 12px;
+
+    font-size: .9rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* ================================================
+   BOTÓN REGISTRARSE
+   ================================================ */
+
+.registro-acciones {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 30px;
+}
+
+.registro-boton.mat-mdc-raised-button {
+    width: 100%;
+    max-width: 390px;
+    min-height: 52px;
+
+    padding: 14px 26px;
+
+    background-color: var(--bm-boton-principal);
+    color: var(--bm-tarjeta);
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    line-height: 1.4;
+
+    box-shadow:
+        0 9px 24px
+        color-mix(
+            in srgb,
+            var(--bm-boton-principal) 22%,
+            transparent
+        );
+
+    transition:
+        background-color .25s ease,
+        box-shadow .25s ease,
+        transform .25s ease;
+}
+
+.registro-boton.mat-mdc-raised-button:hover:not(:disabled) {
+    background-color: var(--bm-interactivo);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 13px 28px
+        color-mix(
+            in srgb,
+            var(--bm-boton-principal) 27%,
+            transparent
+        );
+}
+
+.registro-boton.mat-mdc-raised-button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ================================================
+   ENLACE INICIAR SESIÓN
+   ================================================ */
+
+.registro-login {
+    margin: 25px 0 0;
+
+    color: var(--bm-texto-secundario);
+
+    font-size: .94rem;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.registro-login a {
+    margin-left: 5px;
+
+    color: var(--bm-boton-principal);
+
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: color .25s ease;
+}
+
+.registro-login a:hover {
+    color: var(--bm-interactivo);
+    text-decoration: underline;
+}
+
+.registro-login a:focus-visible,
+.registro-boton:focus-visible {
+    outline: 3px solid var(--bm-interactivo);
+    outline-offset: 3px;
+}
+
+/* ================================================
+   VENTANA DE PC MÁS ANGOSTA
+   ================================================ */
+
+@media (max-width: 1000px) {
+
+    .registro-page {
+        padding: 48px 32px;
+    }
+
+    .registro-card {
+        max-width: 780px;
+        padding: 42px;
+    }
+
+    .registro-campos {
+        column-gap: 18px;
+    }
+
+}
+
+/* ================================================
+   VENTANA DE PC A MEDIA PANTALLA
+   ================================================ */
+
+@media (max-width: 720px) {
+
+    .registro-page {
+        align-items: flex-start;
+        padding: 32px 24px;
+    }
+
+    .registro-card {
+        max-width: 560px;
+        padding: 35px 30px;
+        border-radius: 18px;
+    }
+
+    .registro-encabezado {
+        margin-bottom: 30px;
+    }
+
+    .registro-encabezado h1 {
+        font-size: 2.1rem;
+    }
+
+    .registro-campos {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 9px;
+    }
+
+    .registro-campo-completo {
+        grid-column: auto;
+    }
+
+    .registro-acciones {
+        margin-top: 22px;
+    }
+
+}
+
+/* ================================================
+   VENTANA DE PC MUY ESTRECHA
+   ================================================ */
+
+@media (max-width: 480px) {
+
+    .registro-page {
+        padding: 20px 14px;
+    }
+
+    .registro-card {
+        padding: 28px 20px;
+    }
+
+    .registro-encabezado h1 {
+        font-size: 1.85rem;
+    }
+
+    .registro-encabezado p {
+        font-size: .93rem;
+    }
+
+    .registro-boton.mat-mdc-raised-button {
+        max-width: none;
+    }
+
+}
+
+/* ================================================
+   MOVIMIENTO REDUCIDO
+   ================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .registro-page *,
+    .registro-page *::before,
+    .registro-page *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+
+}

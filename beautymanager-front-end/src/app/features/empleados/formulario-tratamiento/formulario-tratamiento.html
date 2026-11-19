@@ -1,0 +1,657 @@
+
+<div class="formulario-tratamiento-container">
+
+    <!-- ======================================== -->
+    <!-- ENCABEZADO                               -->
+    <!-- ======================================== -->
+
+    <header class="tratamiento-header">
+
+        <div class="header-informacion">
+
+            <span class="header-etiqueta">
+                Registro de atención
+            </span>
+
+            <h2>
+                Finalizar tratamiento
+            </h2>
+
+            <p>
+                Completá la información de la atención realizada
+                antes de finalizar el turno.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-cerrar-formulario"
+            (click)="cancelarFormulario()"
+            [disabled]="enviando"
+            aria-label="Cerrar formulario de tratamiento"
+        >
+            <mat-icon>close</mat-icon>
+        </button>
+
+    </header>
+
+
+    <!-- ======================================== -->
+    <!-- INFORMACIÓN DE LA CLIENTA                -->
+    <!-- ======================================== -->
+
+    <section class="tratamiento-cliente">
+
+        <div class="cliente-icono">
+            <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="cliente-informacion">
+
+            <span>
+                Clienta
+            </span>
+
+            <h3>
+                {{ turno.nombreCliente }}
+                {{ turno.apellidoCliente }}
+            </h3>
+
+        </div>
+
+        <span class="cliente-identificador">
+            #{{ turno.idCliente }}
+        </span>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- RESUMEN DEL TURNO                        -->
+    <!-- ======================================== -->
+
+    <section class="tratamiento-resumen">
+
+        <div class="resumen-titulo">
+
+            <mat-icon>event_note</mat-icon>
+
+            <h3>
+                Información del turno
+            </h3>
+
+        </div>
+
+        <div class="resumen-grid">
+
+            <div class="resumen-item">
+
+                <mat-icon>calendar_month</mat-icon>
+
+                <div>
+
+                    <span>Fecha</span>
+
+                    <strong>
+                        {{ turno.fechaHoraInicio | date:'dd/MM/yyyy' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="resumen-item">
+
+                <mat-icon>schedule</mat-icon>
+
+                <div>
+
+                    <span>Horario reservado</span>
+
+                    <strong>
+                        {{ turno.fechaHoraInicio | date:'HH:mm' }}
+                        -
+                        {{ turno.fechaHoraFin | date:'HH:mm' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="resumen-item">
+
+                <mat-icon>content_cut</mat-icon>
+
+                <div>
+
+                    <span>Servicios reservados</span>
+
+                    <strong>
+                        {{ turno.servicios.length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="resumen-item">
+
+                <mat-icon>payments</mat-icon>
+
+                <div>
+
+                    <span>Importe del turno</span>
+
+                    <strong>
+                        $ {{ turno.precioTotal | number:'1.2-2' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================== -->
+    <!-- FORMULARIO                               -->
+    <!-- ======================================== -->
+
+    <form
+        class="tratamiento-formulario"
+        (ngSubmit)="enviarFormulario()"
+        novalidate
+    >
+
+        <!-- ==================================== -->
+        <!-- SERVICIOS REALIZADOS                 -->
+        <!-- ==================================== -->
+
+        <section class="tratamiento-seccion">
+
+            <div class="seccion-header">
+
+                <div class="seccion-titulo">
+
+                    <mat-icon>spa</mat-icon>
+
+                    <div>
+
+                        <h3>
+                            Servicios realizados
+                        </h3>
+
+                        <p>
+                            Indicá los servicios que se realizaron
+                            durante la atención.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Lista de servicios -->
+
+            <div class="servicios-realizados-lista">
+
+                @for (
+                    servicio of serviciosRealizados;
+                    track $index;
+                    let indice = $index
+                ) {
+
+                    <div class="servicio-realizado-card">
+
+                        <div class="servicio-card-header">
+
+                            <div class="servicio-numero">
+
+                                <mat-icon>check_circle_outline</mat-icon>
+
+                                <strong>
+                                    Servicio {{ indice + 1 }}
+                                </strong>
+
+                            </div>
+
+                            @if (servicio.idServicioOriginal === null) {
+
+                                <button
+                                    type="button"
+                                    class="btn-eliminar-servicio"
+                                    (click)="eliminarServicioAgregado(indice)"
+                                    [disabled]="enviando"
+                                    aria-label="Eliminar servicio adicional"
+                                >
+
+                                    <mat-icon>delete_outline</mat-icon>
+
+                                </button>
+
+                            } @else {
+
+                                <span class="servicio-etiqueta">
+                                    Reservado
+                                </span>
+
+                            }
+
+                        </div>
+
+
+                        <!-- Seleccionar servicio -->
+
+                        <div class="campo-formulario">
+
+                            <label
+                                [for]="'servicio-realizado-' + indice"
+                            >
+                                Servicio realizado
+                                <span class="campo-obligatorio">*</span>
+                            </label>
+
+                            <select
+                                [id]="'servicio-realizado-' + indice"
+                                [name]="'servicioRealizado' + indice"
+                                [(ngModel)]="servicio.idServicioRealizado"
+                                [disabled]="enviando"
+                                required
+                            >
+
+                                <option [ngValue]="null">
+                                    Seleccionar servicio
+                                </option>
+
+                                @for (
+                                    opcion of obtenerOpcionesServicios();
+                                    track opcion.id
+                                ) {
+
+                                    <option [ngValue]="opcion.id">
+                                        {{ opcion.nombre }}
+                                    </option>
+
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Motivo del cambio -->
+
+                        @if (huboCambioServicio(servicio)) {
+
+                            <div class="campo-formulario">
+
+                                <label
+                                    [for]="'motivo-servicio-' + indice"
+                                >
+                                    Motivo del cambio
+                                    <span class="campo-obligatorio">*</span>
+                                </label>
+
+                                <textarea
+                                    [id]="'motivo-servicio-' + indice"
+                                    [name]="'motivoServicio' + indice"
+                                    rows="3"
+                                    maxlength="500"
+                                    placeholder="Explicá por qué se cambió o incorporó este servicio..."
+                                    [(ngModel)]="servicio.motivoCambio"
+                                    [disabled]="enviando"
+                                    required
+                                ></textarea>
+
+                                <span class="contador-caracteres">
+                                    {{ servicio.motivoCambio.length }} / 500
+                                </span>
+
+                            </div>
+
+                        }
+
+                    </div>
+
+                }
+
+            </div>
+
+
+            <!-- Agregar servicio -->
+
+            <button
+                type="button"
+                class="btn-agregar-servicio"
+                (click)="agregarServicio()"
+                [disabled]="enviando"
+            >
+
+                <mat-icon>add_circle_outline</mat-icon>
+
+                Agregar otro servicio
+
+            </button>
+
+        </section>
+
+
+        <!-- ==================================== -->
+        <!-- DURACIÓN REAL                        -->
+        <!-- ==================================== -->
+
+        <section class="tratamiento-seccion">
+
+            <div class="seccion-header">
+
+                <div class="seccion-titulo">
+
+                    <mat-icon>timer</mat-icon>
+
+                    <div>
+
+                        <h3>
+                            Duración de la atención
+                        </h3>
+
+                        <p>
+                            Registrá el tiempo real utilizado.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="campo-formulario">
+
+                <label for="duracion-real-tratamiento">
+                    Duración real en minutos
+                    <span class="campo-obligatorio">*</span>
+                </label>
+
+                <input
+                    id="duracion-real-tratamiento"
+                    name="duracionReal"
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="Ejemplo: 60"
+                    [(ngModel)]="duracionReal"
+                    [disabled]="enviando"
+                    required
+                >
+
+                <span class="campo-ayuda">
+                    Indicá cuánto duró realmente el tratamiento.
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================== -->
+        <!-- PRODUCTOS UTILIZADOS                 -->
+        <!-- ==================================== -->
+
+        <section class="tratamiento-seccion">
+
+            <div class="seccion-header">
+
+                <div class="seccion-titulo">
+
+                    <mat-icon>inventory_2</mat-icon>
+
+                    <div>
+
+                        <h3>
+                            Productos utilizados
+                        </h3>
+
+                        <p>
+                            Detallá los productos aplicados durante
+                            el tratamiento, si corresponde.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="campo-formulario">
+
+                <label for="productos-tratamiento">
+                    Productos utilizados
+                </label>
+
+                <textarea
+                    id="productos-tratamiento"
+                    name="productosUtilizados"
+                    rows="4"
+                    maxlength="2500"
+                    placeholder="Ejemplo: crema hidratante, sérum facial, mascarilla..."
+                    [(ngModel)]="productosUtilizados"
+                    [disabled]="enviando"
+                ></textarea>
+
+                <span class="contador-caracteres">
+                    {{ productosUtilizados.length }} / 2500
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================== -->
+        <!-- OBSERVACIONES                        -->
+        <!-- ==================================== -->
+
+        <section class="tratamiento-seccion">
+
+            <div class="seccion-header">
+
+                <div class="seccion-titulo">
+
+                    <mat-icon>description</mat-icon>
+
+                    <div>
+
+                        <h3>
+                            Observaciones
+                        </h3>
+
+                        <p>
+                            Registrá los detalles relevantes
+                            de la atención.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="campo-formulario">
+
+                <label for="observacion-tratamiento">
+                    Observaciones del tratamiento
+                </label>
+
+                <textarea
+                    id="observacion-tratamiento"
+                    name="observacion"
+                    rows="5"
+                    maxlength="3500"
+                    placeholder="Describí cómo se desarrolló la atención, las observaciones importantes y las recomendaciones..."
+                    [(ngModel)]="observacion"
+                    [disabled]="enviando"
+                ></textarea>
+
+                <span class="contador-caracteres">
+                    {{ observacion.length }} / 3500
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================== -->
+        <!-- RESULTADO FINAL                      -->
+        <!-- ==================================== -->
+
+        <section class="tratamiento-seccion">
+
+            <div class="seccion-header">
+
+                <div class="seccion-titulo">
+
+                    <mat-icon>fact_check</mat-icon>
+
+                    <div>
+
+                        <h3>
+                            Resultado del tratamiento
+                        </h3>
+
+                        <p>
+                            Seleccioná cómo finalizó la atención.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="campo-formulario">
+
+                <label for="resultado-tratamiento">
+                    Resultado final
+                    <span class="campo-obligatorio">*</span>
+                </label>
+
+                <select
+                    id="resultado-tratamiento"
+                    name="resultadoTratamiento"
+                    [(ngModel)]="resultadoTratamiento"
+                    [disabled]="enviando"
+                    required
+                >
+
+                    <option [ngValue]="null">
+                        Seleccionar resultado
+                    </option>
+
+                    @for (resultado of resultados; track resultado.valor) {
+
+                        <option [ngValue]="resultado.valor">
+                            {{ resultado.texto }}
+                        </option>
+
+                    }
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================== -->
+        <!-- MENSAJES DE ERROR                    -->
+        <!-- ==================================== -->
+
+        @if (errorFormulario) {
+
+            <div class="tratamiento-mensaje error" role="alert">
+
+                <mat-icon>error_outline</mat-icon>
+
+                <span>
+                    {{ errorFormulario }}
+                </span>
+
+            </div>
+
+        }
+
+        @if (errorServidor) {
+
+            <div class="tratamiento-mensaje error" role="alert">
+
+                <mat-icon>warning_amber</mat-icon>
+
+                <span>
+                    {{ errorServidor }}
+                </span>
+
+            </div>
+
+        }
+
+
+        <!-- ==================================== -->
+        <!-- AVISO DE FINALIZACIÓN                -->
+        <!-- ==================================== -->
+
+        <div class="tratamiento-aviso">
+
+            <mat-icon>info_outline</mat-icon>
+
+            <p>
+                Al guardar este registro, el tratamiento
+                quedará asociado al historial de la clienta
+                y el turno pasará al estado Finalizado.
+            </p>
+
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- BOTONES                              -->
+        <!-- ==================================== -->
+
+        <footer class="tratamiento-acciones">
+
+            <button
+                type="button"
+                class="btn-cancelar-tratamiento"
+                (click)="cancelarFormulario()"
+                [disabled]="enviando"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                class="btn-guardar-tratamiento"
+                [disabled]="enviando"
+            >
+
+                <mat-icon>
+                    {{ enviando ? 'hourglass_top' : 'task_alt' }}
+                </mat-icon>
+
+                {{
+                    enviando
+                        ? 'Guardando tratamiento...'
+                        : 'Guardar y finalizar turno'
+                }}
+
+            </button>
+
+        </footer>
+
+    </form>
+
+</div>

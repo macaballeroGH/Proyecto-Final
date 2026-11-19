@@ -3,7 +3,6 @@ package com.example.beautymanager.Servicio.servicioImpl;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.ActualizarHorarioEmpleadoDTO;
@@ -22,11 +21,16 @@ import jakarta.transaction.Transactional;
 @Service
 public class HorarioEmpleadoServiceImpl implements HorarioEmpleadoService{
 
-    @Autowired
-    private HorarioEmpleadoRepository horarioEmpleadoRepository;
+    private final HorarioEmpleadoRepository horarioEmpleadoRepository;
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepository empleadoRepository;
+
+    public HorarioEmpleadoServiceImpl(HorarioEmpleadoRepository horarioEmpleadoRepository, EmpleadoRepository empleadoRepository){
+
+        this.horarioEmpleadoRepository = horarioEmpleadoRepository;
+
+        this.empleadoRepository = empleadoRepository;
+    }
 
     //=======================
     //Crear Horario

@@ -1,6 +1,5 @@
 package com.example.beautymanager.Servicio.servicioImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautymanager.Modelo.DTO.InicializarClienteDTO;
@@ -18,14 +17,20 @@ import jakarta.transaction.Transactional;
 @Service
 public class ClienteInicializacionServiceImpl implements ClienteInicializacionService{
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private BilleteraRepository billeteraRepository;
+    private final BilleteraRepository billeteraRepository;
+
+    public ClienteInicializacionServiceImpl(UsuarioRepository usuarioRepository, ClienteRepository clienteRepository, BilleteraRepository billeteraRepository){
+
+        this.usuarioRepository = usuarioRepository;
+
+        this.clienteRepository = clienteRepository;
+
+        this.billeteraRepository = billeteraRepository;
+    }
 
     //=======================
     //Inicializar cliente

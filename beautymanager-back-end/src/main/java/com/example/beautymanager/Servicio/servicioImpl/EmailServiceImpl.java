@@ -1,6 +1,5 @@
 package com.example.beautymanager.Servicio.servicioImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,11 @@ import com.example.beautymanager.Servicio.EmailService;
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+
+    public EmailServiceImpl(JavaMailSender mailSender){
+        this.mailSender = mailSender;
+    }
 
     @Override
     public void enviarEmail(RecordatorioEntity r) {
@@ -37,36 +39,33 @@ public class EmailServiceImpl implements EmailService {
     }
 
     
-@Override
-public void enviarEmailPrueba(String destino) {
+    @Override
+    public void enviarEmailPrueba(String destino) {
 
-    if (destino == null || destino.isBlank()) {
-        throw new IllegalArgumentException(
-            "La dirección de correo es obligatoria"
-        );
+        if (destino == null || destino.isBlank()) {
+            throw new IllegalArgumentException("La dirección de correo es obligatoria");
+        }
+
+        destino = destino.trim();
+
+        if (!destino.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            throw new IllegalArgumentException("La dirección de correo no es válida");
+        }
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+
+        mail.setTo(destino);
+        mail.setSubject("Prueba de correo - BeautyManager");
+        mail.setText("""
+                     Hola,
+                     
+                     Este es un correo de prueba de BeautyManager.
+                     
+                     Si recibiste este mensaje, el env\u00edo de correos desde el sistema est\u00e1 funcionando.
+                     
+                     Este mensaje no corresponde a un turno ni a un recordatorio real.""");
+
+        mailSender.send(mail);
     }
-
-    destino = destino.trim();
-
-    if (!destino.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-        throw new IllegalArgumentException(
-            "La dirección de correo no es válida"
-        );
-    }
-
-    SimpleMailMessage mail = new SimpleMailMessage();
-
-    mail.setTo(destino);
-    mail.setSubject("Prueba de correo - BeautyManager");
-    mail.setText(
-        "Hola,\n\n" +
-        "Este es un correo de prueba de BeautyManager.\n\n" +
-        "Si recibiste este mensaje, el envío de correos " +
-        "desde el sistema está funcionando.\n\n" +
-        "Este mensaje no corresponde a un turno ni a un recordatorio real."
-    );
-
-    mailSender.send(mail);
-}
 
 }

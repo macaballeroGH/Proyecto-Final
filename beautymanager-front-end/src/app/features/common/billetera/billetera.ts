@@ -7,6 +7,7 @@ import { ObtenerMovimientoBilletera } from '../../../core/models/obtener-movimie
 import { RecargarSaldo } from '../../../core/models/recargar-saldo';
 import { MovimientoBilletera } from '../../../core/enums/movimientoBilletera';
 import { MatIconModule } from "@angular/material/icon";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-billetera',
@@ -48,14 +49,116 @@ export class Billetera implements OnInit{
 
   readonly MovimientoBilletera = MovimientoBilletera;
 
-  constructor(private billeteraService: BilleteraService) {}
+  private rutaAnterior: string | null = null;
+
+  constructor(
+  private billeteraService: BilleteraService,
+  private router: Router
+) {
+
+  const navegacion = this.router.currentNavigation();
+
+  const navegacionAnterior =
+    navegacion?.previousNavigation;
+
+  const urlAnterior =
+    navegacionAnterior?.finalUrl ??
+    navegacionAnterior?.extractedUrl;
+
+  if (urlAnterior) {
+
+    const ruta = this.router.serializeUrl(urlAnterior);
+
+    const rutaInterna =
+      /^\/(cliente|admin|empleado)(\/|$|\?)/.test(ruta);
+
+    const esBilletera =
+      /^\/(cliente|admin|empleado)\/billetera(\/|$|\?)/.test(ruta);
+
+    if (rutaInterna && !esBilletera) {
+      this.rutaAnterior = ruta;
+    }
+
+  }
+
+}
 
   ngOnInit(): void {
-    
+
     this.cargarBilletera();
 
     this.cargarMovimientos();
+
   }
+
+  // =========================================
+  // VOLVER A LA PÁGINA ANTERIOR
+  // =========================================
+
+  volver(): void {
+
+  // Regresar a la pantalla anterior,
+  // cuando Angular pueda identificarla.
+
+  if (this.rutaAnterior) {
+
+    this.router.navigateByUrl(this.rutaAnterior);
+
+    return;
+  }
+
+  // Si no existe una ruta anterior válida,
+  // identificar el rol de la sesión.
+
+  let rol: string | undefined;
+
+  try {
+
+    const usuarioGuardado =
+      localStorage.getItem('usuario');
+
+    if (usuarioGuardado) {
+
+      const usuario = JSON.parse(usuarioGuardado);
+
+      rol = usuario.rol;
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      'No se pudo recuperar la sesión:',
+      error
+    );
+
+  }
+
+  switch (rol) {
+
+    case 'ADMIN':
+      this.router.navigate(['/admin/inicio']);
+      break;
+
+    case 'EMPLEADO':
+      this.router.navigate(['/empleado/inicio']);
+      break;
+
+    case 'CLIENTE':
+      this.router.navigate(['/cliente/inicio']);
+      break;
+
+    default:
+      this.router.navigate(['/login']);
+      break;
+
+  }
+
+}
+
+  // =========================================
+  // CARGAR BILLETERA
+  // =========================================
 
   cargarBilletera(): void {
 
@@ -70,18 +173,29 @@ export class Billetera implements OnInit{
         this.billetera.set(billetera);
 
         this.cargandoBilletera.set(false);
+
       },
 
       error: (error) => {
 
-        console.error('Error al obtener la billetera:', error);
+        console.error(
+          'Error al obtener la billetera:',
+          error
+        );
 
         this.errorBilletera.set(true);
 
         this.cargandoBilletera.set(false);
+
       }
+
     });
+
   }
+
+  // =========================================
+  // CARGAR MOVIMIENTOS
+  // =========================================
 
   cargarMovimientos(): void {
 
@@ -93,31 +207,36 @@ export class Billetera implements OnInit{
 
       next: (movimientos) => {
 
-        console.log('MOVIMIENTOS RECIBIDOS:', movimientos);
-        console.log('TIPO:', typeof movimientos);
-        console.log('ES ARRAY:', Array.isArray(movimientos));
-
         this.movimientos.set(movimientos);
 
-        this.ultimosMovimientos.set(movimientos.slice(0, 3));
+        this.ultimosMovimientos.set(
+          movimientos.slice(0, 3)
+        );
 
         this.cargandoMovimientos.set(false);
 
-        console.log('cargandoMovimientos:', this.cargandoMovimientos);
-        console.log('movimientos:', this.movimientos);
-        console.log('ultimosMovimientos:', this.ultimosMovimientos);
       },
 
       error: (error) => {
 
-        console.error('Error al obtener los movimientos:', error);
+        console.error(
+          'Error al obtener los movimientos:',
+          error
+        );
 
         this.errorMovimientos.set(true);
 
         this.cargandoMovimientos.set(false);
+
       }
+
     });
+
   }
+
+  // =========================================
+  // MODAL DE RECARGA
+  // =========================================
 
   abrirModalRecarga(): void {
 
@@ -126,11 +245,12 @@ export class Billetera implements OnInit{
     this.errorRecarga = '';
 
     this.mostrarModalRecarga = true;
+
   }
 
   cerrarModalRecarga(): void {
 
-    if(this.recargandoSaldo){
+    if (this.recargandoSaldo) {
       return;
     }
 
@@ -139,34 +259,45 @@ export class Billetera implements OnInit{
     this.montoRecarga = null;
 
     this.errorRecarga = '';
+
   }
+
+  // =========================================
+  // RECARGAR SALDO
+  // =========================================
 
   recargarSaldo(): void {
 
     this.errorRecarga = '';
 
-    if(this.montoRecarga === null || this.montoRecarga === undefined){
+    if (
+      this.montoRecarga === null ||
+      this.montoRecarga === undefined ||
+      !Number.isFinite(this.montoRecarga)
+    ) {
 
-      this.errorRecarga = 'Ingrese un monto.';
-
-      return;
-    }
-
-    if(this.montoRecarga < this.montoMinimo){
-
-      this.errorRecarga = `El monto minimo es $${this.montoMinimo}.`;
+      this.errorRecarga = 'Ingresá un monto válido.';
 
       return;
     }
 
-    if(this.montoRecarga > this.montoMaximo){
-      
-      this.errorRecarga = `El monto maximo es $${this.montoMaximo}.`;
+    if (this.montoRecarga < this.montoMinimo) {
+
+      this.errorRecarga =
+        `El monto mínimo es $${this.montoMinimo}.`;
 
       return;
     }
 
-    if(this.recargandoSaldo){
+    if (this.montoRecarga > this.montoMaximo) {
+
+      this.errorRecarga =
+        `El monto máximo es $${this.montoMaximo}.`;
+
+      return;
+    }
+
+    if (this.recargandoSaldo) {
       return;
     }
 
@@ -191,32 +322,61 @@ export class Billetera implements OnInit{
         this.errorRecarga = '';
 
         this.cargarMovimientos();
+
       },
 
       error: (error) => {
 
-        console.error('Error al recargar saldo:', error);
+        console.error(
+          'Error al recargar saldo:',
+          error
+        );
 
         this.recargandoSaldo = false;
 
-        this.errorRecarga = error?.error?.message || 'No se pudo realizar la recarga. Intente nuevamente.';
+        this.errorRecarga =
+          error?.error?.message ||
+          'No se pudo realizar la recarga. Intentá nuevamente.';
+
       }
+
     });
+
   }
 
+  // =========================================
+  // MODAL DE MOVIMIENTOS
+  // =========================================
+
   verTodosLosMovimientos(): void {
+
     this.mostrarModalMovimientos.set(true);
+
   }
 
   cerrarModalMovimientos(): void {
+
     this.mostrarModalMovimientos.set(false);
+
   }
+
+  // =========================================
+  // VISIBILIDAD DEL SALDO
+  // =========================================
 
   alternarVisibilidadSaldo(): void {
+
     this.mostrarSaldo.set(!this.mostrarSaldo());
+
   }
 
+  // =========================================
+  // CONSULTAS AUXILIARES
+  // =========================================
+
   hayMovimientos(): boolean {
+
     return this.movimientos().length > 0;
+
   }
 }

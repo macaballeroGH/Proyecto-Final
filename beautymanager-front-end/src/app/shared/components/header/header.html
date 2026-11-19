@@ -12,8 +12,8 @@
             Billetera
         </button>
 
-        <button routerLink="/perfil">
-            Perfil
-        </button>
+        @if (rutaPerfil) {
+            <button type="button" [routerLink]="rutaPerfil">Perfil</button>
+        }
     </div>
 </header>

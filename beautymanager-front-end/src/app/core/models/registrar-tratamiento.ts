@@ -1,6 +1,23 @@
+import { ResultadoTratamiento } from "../enums/resultadoTratamiento";
+
 export interface RegistrarTratamiento {
     idTurno: number;
-    observacion: string;
+
+    observacion: string | null;
+
     duracionReal: number;
-    productosUtilizados: string;
+
+    productosUtilizados: string | null;
+
+    resultadoTratamiento: ResultadoTratamiento;
+
+    serviciosRealizados: {
+
+        idServicioRealizado: number;
+
+        idTurnoServicioReservado: number | null;
+
+        motivoCambio: string | null;
+
+    }[];
 }

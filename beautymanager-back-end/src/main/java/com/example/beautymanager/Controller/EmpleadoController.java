@@ -3,10 +3,10 @@ package com.example.beautymanager.Controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +29,11 @@ import com.example.beautymanager.Servicio.EmpleadoService;
 @PreAuthorize("hasRole('ADMIN')")
 public class EmpleadoController {
 
-    @Autowired
-    private EmpleadoService empleadoService;
+    private final EmpleadoService empleadoService;
+
+    public EmpleadoController(EmpleadoService empleadoService){
+        this.empleadoService = empleadoService;
+    }
 
     //=======================
     //Crear empleado
@@ -181,4 +184,25 @@ public class EmpleadoController {
     public ResponseEntity<List<ObtenerEmpleadoDTO>> bajasEntreFechas(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fin){
         return ResponseEntity.ok(empleadoService.bajasEntreFechas(inicio, fin));
     }
+
+
+    //========================================
+    //OBTENER MI PERFIL COMO EMPLEADA
+    //========================================
+
+    @GetMapping("/mi-perfil")
+    @PreAuthorize("hasRole('EMPLEADO')")
+    public ResponseEntity<ObtenerEmpleadoDTO> obtenerMiPerfil() {
+
+        Long idUsuario = (Long) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        ObtenerEmpleadoDTO empleado =
+                empleadoService.buscarPorUsuarioId(idUsuario);
+
+        return ResponseEntity.ok(empleado);
+    }
+
 }

@@ -52,6 +52,10 @@ export class EmpleadoService {
     return this.http.get<Empleado>(`${this.apiUrl}/email/${email}`);
   }
 
+  obtenerMiPerfil(): Observable<Empleado> {
+    return this.http.get<Empleado>(`${this.apiUrl}/mi-perfil`);
+  }
+
   buscarPorUsuarioId(idUsuario: number): Observable<Empleado> {
     return this.http.get<Empleado>(`${this.apiUrl}/usuario/${idUsuario}`);
   }

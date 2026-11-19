@@ -2,7 +2,6 @@ package com.example.beautymanager.Servicio;
 
 import java.util.List;
 
-import com.example.beautymanager.Modelo.DTO.ActualizarTurnoDTO;
 import com.example.beautymanager.Modelo.DTO.ObtenerTurnoDTO;
 
 public interface GestionAgendaService {
@@ -20,8 +19,6 @@ public interface GestionAgendaService {
     ObtenerTurnoDTO rechazarTurno(Long idTurno);
 
     ObtenerTurnoDTO cancelarTurno(Long idTurno);
-
-    ObtenerTurnoDTO reprogramarTurno(Long idTurno, ActualizarTurnoDTO actualizarTurno);
 
     ObtenerTurnoDTO cambiarEmpleado(Long idTurno, Long idEmpleado);
 }

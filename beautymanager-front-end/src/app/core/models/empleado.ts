@@ -10,6 +10,7 @@ export interface Empleado {
     apellido: string;
     email: string;
     telefono: string;
+    fotoPerfil: string | null;
     estadoUsuario: EstadoUsuario;
 
     especialidad:EspecialidadEmpleado;
